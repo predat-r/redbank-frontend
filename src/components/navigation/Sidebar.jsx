@@ -1,4 +1,4 @@
-import { X, RefreshCw, Landmark } from 'lucide-react';
+import { X, RefreshCw } from 'lucide-react';
 import { NavItem } from './NavItem';
 import { Button } from '../ui/Button';
 
@@ -32,21 +32,11 @@ export const Sidebar = ({
         {/* Header / Brand Logo */}
         <div>
           <div className="flex items-center justify-between h-16 px-5 border-b border-neutral-200">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold shadow-sm shrink-0">
-                <Landmark className="w-5 h-5" />
-              </div>
-              {!isCollapsed && (
-                <div className="flex flex-col">
-                  <span className="font-display font-bold text-lg text-slate-800 tracking-tight leading-none">
-                    RedBank
-                  </span>
-                  <span className="text-[10px] uppercase font-semibold text-neutral-400 tracking-wider">
-                    Online Banking
-                  </span>
-                </div>
-              )}
-            </div>
+            <img
+              src="/favicon_trans.svg"
+              alt="RedBank Logo"
+              className="h-8 w-auto shrink-0 object-contain"
+            />
 
             {/* Mobile Close Button */}
             {isOpen && (
