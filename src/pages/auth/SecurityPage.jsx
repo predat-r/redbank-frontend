@@ -1,4 +1,4 @@
-import { KeyRound, LockKeyhole, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, KeyRound, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert } from '../../components/ui/Alert.jsx';
@@ -8,6 +8,7 @@ import { Input } from '../../components/ui/Input.jsx';
 import { useToast } from '../../hooks/useToast.js';
 import { useChangePassword, useLogout } from '../../features/auth/auth.queries.js';
 import { validatePasswordChange } from '../../features/auth/validation.js';
+import { useAuth } from '../../features/auth/useAuth.js';
 
 const initialValues = { currentPassword: '', newPassword: '', confirmPassword: '' };
 
@@ -18,6 +19,8 @@ export function SecurityPage() {
   const logoutMutation = useLogout();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const { roles } = useAuth();
+  const returnPath = roles?.includes('ROLE_ADMIN') ? '/admin' : '/dashboard';
 
   function updateField(event) {
     const { name, value } = event.target;
@@ -71,13 +74,22 @@ export function SecurityPage() {
               Keep your account credentials secure.
             </p>
           </div>
-          <Button
-            loading={logoutMutation.isPending}
-            onClick={handleLogout}
-            variant="ghost"
-          >
-            Sign Out
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              icon={ArrowLeft}
+              onClick={() => navigate(returnPath)}
+              variant="outline"
+            >
+              Back to {returnPath === '/admin' ? 'admin' : 'dashboard'}
+            </Button>
+            <Button
+              loading={logoutMutation.isPending}
+              onClick={handleLogout}
+              variant="ghost"
+            >
+              Sign Out
+            </Button>
+          </div>
         </header>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
