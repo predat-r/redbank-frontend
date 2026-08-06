@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../providers/AuthProvider.jsx';
+import { ToastProvider } from '../components/ui/Toast.jsx';
 
 export function renderWithProviders(ui, options = {}) {
   const queryClient = new QueryClient({
@@ -13,7 +14,9 @@ export function renderWithProviders(ui, options = {}) {
   function Wrapper({ children }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <AuthProvider restoreOnMount={false}>{children}</AuthProvider>
+        <ToastProvider>
+          <AuthProvider restoreOnMount={false}>{children}</AuthProvider>
+        </ToastProvider>
       </QueryClientProvider>
     );
   }
