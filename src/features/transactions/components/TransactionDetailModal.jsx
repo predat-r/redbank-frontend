@@ -46,26 +46,33 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
                   isCredit ? 'text-success-600' : 'text-neutral-800'
                 }`}
               >
-                {isCredit ? `+` : `-`}${transaction.amount.toFixed(2)}
+                {isCredit ? '+' : '-'}${transaction.amount.toFixed(2)}
               </div>
-              <div className="text-xs text-neutral-500">{transaction.description}</div>
+              <p className="text-xs text-neutral-500 font-mono">
+                {new Date(transaction.createdAt).toLocaleString()}
+              </p>
             </div>
           </div>
           <StatusBadge status={transaction.status} />
         </div>
 
-        {/* Detailed Fields */}
-        <div className="space-y-3 text-xs sm:text-sm divide-y divide-neutral-100">
-          <div className="flex justify-between py-2">
-            <span className="text-neutral-500 font-medium">Transaction Reference</span>
-            <div className="flex items-center gap-1">
-              <span className="font-mono font-semibold text-slate-800">
-                {transaction.transactionReference}
-              </span>
+        {/* Detailed Breakdown List */}
+        <div className="space-y-3 text-xs sm:text-sm">
+          <div className="flex justify-between items-center py-2 border-b border-neutral-100">
+            <span className="text-neutral-500 font-medium">Transaction Type</span>
+            <span className="font-semibold text-neutral-800 uppercase tracking-wider text-xs">
+              {transaction.type}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center py-2 border-b border-neutral-100">
+            <span className="text-neutral-500 font-medium">Reference Code</span>
+            <div className="flex items-center gap-1.5 font-mono text-neutral-800 font-semibold">
+              <span>{transaction.transactionReference}</span>
               <button
                 onClick={handleCopyRef}
                 className="p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
-                title="Copy reference"
+                title="Copy Reference"
               >
                 {copied ? (
                   <Check className="w-3.5 h-3.5 text-success-600" />
@@ -76,48 +83,23 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="flex justify-between py-2">
-            <span className="text-neutral-500 font-medium">Transaction Type</span>
-            <span className="font-semibold text-neutral-800 uppercase">
-              {transaction.type}
+          <div className="flex justify-between items-start py-2 border-b border-neutral-100">
+            <span className="text-neutral-500 font-medium">Description</span>
+            <span className="font-medium text-neutral-800 text-right max-w-[200px] truncate">
+              {transaction.description}
             </span>
           </div>
 
-          <div className="flex justify-between py-2">
-            <span className="text-neutral-500 font-medium">Source Account</span>
-            <span className="font-mono text-neutral-800">
-              {transaction.sourceAccountNumber || 'N/A'}
-            </span>
+          <div className="flex justify-between items-center py-2 border-b border-neutral-100">
+            <span className="text-neutral-500 font-medium">Processing Fee</span>
+            <span className="font-semibold text-success-600">$0.00 (Free)</span>
           </div>
-
-          <div className="flex justify-between py-2">
-            <span className="text-neutral-500 font-medium">Destination Account</span>
-            <span className="font-mono text-neutral-800">
-              {transaction.destinationAccountNumber || 'N/A'}
-            </span>
-          </div>
-
-          <div className="flex justify-between py-2">
-            <span className="text-neutral-500 font-medium">Initiated At</span>
-            <span className="font-mono text-neutral-700">
-              {new Date(transaction.createdAt).toLocaleString()}
-            </span>
-          </div>
-
-          {transaction.completedAt && (
-            <div className="flex justify-between py-2">
-              <span className="text-neutral-500 font-medium">Completed At</span>
-              <span className="font-mono text-neutral-700">
-                {new Date(transaction.completedAt).toLocaleString()}
-              </span>
-            </div>
-          )}
         </div>
 
-        {/* Modal Action Footer */}
-        <div className="pt-2 flex justify-end">
-          <Button variant="secondary" onClick={onClose} fullWidth>
-            Close
+        {/* Action Button */}
+        <div className="pt-2">
+          <Button variant="primary" fullWidth onClick={onClose}>
+            Done
           </Button>
         </div>
       </div>

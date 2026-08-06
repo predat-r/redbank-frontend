@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../../layouts/AppShell';
 import { WelcomeHeader } from '../../features/dashboard/components/WelcomeHeader';
 import { BalanceHeroSection } from '../../features/dashboard/components/BalanceHeroSection';
-import { RecentActivityPanel } from '../../features/dashboard/components/RecentActivityPanel';
-import { TransactionDetailModal } from '../../features/dashboard/components/TransactionDetailModal';
+import { TransactionHistory } from '../../features/transactions/components/TransactionHistory';
+import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
 import { useToast } from '../../hooks/useToast';
 import {
   mockAccountHolder,
@@ -72,7 +72,7 @@ export const DashboardPage = ({ onNavigate }) => {
         />
 
         {/* Recent Activity Table & Tabbed Section */}
-        <RecentActivityPanel
+        <TransactionHistory
           transactions={mockTransactions}
           onRowClick={handleRowClick}
           onExport={handleExport}

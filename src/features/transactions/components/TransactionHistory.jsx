@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { Table, StatusBadge, SegmentedControl, Button } from '../../../components/ui';
 
-export const RecentActivityPanel = ({ transactions = [], onRowClick, onExport }) => {
+export const TransactionHistory = ({ transactions = [], onRowClick, onExport }) => {
   const [filterType, setFilterType] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
@@ -237,3 +237,6 @@ export const RecentActivityPanel = ({ transactions = [], onRowClick, onExport })
     </div>
   );
 };
+
+// Export alias for backward compatibility
+export const RecentActivityPanel = TransactionHistory;
