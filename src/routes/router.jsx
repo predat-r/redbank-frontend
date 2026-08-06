@@ -7,6 +7,7 @@ import { LoginPage } from '../pages/auth/LoginPage.jsx';
 import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
 import { SecurityPage } from '../pages/auth/SecurityPage.jsx';
+import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
 import { RoutePlaceholder } from '../pages/system/RoutePlaceholder.jsx';
 import { HomeRedirect } from './HomeRedirect.jsx';
 
@@ -49,12 +50,7 @@ export const router = createBrowserRouter([
         children: [
           {
             path: '/admin/registrations',
-            element: (
-              <RoutePlaceholder
-                title="Registration approvals"
-                message="The approval workflow is coming in Portion 4."
-              />
-            ),
+            element: <RegistrationsPage />,
           },
         ],
       },
