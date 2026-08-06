@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../../layouts/AppShell';
 import { WelcomeHeader } from '../../features/dashboard/components/WelcomeHeader';
 import { BalanceHeroSection } from '../../features/dashboard/components/BalanceHeroSection';
@@ -14,6 +15,8 @@ import {
 
 export const DashboardPage = ({ onNavigate }) => {
   const { addToast } = useToast();
+  const navigate = useNavigate();
+  const handleNavigate = onNavigate || navigate;
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -31,8 +34,8 @@ export const DashboardPage = ({ onNavigate }) => {
   };
 
   const handleTransferClick = () => {
-    if (onNavigate) {
-      onNavigate('/transfer');
+    if (handleNavigate) {
+      handleNavigate('/transfer');
     } else {
       addToast({
         type: 'info',
@@ -51,7 +54,7 @@ export const DashboardPage = ({ onNavigate }) => {
   };
 
   return (
-    <AppShell activePath="/dashboard" onNavigate={onNavigate} user={mockUserProfile}>
+    <AppShell activePath="/dashboard" onNavigate={handleNavigate} user={mockUserProfile}>
       <div className="space-y-6">
         {/* Welcome Greeting Header */}
         <WelcomeHeader
