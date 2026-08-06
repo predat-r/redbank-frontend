@@ -55,13 +55,13 @@ export const TransactionInitiateStep = ({
         )}
 
         <Input
-          label="Amount (PKR)"
+          label="Amount ($)"
           type="number"
           placeholder="0.00"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           error={errors.amount}
-          helperText="Min: 100 PKR · Max: 500,000 PKR"
+          helperText="Min: $0.01 · Max: $500,000"
           required
         />
 

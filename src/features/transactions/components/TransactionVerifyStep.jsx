@@ -1,4 +1,4 @@
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, AlertCircle } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
 
@@ -9,6 +9,7 @@ export const TransactionVerifyStep = ({
   amount,
   description,
   loading,
+  error,
   onBack,
   onConfirm,
 }) => {
@@ -23,6 +24,13 @@ export const TransactionVerifyStep = ({
           Please review the details below before confirming.
         </p>
       </div>
+
+      {error && (
+        <div className="p-3.5 bg-danger-50 border border-danger-200 rounded-xl flex items-start gap-2.5 text-xs text-danger-800">
+          <AlertCircle className="w-4 h-4 text-danger-600 shrink-0 mt-0.5" />
+          <div className="flex-1 font-medium">{error}</div>
+        </div>
+      )}
 
       <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 space-y-3">
         <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
@@ -51,13 +59,13 @@ export const TransactionVerifyStep = ({
         <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
           <span className="text-neutral-500 font-medium">Amount</span>
           <span className="font-bold text-primary-600 text-lg tabular-nums">
-            PKR {parseFloat(amount).toLocaleString()}
+            ${parseFloat(amount || '0').toLocaleString()}
           </span>
         </div>
 
         <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
           <span className="text-neutral-500 font-medium">Processing Fee</span>
-          <span className="font-semibold text-success-600">FREE (0 PKR)</span>
+          <span className="font-semibold text-success-600">FREE ($0)</span>
         </div>
 
         {description && (
