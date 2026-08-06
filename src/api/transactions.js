@@ -1,16 +1,19 @@
 import api from './axios.js';
 
 export async function createTransfer(payload) {
-  const response = await api.post('/api/accounts/me/transfers', payload);
+  const response = await api.post('/accounts/me/transfers', payload);
   return response.data;
 }
 
 export async function createWithdrawal(payload) {
-  const response = await api.post('/api/accounts/me/withdrawals', payload);
+  const response = await api.post('/accounts/me/withdrawals', payload);
   return response.data;
 }
 
-export async function getMyTransactions(params = { page: 0, size: 10 }) {
-  const response = await api.get('/api/accounts/me/transactions', { params });
+export async function getMyTransactions(params = {}) {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== '' && v !== null)
+  );
+  const response = await api.get('/accounts/me/transactions', { params: cleanParams });
   return response.data;
 }
