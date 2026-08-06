@@ -1,5 +1,5 @@
 import { AppShell } from '../../layouts/AppShell';
-import { TransactionForm } from '../../features/transfers/components/TransactionForm';
+import { TransactionForm } from '../../features/transactions/components/TransactionForm';
 
 export const TransferPage = () => {
   return (

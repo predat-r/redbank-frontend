@@ -4,7 +4,7 @@ import { AppShell } from '../../layouts/AppShell';
 import { WelcomeHeader } from '../../features/dashboard/components/WelcomeHeader';
 import { BalanceHeroSection } from '../../features/dashboard/components/BalanceHeroSection';
 import { RecentActivityPanel } from '../../features/dashboard/components/RecentActivityPanel';
-import { TransactionDetailModal } from '../../features/dashboard/components/TransactionDetailModal';
+import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
 import { useToast } from '../../hooks/useToast';
 import {
   mockAccountHolder,
