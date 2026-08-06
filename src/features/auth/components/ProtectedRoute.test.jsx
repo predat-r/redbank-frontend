@@ -22,7 +22,7 @@ describe('ProtectedRoute', () => {
   });
 
   test('renders protected content for a stored session', () => {
-    setSession({ accessToken: 'token', refreshToken: 'refresh', tokenType: 'Bearer' });
+    setSession({ accessToken: 'token', tokenType: 'Bearer' });
 
     renderWithProviders(
       <MemoryRouter initialEntries={['/dashboard']}>

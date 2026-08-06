@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { restoreSession } from '../api/axios.js';
 import {
   clearSession,
   getSession,
@@ -8,8 +9,9 @@ import {
 import { decodeJwt, getRolesFromClaims, hasRole } from '../features/auth/jwt.js';
 import { AuthContext } from './AuthContext.js';
 
-export function AuthProvider({ children }) {
+export function AuthProvider({ children, restoreOnMount = true }) {
   const session = useSyncExternalStore(subscribeToSession, getSession, () => null);
+  const [isInitializing, setIsInitializing] = useState(restoreOnMount);
   const claims = useMemo(() => decodeJwt(session?.accessToken), [session?.accessToken]);
   const roles = useMemo(() => getRolesFromClaims(claims), [claims]);
 
@@ -20,17 +22,33 @@ export function AuthProvider({ children }) {
     [roles]
   );
 
+  useEffect(() => {
+    if (!restoreOnMount) return undefined;
+    let active = true;
+
+    restoreSession()
+      .catch(() => clearSession())
+      .finally(() => {
+        if (active) setIsInitializing(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [restoreOnMount]);
+
   const value = useMemo(
     () => ({
       session,
       claims,
       roles,
-      isAuthenticated: Boolean(session?.accessToken && session?.refreshToken),
+      isAuthenticated: Boolean(session?.accessToken),
+      isInitializing,
       establishSession,
       endSession,
       hasRole: userHasRole,
     }),
-    [claims, endSession, establishSession, roles, session, userHasRole]
+    [claims, endSession, establishSession, isInitializing, roles, session, userHasRole]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

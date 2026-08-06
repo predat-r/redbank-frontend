@@ -2,40 +2,34 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   clearSession,
   getSession,
-  reloadSessionFromStorage,
   setSession,
   subscribeToSession,
 } from './tokenStore.js';
 
-const tokens = {
-  accessToken: 'access-token',
-  refreshToken: 'refresh-token',
-  tokenType: 'Bearer',
-};
+const tokens = { accessToken: 'access-token', tokenType: 'Bearer' };
 
 describe('tokenStore', () => {
   beforeEach(() => {
     clearSession();
+    window.localStorage.clear();
     window.sessionStorage.clear();
   });
 
-  test('stores a complete session per browser tab', () => {
+  test('keeps only the access token in application memory', () => {
     setSession(tokens);
 
     expect(getSession()).toEqual(tokens);
-    expect(JSON.parse(window.sessionStorage.getItem('redbank.auth.session'))).toEqual(
-      tokens
+    expect(window.localStorage).toHaveLength(0);
+    expect(window.sessionStorage).toHaveLength(0);
+  });
+
+  test('rejects responses without an access token', () => {
+    expect(() => setSession({ tokenType: 'Bearer' })).toThrow(
+      'An access token is required.'
     );
   });
 
-  test('restores valid tokens from session storage', () => {
-    window.sessionStorage.setItem('redbank.auth.session', JSON.stringify(tokens));
-    reloadSessionFromStorage();
-
-    expect(getSession()).toEqual(tokens);
-  });
-
-  test('clears session data and notifies subscribers', () => {
+  test('clears memory and notifies subscribers', () => {
     const listener = vi.fn();
     const unsubscribe = subscribeToSession(listener);
     setSession(tokens);
@@ -43,7 +37,6 @@ describe('tokenStore', () => {
     clearSession();
 
     expect(getSession()).toBeNull();
-    expect(window.sessionStorage.getItem('redbank.auth.session')).toBeNull();
     expect(listener).toHaveBeenCalledTimes(2);
     unsubscribe();
   });
