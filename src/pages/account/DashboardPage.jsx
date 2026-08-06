@@ -11,7 +11,6 @@ import {
   mockAccountHolder,
   mockLatestBalance,
   mockUserProfile,
-  mockTransactions,
 } from '../../features/dashboard/mockData';
 
 export const DashboardPage = ({ onNavigate }) => {
@@ -88,7 +87,6 @@ export const DashboardPage = ({ onNavigate }) => {
 
         {/* Recent Activity Table with View All Button */}
         <TransactionHistory
-          transactions={mockTransactions}
           limit={5}
           showViewAll={true}
           hideSummaryKpi={true}
