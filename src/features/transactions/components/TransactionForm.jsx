@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Card } from '../../../components/ui/Card';
 import { Stepper } from '../../../components/ui/Stepper';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
@@ -10,6 +11,7 @@ import { TransactionReceiptStep } from './TransactionReceiptStep';
 import { TransactionLimitsCard } from './TransactionLimitsCard';
 
 export const TransactionForm = ({ initialMode = 'transfer' }) => {
+  const location = useLocation();
   const { addToast } = useToast();
 
   const [mode, setMode] = useState(initialMode); // 'transfer' | 'withdrawal'
@@ -17,8 +19,12 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const [loading, setLoading] = useState(false);
 
   // Form State
-  const [destinationAccountNumber, setDestinationAccountNumber] = useState('');
-  const [amount, setAmount] = useState('');
+  const [destinationAccountNumber, setDestinationAccountNumber] = useState(
+    location?.state?.destinationAccountNumber || ''
+  );
+  const [amount, setAmount] = useState(
+    location?.state?.amount ? String(location.state.amount) : ''
+  );
   const [description, setDescription] = useState('');
   const [withdrawalMethod, setWithdrawalMethod] = useState('ATM_CODE');
   const [errors, setErrors] = useState({});
@@ -131,9 +137,9 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6">
       {/* Header Navigation Segmented Toggle */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-neutral-0 p-4 rounded-xl border border-neutral-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-neutral-0 p-4 sm:p-5 rounded-xl border border-neutral-200 shadow-sm">
         <div>
           <h1 className="text-xl font-bold text-neutral-800 tracking-tight">
             {mode === 'transfer' ? 'Fund Transfer' : 'Cash Withdrawal'}
@@ -160,9 +166,9 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
         <Stepper steps={steps} currentStep={currentStep} />
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Step Form / Content View (2 Columns) */}
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Main Step Form / Content View (7 Columns) */}
+        <div className="lg:col-span-7">
           {currentStep === 0 && (
             <TransactionInitiateStep
               mode={mode}
@@ -201,8 +207,10 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
           )}
         </div>
 
-        {/* Side Transaction Limits & Guidelines Rail (1 Column) */}
-        <TransactionLimitsCard />
+        {/* Recent Activity Side Rail (5 Columns) */}
+        <div className="lg:col-span-5">
+          <TransactionLimitsCard />
+        </div>
       </div>
     </div>
   );

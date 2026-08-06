@@ -71,11 +71,13 @@ export const DashboardPage = ({ onNavigate }) => {
           }
         />
 
-        {/* Recent Activity Table & Tabbed Section */}
+        {/* Recent Activity Table with View All Button */}
         <TransactionHistory
           transactions={mockTransactions}
+          limit={5}
+          showViewAll={true}
+          hideSummaryKpi={true}
           onRowClick={handleRowClick}
-          onExport={handleExport}
         />
 
         {/* Transaction Detail Modal */}
