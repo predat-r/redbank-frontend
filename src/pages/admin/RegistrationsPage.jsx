@@ -153,96 +153,93 @@ export function RegistrationsPage() {
   const metadata = registrations.data?.page;
 
   return (
-    <main className="min-h-screen bg-neutral-100 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <header>
-          <p className="text-sm font-semibold text-primary-600">Administration</p>
-          <h1 className="mt-1 text-2xl font-bold text-neutral-800 sm:text-3xl">
-            Pending registrations
-          </h1>
-          <p className="mt-2 text-sm text-neutral-500">
-            Review new account applications and record an approval decision.
-          </p>
-        </header>
+    <div className="space-y-6">
+      <header>
+        <p className="text-sm font-semibold text-primary-600">Administration</p>
+        <h1 className="mt-1 text-2xl font-bold text-neutral-800 sm:text-3xl">
+          Pending registrations
+        </h1>
+        <p className="mt-2 text-sm text-neutral-500">
+          Review new account applications and record an approval decision.
+        </p>
+      </header>
 
-        {registrations.isError ? (
-          <EmptyState
-            icon={ClipboardCheck}
-            title="Unable to load registrations"
-            description={registrations.error.message}
-            actionLabel="Try Again"
-            onAction={() => registrations.refetch()}
-          />
-        ) : !registrations.isLoading && data.length === 0 ? (
-          <EmptyState
-            icon={ClipboardCheck}
-            title="No pending registrations"
-            description="All submitted applications have been reviewed."
-          />
-        ) : (
-          <Table
-            columns={columns}
-            data={data}
-            loading={registrations.isLoading}
-            emptyMessage="No pending registrations"
-            onRowClick={(row) => setDetailId(row.id)}
-            renderMobileCard={(row) => (
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-neutral-800">{row.name}</p>
-                    <p className="text-xs text-neutral-500">{row.email}</p>
-                  </div>
-                  <StatusBadge status={row.status} />
+      {registrations.isError ? (
+        <EmptyState
+          icon={ClipboardCheck}
+          title="Unable to load registrations"
+          description={registrations.error.message}
+          actionLabel="Try Again"
+          onAction={() => registrations.refetch()}
+        />
+      ) : !registrations.isLoading && data.length === 0 ? (
+        <EmptyState
+          icon={ClipboardCheck}
+          title="No pending registrations"
+          description="All submitted applications have been reviewed."
+        />
+      ) : (
+        <Table
+          columns={columns}
+          data={data}
+          loading={registrations.isLoading}
+          emptyMessage="No pending registrations"
+          onRowClick={(row) => setDetailId(row.id)}
+          renderMobileCard={(row) => (
+            <div className="space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-neutral-800">{row.name}</p>
+                  <p className="text-xs text-neutral-500">{row.email}</p>
                 </div>
-                <p className="text-xs text-neutral-500">
-                  Submitted {formatDate(row.createdAt)}
-                </p>
-                <div className="flex flex-wrap gap-2 border-t border-neutral-200 pt-3">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    icon={Eye}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setDetailId(row.id);
-                    }}
-                  >
-                    Details
-                  </Button>
-                  <Button
-                    size="sm"
-                    icon={Check}
-                    onClick={(event) => openDecision(event, 'approve', row)}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="danger"
-                    icon={X}
-                    onClick={(event) => openDecision(event, 'reject', row)}
-                  >
-                    Reject
-                  </Button>
-                </div>
+                <StatusBadge status={row.status} />
               </div>
-            )}
-            pagination={{
-              page: metadata?.number ?? page,
-              pageSize: metadata?.size ?? pageSize,
-              totalElements: metadata?.totalElements ?? 0,
-              totalPages: metadata?.totalPages ?? 1,
-              onPageChange: setPage,
-              onPageSizeChange: (size) => {
-                setPageSize(size);
-                setPage(0);
-              },
-            }}
-          />
-        )}
-      </div>
-
+              <p className="text-xs text-neutral-500">
+                Submitted {formatDate(row.createdAt)}
+              </p>
+              <div className="flex flex-wrap gap-2 border-t border-neutral-200 pt-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  icon={Eye}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setDetailId(row.id);
+                  }}
+                >
+                  Details
+                </Button>
+                <Button
+                  size="sm"
+                  icon={Check}
+                  onClick={(event) => openDecision(event, 'approve', row)}
+                >
+                  Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  icon={X}
+                  onClick={(event) => openDecision(event, 'reject', row)}
+                >
+                  Reject
+                </Button>
+              </div>
+            </div>
+          )}
+          pagination={{
+            page: metadata?.number ?? page,
+            pageSize: metadata?.size ?? pageSize,
+            totalElements: metadata?.totalElements ?? 0,
+            totalPages: metadata?.totalPages ?? 1,
+            onPageChange: setPage,
+            onPageSizeChange: (size) => {
+              setPageSize(size);
+              setPage(0);
+            },
+          }}
+        />
+      )}
       <Modal
         isOpen={detailId != null}
         onClose={() => setDetailId(null)}
@@ -330,6 +327,6 @@ export function RegistrationsPage() {
           </div>
         </div>
       </Modal>
-    </main>
+    </div>
   );
 }

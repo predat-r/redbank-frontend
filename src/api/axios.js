@@ -15,6 +15,7 @@ const clientOptions = {
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
   withCredentials: true,
+  paramsSerializer: { indexes: null },
 };
 
 const api = axios.create(clientOptions);
