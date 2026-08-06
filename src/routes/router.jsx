@@ -7,7 +7,6 @@ import { LoginPage } from '../pages/auth/LoginPage.jsx';
 import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
 import { SecurityPage } from '../pages/auth/SecurityPage.jsx';
-import { DashboardPage } from '../pages/account/DashboardPage.jsx';
 import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
 import { RoutePlaceholder } from '../pages/system/RoutePlaceholder.jsx';
 import { HomeRedirect } from './HomeRedirect.jsx';
@@ -44,7 +43,12 @@ export const router = createBrowserRouter([
         children: [
           {
             path: '/dashboard',
-            element: <DashboardPage />,
+            element: (
+              <RoutePlaceholder
+                title="Dashboard"
+                message="Your authenticated dashboard is ready for its feature content."
+              />
+            ),
           },
         ],
       },
