@@ -49,6 +49,21 @@ export const StatusBadge = ({
           defaultLabel: status || 'Failed',
         };
 
+      case 'FROZEN':
+        return {
+          bg: 'bg-warning-50 text-warning-600',
+          icon: AlertCircle,
+          defaultLabel: 'Frozen',
+        };
+
+      case 'DEACTIVATED':
+      case 'CLOSED':
+        return {
+          bg: 'bg-slate-100 text-slate-600',
+          icon: XCircle,
+          defaultLabel: normalizedStatus === 'DEACTIVATED' ? 'Deactivated' : 'Closed',
+        };
+
       case 'ROLE_ADMIN':
         return {
           bg: 'bg-primary-50 text-primary-600',

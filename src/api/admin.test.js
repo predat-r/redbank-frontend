@@ -2,12 +2,20 @@ import { afterEach, describe, expect, test } from 'vitest';
 import api from './axios.js';
 import {
   approveRegistration,
+  createAdminUser,
+  deactivateAdminAccount,
+  deactivateAdminUser,
+  freezeAdminAccount,
+  getAdminAccount,
   getAdminAccounts,
   getAdminTransactions,
+  getAdminUser,
   getAdminUsers,
   getPendingRegistration,
   getPendingRegistrations,
   rejectRegistration,
+  reactivateAdminUser,
+  updateAdminUser,
 } from './admin.js';
 
 const originalAdapter = api.defaults.adapter;
@@ -99,5 +107,58 @@ describe('admin overview API', () => {
       size: 20,
       sort: ['createdAt,desc'],
     });
+  });
+});
+
+describe('admin user and account-holder API', () => {
+  test('uses the user detail and write contracts', async () => {
+    const requests = [];
+    api.defaults.adapter = async (config) => {
+      requests.push(config);
+      return response(config, { id: 4 });
+    };
+    const createPayload = {
+      name: 'Amina Khan',
+      email: 'amina@example.com',
+      phoneNumber: '+923001234567',
+      address: '12 Bank Street',
+      password: 'secure-password',
+    };
+    const updatePayload = { ...createPayload };
+    delete updatePayload.password;
+
+    await getAdminUser(4);
+    await createAdminUser(createPayload);
+    await updateAdminUser({ userId: 4, payload: updatePayload });
+    await deactivateAdminUser(4);
+    await reactivateAdminUser(4);
+
+    expect(requests.map(({ method, url }) => [method, url])).toEqual([
+      ['get', '/admin/users/4'],
+      ['post', '/admin/users'],
+      ['put', '/admin/users/4'],
+      ['patch', '/admin/users/4/deactivate'],
+      ['patch', '/admin/users/4/reactivate'],
+    ]);
+    expect(JSON.parse(requests[1].data)).toEqual(createPayload);
+    expect(JSON.parse(requests[2].data)).toEqual(updatePayload);
+  });
+
+  test('uses the account detail and lifecycle contracts', async () => {
+    const requests = [];
+    api.defaults.adapter = async (config) => {
+      requests.push(config);
+      return response(config, { id: 15 });
+    };
+
+    await getAdminAccount(15);
+    await freezeAdminAccount(15);
+    await deactivateAdminAccount(15);
+
+    expect(requests.map(({ method, url }) => [method, url])).toEqual([
+      ['get', '/admin/accounts/15'],
+      ['patch', '/admin/accounts/freeze/15'],
+      ['patch', '/admin/accounts/deactivate/15'],
+    ]);
   });
 });

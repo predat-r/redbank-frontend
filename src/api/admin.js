@@ -35,11 +35,47 @@ export async function getAdminUsers(options = {}) {
   return response.data;
 }
 
+export async function getAdminUser(userId) {
+  const response = await api.get(`/admin/users/${userId}`);
+  return response.data;
+}
+
+export async function createAdminUser(payload) {
+  const response = await api.post('/admin/users', payload);
+  return response.data;
+}
+
+export async function updateAdminUser({ userId, payload }) {
+  const response = await api.put(`/admin/users/${userId}`, payload);
+  return response.data;
+}
+
+export async function deactivateAdminUser(userId) {
+  await api.patch(`/admin/users/${userId}/deactivate`);
+}
+
+export async function reactivateAdminUser(userId) {
+  await api.patch(`/admin/users/${userId}/reactivate`);
+}
+
 export async function getAdminAccounts(options = {}) {
   const response = await api.get('/admin/accounts', {
     params: pageableParams(options),
   });
   return response.data;
+}
+
+export async function getAdminAccount(accountId) {
+  const response = await api.get(`/admin/accounts/${accountId}`);
+  return response.data;
+}
+
+export async function freezeAdminAccount(accountId) {
+  await api.patch(`/admin/accounts/freeze/${accountId}`);
+}
+
+export async function deactivateAdminAccount(accountId) {
+  await api.patch(`/admin/accounts/deactivate/${accountId}`);
 }
 
 export async function getAdminTransactions(options = {}) {

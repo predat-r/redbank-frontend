@@ -1,12 +1,20 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   approveRegistration,
+  createAdminUser,
+  deactivateAdminAccount,
+  deactivateAdminUser,
+  freezeAdminAccount,
+  getAdminAccount,
   getAdminAccounts,
   getAdminTransactions,
+  getAdminUser,
   getAdminUsers,
   getPendingRegistration,
   getPendingRegistrations,
   rejectRegistration,
+  reactivateAdminUser,
+  updateAdminUser,
 } from '../../api/admin.js';
 
 export const adminKeys = {
@@ -15,8 +23,10 @@ export const adminKeys = {
   registration: (userId) => ['admin', 'registrations', 'detail', userId],
   users: ['admin', 'users'],
   userList: (options) => ['admin', 'users', 'list', options],
+  user: (userId) => ['admin', 'users', 'detail', userId],
   accounts: ['admin', 'accounts'],
   accountList: (options) => ['admin', 'accounts', 'list', options],
+  account: (accountId) => ['admin', 'accounts', 'detail', accountId],
   transactions: ['admin', 'transactions'],
   transactionList: (options) => ['admin', 'transactions', 'list', options],
 };
@@ -74,6 +84,90 @@ export function useAdminOverview() {
     error: results.find((result) => result.isError)?.error,
     refetch: () => Promise.all(results.map((result) => result.refetch())),
   };
+}
+
+export function useAdminUsers(options) {
+  return useQuery({
+    queryKey: adminKeys.userList(options),
+    queryFn: () => getAdminUsers(options),
+  });
+}
+
+export function useAdminUser(userId) {
+  return useQuery({
+    queryKey: adminKeys.user(userId),
+    queryFn: () => getAdminUser(userId),
+    enabled: userId != null,
+  });
+}
+
+export function useAdminAccounts(options) {
+  return useQuery({
+    queryKey: adminKeys.accountList(options),
+    queryFn: () => getAdminAccounts(options),
+  });
+}
+
+export function useAdminAccount(accountId) {
+  return useQuery({
+    queryKey: adminKeys.account(accountId),
+    queryFn: () => getAdminAccount(accountId),
+    enabled: accountId != null,
+  });
+}
+
+function useAdminMutation(mutationFn, invalidationKeys) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn,
+    onSuccess: (_data, variables) => {
+      invalidationKeys(variables).forEach((queryKey) =>
+        queryClient.invalidateQueries({ queryKey })
+      );
+    },
+  });
+}
+
+export function useCreateAdminUser() {
+  return useAdminMutation(createAdminUser, () => [adminKeys.users, adminKeys.accounts]);
+}
+
+export function useUpdateAdminUser() {
+  return useAdminMutation(updateAdminUser, ({ userId }) => [
+    adminKeys.users,
+    adminKeys.user(userId),
+  ]);
+}
+
+export function useDeactivateAdminUser() {
+  return useAdminMutation(deactivateAdminUser, (userId) => [
+    adminKeys.users,
+    adminKeys.user(userId),
+    adminKeys.accounts,
+  ]);
+}
+
+export function useReactivateAdminUser() {
+  return useAdminMutation(reactivateAdminUser, (userId) => [
+    adminKeys.users,
+    adminKeys.user(userId),
+    adminKeys.accounts,
+  ]);
+}
+
+export function useFreezeAdminAccount() {
+  return useAdminMutation(freezeAdminAccount, (accountId) => [
+    adminKeys.accounts,
+    adminKeys.account(accountId),
+  ]);
+}
+
+export function useDeactivateAdminAccount() {
+  return useAdminMutation(deactivateAdminAccount, (accountId) => [
+    adminKeys.accounts,
+    adminKeys.account(accountId),
+  ]);
 }
 
 function useRegistrationDecision(mutationFn) {

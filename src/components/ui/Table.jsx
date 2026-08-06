@@ -1,4 +1,12 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import {
+  ArrowUpDown,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronUp,
+} from 'lucide-react';
 import { Button } from './Button';
 
 export const Table = ({
@@ -11,6 +19,7 @@ export const Table = ({
   onRowClick,
   className = '',
   renderMobileCard,
+  sorting,
 }) => {
   const {
     page = 0,
@@ -31,6 +40,15 @@ export const Table = ({
               {columns.map((col) => (
                 <th
                   key={col.key || col.header}
+                  aria-sort={
+                    col.sortable
+                      ? sorting?.field === (col.sortKey || col.key)
+                        ? sorting.direction === 'asc'
+                          ? 'ascending'
+                          : 'descending'
+                        : 'none'
+                      : undefined
+                  }
                   className={`px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-neutral-500 select-none ${
                     col.align === 'right'
                       ? 'text-right'
@@ -40,7 +58,35 @@ export const Table = ({
                   }`}
                   style={{ width: col.width }}
                 >
-                  {col.header}
+                  {col.sortable && sorting?.onSortChange ? (
+                    <button
+                      className="inline-flex items-center gap-1.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+                      onClick={() => {
+                        const field = col.sortKey || col.key;
+                        sorting.onSortChange({
+                          field,
+                          direction:
+                            sorting.field === field && sorting.direction === 'asc'
+                              ? 'desc'
+                              : 'asc',
+                        });
+                      }}
+                      type="button"
+                    >
+                      {col.header}
+                      {sorting.field === (col.sortKey || col.key) ? (
+                        sorting.direction === 'asc' ? (
+                          <ChevronUp aria-hidden="true" className="size-3.5" />
+                        ) : (
+                          <ChevronDown aria-hidden="true" className="size-3.5" />
+                        )
+                      ) : (
+                        <ArrowUpDown aria-hidden="true" className="size-3.5" />
+                      )}
+                    </button>
+                  ) : (
+                    col.header
+                  )}
                 </th>
               ))}
             </tr>

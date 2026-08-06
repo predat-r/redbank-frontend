@@ -6,7 +6,9 @@ import { AuthLayout } from '../layouts/AuthLayout.jsx';
 import { AdminLayout } from '../layouts/AdminLayout.jsx';
 import { AdminModulePlaceholder } from '../pages/admin/AdminModulePlaceholder.jsx';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage.jsx';
+import { AccountHoldersPage } from '../pages/admin/AccountHoldersPage.jsx';
 import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
+import { UsersPage } from '../pages/admin/UsersPage.jsx';
 import { DashboardPage } from '../pages/account/DashboardPage.jsx';
 import { TransferPage } from '../pages/account/TransferPage.jsx';
 import { WithdrawPage } from '../pages/account/WithdrawPage.jsx';
@@ -69,11 +71,11 @@ export const router = createBrowserRouter([
               { path: 'registrations', element: <RegistrationsPage /> },
               {
                 path: 'users',
-                element: <AdminModulePlaceholder title="Users" />,
+                element: <UsersPage />,
               },
               {
                 path: 'accounts',
-                element: <AdminModulePlaceholder title="Account holders" />,
+                element: <AccountHoldersPage />,
               },
               {
                 path: 'deposits',
