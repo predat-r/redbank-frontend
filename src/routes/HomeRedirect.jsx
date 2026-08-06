@@ -12,10 +12,14 @@ export function HomeRedirect() {
     );
   }
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  return (
-    <Navigate
-      to={hasRole('ROLE_ADMIN') ? '/admin/registrations' : '/dashboard'}
-      replace
-    />
-  );
+
+  if (hasRole('ROLE_ADMIN')) {
+    return <Navigate to="/admin/registrations" replace />;
+  }
+
+  if (hasRole('ROLE_ACCOUNT_HOLDER')) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Navigate to="/registration-status" replace />;
 }
