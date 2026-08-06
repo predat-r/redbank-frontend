@@ -6,5 +6,4 @@ import { clearSession } from '../api/tokenStore.js';
 afterEach(() => {
   cleanup();
   clearSession();
-  window.sessionStorage.clear();
 });

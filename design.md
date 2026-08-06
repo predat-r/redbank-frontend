@@ -459,6 +459,9 @@ blocks**, and **Primary components used** (referencing Part A).
 - **Route:** `/login` · **Access:** Public · **Endpoint:** `POST /api/auth/login`
 - **Session endpoints:** `POST /api/auth/refresh`, `POST /api/auth/logout`,
   `GET /api/auth/registration-status`
+- **Session behavior:** Login and registration return an access token in JSON and set the refresh
+  token as an HttpOnly cookie. Login, registration, refresh, and logout requests include browser
+  credentials. Refresh and logout send no JSON request body.
 - **Content:** Email + password fields, "Forgot password" link, primary CTA "Sign In", link to Register.
 - **Components:** Auth card, Inputs, Primary Button, inline error banner (info/error color) for bad credentials.
 - **API limitation:** Password recovery is not currently exposed by the backend. The "Forgot
@@ -611,7 +614,7 @@ redbank-frontend/
 │   └── icons.svg
 ├── src/
 │   ├── api/                      # HTTP transport and endpoint functions
-│   │   ├── client.js             # Base URL, headers, JSON parsing, auth/error handling
+│   │   ├── axios.js              # Axios instances, headers, refresh, and error handling
 │   │   ├── auth.js               # /api/auth/* endpoint functions
 │   │   ├── accounts.js           # Account and balance endpoint functions
 │   │   ├── admin.js              # Admin endpoint functions
@@ -665,7 +668,7 @@ are not required.
    to the corresponding folder in `features/`.
 2. **Shared components contain no RedBank business rules.** Put a generic `Button` or `Modal` in
    `components/ui/`. Put `TransferConfirmationModal` in `features/transfers/components/`.
-3. **API functions are framework-independent.** Files in `api/` may use `fetch` and normalize
+3. **API functions are framework-independent.** Files in `api/` may use the shared Axios client and normalize
    responses/errors, but must not import React, React Router, or UI components.
 4. **Server state uses query hooks.** Keep TanStack Query keys, queries, mutations, and cache
    invalidation beside their feature (for example `features/accounts/account.queries.js`). Do
@@ -713,10 +716,31 @@ independently testable.
 
 ---
 
+## C.5 Authentication and Session Security
+
+- The backend-owned HttpOnly refresh-token cookie is the only refresh credential. Frontend
+  JavaScript must never attempt to read, copy, or persist it.
+- Keep `accessToken` and `tokenType` in application memory only. Never write authentication
+  tokens to `localStorage`, `sessionStorage`, IndexedDB, URLs, or logs.
+- Configure Axios auth requests with `withCredentials: true`. This is required for login,
+  registration, refresh, and logout so the browser can receive and send the refresh cookie.
+- Call `POST /api/auth/refresh` and `POST /api/auth/logout` without a JSON body. Refresh returns a
+  new access token while the backend rotates the cookie; logout invalidates and clears the cookie.
+- On application startup, attempt one credentialed refresh before route guards redirect. A `401`
+  means the user is signed out; it is not an application error.
+- Protected requests send `Authorization: Bearer <accessToken>`. Concurrent `401` responses share
+  one refresh operation and retry at most once; a failed refresh clears in-memory authentication.
+- Do not set the `Origin` request header in frontend code. Browsers provide it and the backend
+  validates it. Development permits exactly `http://localhost:3001`; production must allow only
+  the deployed frontend's exact HTTPS origin.
+
+---
+
 ## Changelog
 
 | Date       | Change                                                                                                      |
 | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| 2026-08-06 | Documented memory-only access tokens and backend-managed HttpOnly refresh cookies.                          |
 | 2026-08-06 | Aligned Page Directory endpoints and supported behaviors with `docs/openapi.json`.                          |
 | 2026-08-06 | Added Part C: canonical frontend folder structure and file-placement rules.                                 |
 | 2026-08-06 | Initial version — foundations + full page directory drafted from README v1 endpoints and reference screens. |

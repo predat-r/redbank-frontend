@@ -10,8 +10,8 @@ export async function login(payload) {
   return response.data;
 }
 
-export async function logout(refreshToken) {
-  await refreshClient.post('/auth/logout', { refreshToken });
+export async function logout() {
+  await refreshClient.post('/auth/logout');
 }
 
 export async function getRegistrationStatus() {
