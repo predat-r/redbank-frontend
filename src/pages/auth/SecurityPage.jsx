@@ -59,7 +59,11 @@ export function SecurityPage() {
       <div className="mx-auto max-w-5xl">
         <header className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <p className="font-display text-xl font-bold text-primary-600">RedBank</p>
+            <img
+              src="/favicon_trans.svg"
+              alt="RedBank"
+              className="h-9 w-auto object-contain"
+            />
             <h1 className="mt-2 text-2xl font-bold text-neutral-800 sm:text-[28px]">
               Password & Security
             </h1>

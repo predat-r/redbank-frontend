@@ -29,6 +29,7 @@ const adminNavItems = [
 ];
 
 function activeAdminPath(pathname) {
+  if (pathname.startsWith('/admin/balance/')) return '/admin/accounts';
   const matchingItem = adminNavItems
     .filter(({ href }) =>
       href === '/admin' ? pathname === href : pathname.startsWith(href)

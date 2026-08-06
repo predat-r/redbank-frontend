@@ -131,3 +131,15 @@ export async function getAdminBalanceLedger(accountId, options = {}) {
   });
   return response.data;
 }
+
+export async function getAdminAuditLogs(options = {}) {
+  const response = await api.get('/admin/audit-logs', {
+    params: pageableParams(options),
+  });
+  return response.data;
+}
+
+export async function getAdminAuditLog(auditLogId) {
+  const response = await api.get(`/admin/audit-logs/${auditLogId}`);
+  return response.data;
+}

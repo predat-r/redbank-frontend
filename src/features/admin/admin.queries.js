@@ -14,6 +14,8 @@ import {
   createAdminDeposit,
   getAdminLatestBalance,
   getAdminBalanceLedger,
+  getAdminAuditLogs,
+  getAdminAuditLog,
   getAdminUser,
   getAdminUsers,
   getPendingRegistration,
@@ -161,6 +163,21 @@ export function useCreateAdminDeposit() {
   return useMutation({
     mutationFn: createAdminDeposit,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.transactions }),
+  });
+}
+
+export function useAdminAuditLogs(options) {
+  return useQuery({
+    queryKey: ['admin', 'audit-logs', 'list', options],
+    queryFn: () => getAdminAuditLogs(options),
+  });
+}
+
+export function useAdminAuditLog(auditLogId) {
+  return useQuery({
+    queryKey: ['admin', 'audit-logs', 'detail', auditLogId],
+    queryFn: () => getAdminAuditLog(auditLogId),
+    enabled: auditLogId != null,
   });
 }
 

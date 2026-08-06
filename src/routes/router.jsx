@@ -4,7 +4,6 @@ import { PublicRoute } from '../features/auth/components/PublicRoute.jsx';
 import { RoleRoute } from '../features/auth/components/RoleRoute.jsx';
 import { AuthLayout } from '../layouts/AuthLayout.jsx';
 import { AdminLayout } from '../layouts/AdminLayout.jsx';
-import { AdminModulePlaceholder } from '../pages/admin/AdminModulePlaceholder.jsx';
 import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage.jsx';
 import { AccountHoldersPage } from '../pages/admin/AccountHoldersPage.jsx';
 import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
@@ -12,6 +11,7 @@ import { UsersPage } from '../pages/admin/UsersPage.jsx';
 import { TransactionsPage } from '../pages/admin/TransactionsPage.jsx';
 import { DepositsPage } from '../pages/admin/DepositsPage.jsx';
 import { BalancePage } from '../pages/admin/BalancePage.jsx';
+import { AuditLogsPage } from '../pages/admin/AuditLogsPage.jsx';
 import { DashboardPage } from '../pages/account/DashboardPage.jsx';
 import { TransferPage } from '../pages/account/TransferPage.jsx';
 import { WithdrawPage } from '../pages/account/WithdrawPage.jsx';
@@ -94,7 +94,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: 'audit-logs',
-                element: <AdminModulePlaceholder title="Audit logs" />,
+                element: <AuditLogsPage />,
               },
             ],
           },
