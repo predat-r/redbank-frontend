@@ -13,18 +13,20 @@ export const Input = React.forwardRef(
       alignRight = false,
       icon: Icon,
       className = '',
-      id,
+      containerClassName = '',
+      id: providedId,
       disabled = false,
       ...props
     },
     ref
   ) => {
-    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
-
+    const generatedId = React.useId();
+    const inputId = providedId || generatedId;
     const isError = Boolean(error);
+    const messageId = `${inputId}-message`;
 
     return (
-      <div className="w-full flex flex-col gap-1.5">
+      <div className={`flex w-full flex-col gap-1.5 ${containerClassName}`}>
         {label && (
           <label
             htmlFor={inputId}
@@ -52,6 +54,8 @@ export const Input = React.forwardRef(
             ref={ref}
             id={inputId}
             disabled={disabled}
+            aria-describedby={error || helperText ? messageId : undefined}
+            aria-invalid={isError}
             className={`
               w-full h-11 px-3.5 bg-neutral-0 text-neutral-800 text-sm rounded-lg border transition-all duration-120
               placeholder:text-neutral-400 focus:outline-none
@@ -79,6 +83,7 @@ export const Input = React.forwardRef(
 
         {(error || helperText) && (
           <span
+            id={messageId}
             className={`text-xs ${
               isError ? 'text-error-600 font-medium' : 'text-neutral-500'
             }`}
