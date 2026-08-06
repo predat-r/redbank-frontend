@@ -10,7 +10,7 @@ import { WithdrawPage } from '../pages/account/WithdrawPage.jsx';
 import { LoginPage } from '../pages/auth/LoginPage.jsx';
 import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
-import { SecurityPage } from '../pages/auth/SecurityPage.jsx';
+import { ProfilePage } from '../pages/auth/ProfilePage.jsx';
 import { RoutePlaceholder } from '../pages/system/RoutePlaceholder.jsx';
 import { HomeRedirect } from './HomeRedirect.jsx';
 
@@ -36,8 +36,12 @@ export const router = createBrowserRouter([
         element: <RegistrationStatusPage />,
       },
       {
+        path: '/profile',
+        element: <ProfilePage />,
+      },
+      {
         path: '/settings/security',
-        element: <SecurityPage />,
+        element: <ProfilePage />,
       },
       {
         element: (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Bell, Menu, User, LogOut, Settings, ShieldCheck } from 'lucide-react';
+import { Search, Bell, Menu, User, LogOut, ShieldCheck } from 'lucide-react';
 
 export const Topbar = ({
   user = { name: 'John Doe', role: 'ROLE_ACCOUNT_HOLDER', email: 'john@example.com' },
@@ -119,8 +119,8 @@ export const Topbar = ({
                       }}
                       className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
                     >
-                      <Settings className="w-4 h-4 text-neutral-500" />
-                      Security & Settings
+                      <User className="w-4 h-4 text-neutral-500" />
+                      My Profile
                     </button>
                   )}
                   {onLogout && (
