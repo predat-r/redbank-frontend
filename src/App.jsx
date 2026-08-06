@@ -1,10 +1,11 @@
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes/router.jsx';
 import { ToastProvider } from './components/ui';
-import { AppRouter } from './routes/router';
 
 function App() {
   return (
     <ToastProvider>
-      <AppRouter />
+      <RouterProvider router={router} />
     </ToastProvider>
   );
 }
