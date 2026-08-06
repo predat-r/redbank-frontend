@@ -734,6 +734,32 @@ independently testable.
   validates it. Development permits exactly `http://localhost:3001`; production must allow only
   the deployed frontend's exact HTTPS origin.
 
+### Using Auth Globally
+
+`AppProviders` mounts `AuthProvider` for the entire application. Components inside the app can
+access authentication through the feature hook:
+
+```jsx
+import { useAuth } from '../features/auth/useAuth.js';
+
+const {
+  isAuthenticated,
+  isInitializing,
+  session,
+  claims,
+  roles,
+  hasRole,
+  establishSession,
+  endSession,
+} = useAuth();
+```
+
+- Use `ProtectedRoute` for authenticated route groups and `RoleRoute` for role-restricted groups.
+- Use `establishSession` after login or registration and `endSession` when clearing local auth.
+- API modules must use the shared Axios client; it attaches the access token, performs one shared
+  refresh for concurrent `401` responses, and retries each failed request at most once.
+- Do not read auth context directly, duplicate token state, or persist tokens in browser storage.
+
 ---
 
 ## Changelog
