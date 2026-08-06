@@ -8,7 +8,7 @@ import {
   ArrowLeftRight,
   Banknote,
   History,
-  Settings,
+  User,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -55,7 +55,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
           },
         ]
       : []),
-    { label: 'Settings', href: '/settings/security', icon: Settings },
+    { label: 'Profile', href: '/profile', icon: User },
   ];
 
   const handleLogout = () => {
@@ -86,7 +86,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
           unreadNotifications={2}
           onMenuToggle={() => setMobileDrawerOpen((prev) => !prev)}
           onNotificationClick={() => {}}
-          onSettingsClick={() => handleNavigation('/settings/security')}
+          onSettingsClick={() => handleNavigation('/profile')}
           onLogout={handleLogout}
         />
 
