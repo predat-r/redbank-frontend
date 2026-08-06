@@ -37,3 +37,18 @@ export function validateRegistration(values) {
 
   return errors;
 }
+
+export function validatePasswordChange(values) {
+  const errors = {};
+  if (!values.currentPassword) errors.currentPassword = 'Current password is required.';
+  if (values.newPassword.length < 8 || values.newPassword.length > 100) {
+    errors.newPassword = 'New password must be between 8 and 100 characters.';
+  }
+  if (values.confirmPassword !== values.newPassword) {
+    errors.confirmPassword = 'Passwords do not match.';
+  }
+  if (values.currentPassword && values.currentPassword === values.newPassword) {
+    errors.newPassword = 'New password must be different from your current password.';
+  }
+  return errors;
+}

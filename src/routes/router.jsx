@@ -5,6 +5,8 @@ import { RoleRoute } from '../features/auth/components/RoleRoute.jsx';
 import { AuthLayout } from '../layouts/AuthLayout.jsx';
 import { LoginPage } from '../pages/auth/LoginPage.jsx';
 import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
+import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
+import { SecurityPage } from '../pages/auth/SecurityPage.jsx';
 import { RoutePlaceholder } from '../pages/system/RoutePlaceholder.jsx';
 import { HomeRedirect } from './HomeRedirect.jsx';
 
@@ -27,21 +29,11 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/registration-status',
-        element: (
-          <RoutePlaceholder
-            title="Registration status"
-            message="Status details are coming next."
-          />
-        ),
+        element: <RegistrationStatusPage />,
       },
       {
         path: '/settings/security',
-        element: (
-          <RoutePlaceholder
-            title="Security settings"
-            message="Password settings are coming next."
-          />
-        ),
+        element: <SecurityPage />,
       },
       {
         path: '/dashboard',
