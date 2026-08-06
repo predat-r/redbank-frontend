@@ -7,11 +7,8 @@
 >
 > **Structure note:** This file is split into two halves on purpose:
 >
-> - **Part A — Design Foundations** (colors, type, spacing, components, motion, icons). This is
->   the stable part. Change it rarely, and only with team agreement, since every screen depends
->   on it.
-> - **Part B — Page Directory** (what pages exist, what's on them). This is expected to change
->   as product requirements evolve. Treat Part B as a living spec, Part A as the rulebook.
+> - **Part A — Design Foundations** (colors, type, spacing, components, motion, icons). This is > the stable part. Change it rarely, and only with team agreement, since every screen depends > on it.
+> - **Part B — Page Directory** (what pages exist, what's on them). This is expected to change > as product requirements evolve. Treat Part B as a living spec, Part A as the rulebook.
 >
 > **Inspiration:** The three reference screens shared with the team (dashboard, fund transfer,
 > accounts/filter view) set the tone — soft neutral surfaces, rounded cards, a friendly welcome
@@ -460,12 +457,16 @@ blocks**, and **Primary components used** (referencing Part A).
 ### B.2 Login
 
 - **Route:** `/login` · **Access:** Public · **Endpoint:** `POST /api/auth/login`
+- **Session endpoints:** `POST /api/auth/refresh`, `POST /api/auth/logout`,
+  `GET /api/auth/registration-status`
 - **Content:** Email + password fields, "Forgot password" link, primary CTA "Sign In", link to Register.
 - **Components:** Auth card, Inputs, Primary Button, inline error banner (info/error color) for bad credentials.
+- **API limitation:** Password recovery is not currently exposed by the backend. The "Forgot
+  password" affordance must remain unavailable with an explanatory message until an endpoint is added.
 
 ### B.3 Change Password
 
-- **Route:** `/settings/security` · **Access:** Authenticated · **Endpoint:** `POST /api/auth/change-password`
+- **Route:** `/settings/security` · **Access:** Authenticated · **Endpoint:** `PUT /api/auth/password`
 - **Content:** Current password, new password, confirm new password, security tips sidebar.
 - **Components:** Form card, Inputs, Primary Button, Toast on success.
 
@@ -475,7 +476,8 @@ blocks**, and **Primary components used** (referencing Part A).
 
 ### B.4 Dashboard
 
-- **Route:** `/dashboard` · **Endpoint:** `GET /api/balance/me/latest`, `GET /api/accounts/me/transactions`
+- **Route:** `/dashboard` · **Endpoints:** `GET /api/accounts/me`,
+  `GET /api/balance/me/latest`, `GET /api/accounts/me/transactions`
 - **Content:** Personalized welcome header ("Welcome, {name}"), Current Balance hero card
   (amount-lg, currency selector, "View Details" button), Account Type card, tabbed panel
   (Transaction History / mirrors reference layout — Loan Summary tab omitted, not in scope of
@@ -484,10 +486,13 @@ blocks**, and **Primary components used** (referencing Part A).
 
 ### B.5 Accounts / My Account Summary
 
-- **Route:** `/accounts` · **Endpoint:** `GET /api/accounts/me/transactions`, `GET /api/balance/me/latest`
-- **Content:** Sub-tabs (Mini Statement / Account Summary / Transaction History), Filter panel
-  (period dropdown, date range, balance range, Debit/Credit/Both segmented control), results table.
-- **Components:** Tabs, Filter panel (Inputs + Segmented Control §6.5), Table (§6.4).
+- **Route:** `/accounts` · **Endpoints:** `GET /api/accounts/me`,
+  `GET /api/accounts/me/transactions`, `GET /api/balance/me/latest`
+- **Content:** Sub-tabs (Mini Statement / Account Summary / Transaction History), account summary,
+  and pageable transaction results.
+- **Components:** Tabs, account summary Cards (§6.3), Table (§6.4).
+- **API limitation:** Period, date-range, balance-range, and debit/credit server-side filters are
+  deferred until the transaction endpoint exposes corresponding query parameters.
 
 ### B.6 Fund Transfer
 
@@ -503,8 +508,10 @@ blocks**, and **Primary components used** (referencing Part A).
 ### B.7 Transaction History (standalone/history view)
 
 - **Route:** `/history` · **Endpoint:** `GET /api/accounts/me/transactions`
-- **Content:** Full paginated table with search/filter, export option.
-- **Components:** Table (§6.4), Filter panel, Ghost button for export ("download" icon).
+- **Content:** Full pageable transaction table with an export option for the currently loaded data.
+- **Components:** Table (§6.4), Ghost button for export ("download" icon).
+- **API limitation:** Search, server-side filtering, and a dedicated export endpoint are not
+  currently available. Export must be generated client-side from data already retrieved.
 
 ### B.8 Balance / Ledger
 
@@ -518,8 +525,9 @@ blocks**, and **Primary components used** (referencing Part A).
 
 ### B.9 Admin — Pending Registrations
 
-- **Route:** `/admin/registrations` · **Endpoints:** `GET /api/admin/registrations/pending`,
-  `POST /api/admin/registrations/{userId}/approve`, `POST /api/admin/registrations/{userId}/reject`
+- **Route:** `/admin/registrations` · **Endpoints:** `GET /api/admin/registrations`,
+  `GET /api/admin/registrations/{userId}`, `POST /api/admin/registrations/{userId}/approve`,
+  `POST /api/admin/registrations/{userId}/reject`
 - **Content:** Table of pending applicants (name, email, submitted date, `PENDING_APPROVAL`
   badge), row actions Approve / Reject, Reject opens a Modal requiring a reason.
 - **Components:** Table, Status Badge, Danger/Primary Buttons, Modal (§6.9), Toast on decision.
@@ -527,36 +535,43 @@ blocks**, and **Primary components used** (referencing Part A).
 ### B.10 Admin — Deposits
 
 - **Route:** `/admin/deposits` · **Endpoint:** `POST /api/admin/deposits`
-- **Content:** Form (Account number, Amount, Currency, Note), recent-deposits table below for context.
-- **Components:** Form card, Inputs, Primary Button, Table.
+- **Content:** Form (Account number, Amount, Currency, Note) and a success receipt for the deposit
+  returned by the create operation.
+- **Components:** Form card, Inputs, Primary Button, success Toast/receipt Card.
+- **API limitation:** A recent-deposits table is not included because no deposit-list endpoint exists.
 
 ### B.11 Admin — Transactions
 
 - **Route:** `/admin/transactions` · **Endpoints:** `GET /api/admin/transactions`,
   `GET /api/admin/transactions/{id}`, `GET /api/admin/transactions/reference/{reference}`,
   `GET /api/admin/accounts/{accountNumber}/transactions`
-- **Content:** Global searchable/filterable transaction table, search-by-reference box (mono
-  font for reference IDs), row click → detail Modal/drawer with source/destination owner info.
+- **Content:** Global pageable transaction table, exact search by transaction reference or account
+  number, and row click → detail Modal/drawer with source/destination owner info.
 - **Components:** Table, search Input (JetBrains Mono for reference display), Modal/side-drawer.
 
 ### B.12 Admin — Balance & Ledger
 
 - **Route:** `/admin/balance/:accountId` · **Endpoints:** `GET /api/admin/balance/{accountId}/latest`,
   `GET /api/admin/balance/{accountId}/ledger`
-- **Content:** Account summary header, full ledger table (running balance per entry), discrepancy
-  flag banner if reconciliation job flagged the account.
-- **Components:** Stat cards, Table, Info/Warning banner.
+- **Content:** Account summary header and pageable ledger table (running balance per entry).
+- **Components:** Stat cards, Table.
+- **API limitation:** A reconciliation/discrepancy flag is deferred until the backend exposes it.
 
 ### B.13 Admin — Audit Logs
 
-- **Route:** `/admin/audit-logs` · **Endpoint:** `GET /api/admin/audit-logs`
-- **Content:** Table of admin actions (actor, action type, target, timestamp), filter by action type/date.
-- **Components:** Table, Filter panel.
+- **Route:** `/admin/audit-logs` · **Endpoints:** `GET /api/admin/audit-logs`,
+  `GET /api/admin/audit-logs/{auditLogId}`
+- **Content:** Pageable table of admin actions (actor, action type, target, timestamp); row click
+  opens the selected audit-log detail.
+- **Components:** Table, Modal/side-drawer.
+- **API limitation:** Action-type and date filters are deferred until the list endpoint exposes them.
 
 ### B.14 Admin Panel — Overview
 
-- **Route:** `/admin` · **Content:** Summary tiles (pending registrations count, today's
-  deposits, flagged accounts, total accounts) linking into B.9–B.13.
+- **Route:** `/admin` · **Endpoints:** `GET /api/admin/registrations`, `GET /api/admin/users`,
+  `GET /api/admin/accounts`, `GET /api/admin/transactions`
+- **Content:** Summary tiles (pending registrations, total users, total accounts, total
+  transactions), derived from each pageable response's `page.totalElements`, linking into B.9–B.13.
 - **Components:** Stat Cards grid, quick-link Cards.
 
 ---
@@ -571,9 +586,10 @@ blocks**, and **Primary components used** (referencing Part A).
 ### B.16 Notifications Panel
 
 - **Route:** dropdown from Topbar bell icon.
-- **Content:** List of recent system notifications (approval decisions, large transactions,
-  token-expiry warnings), unread indicator dot.
+- **Content:** Empty/unavailable state reserved for future system notifications.
 - **Components:** Dropdown card (`shadow-lg`), list rows, ghost "Mark all read" button.
+- **API limitation:** Notification listing, unread state, and "Mark all read" are not connected
+  until the backend exposes notification endpoints; clients must not fabricate notification data.
 
 ---
 
@@ -701,5 +717,6 @@ independently testable.
 
 | Date       | Change                                                                                                      |
 | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| 2026-08-06 | Aligned Page Directory endpoints and supported behaviors with `docs/openapi.json`.                          |
 | 2026-08-06 | Added Part C: canonical frontend folder structure and file-placement rules.                                 |
 | 2026-08-06 | Initial version — foundations + full page directory drafted from README v1 endpoints and reference screens. |
