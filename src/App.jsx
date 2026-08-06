@@ -1,9 +1,8 @@
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes/router.jsx';
+
 function App() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950">
-      <h1 className="text-5xl font-bold text-red-500">RedBank</h1>
-    </main>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
