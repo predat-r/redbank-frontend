@@ -1,0 +1,101 @@
+import { useState } from 'react';
+import { AppShell } from '../../layouts/AppShell';
+import { WelcomeHeader } from '../../features/dashboard/components/WelcomeHeader';
+import { BalanceHeroSection } from '../../features/dashboard/components/BalanceHeroSection';
+import { RecentActivityPanel } from '../../features/dashboard/components/RecentActivityPanel';
+import { TransactionDetailModal } from '../../features/dashboard/components/TransactionDetailModal';
+import { useToast } from '../../hooks/useToast';
+import {
+  mockAccountHolder,
+  mockLatestBalance,
+  mockUserProfile,
+  mockTransactions,
+} from '../../features/dashboard/mockData';
+
+export const DashboardPage = ({ onNavigate }) => {
+  const { addToast } = useToast();
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRowClick = (transaction) => {
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
+  const handleExport = () => {
+    addToast({
+      type: 'success',
+      title: 'Statement Downloaded',
+      message: 'Your recent activity report (CSV) has been generated successfully.',
+    });
+  };
+
+  const handleTransferClick = () => {
+    if (onNavigate) {
+      onNavigate('/transfer');
+    } else {
+      addToast({
+        type: 'info',
+        title: 'Fund Transfer',
+        message: 'Navigating to transfer screen...',
+      });
+    }
+  };
+
+  const handleWithdrawClick = () => {
+    addToast({
+      type: 'info',
+      title: 'Withdrawal',
+      message: 'Withdrawal feature requested.',
+    });
+  };
+
+  return (
+    <AppShell activePath="/dashboard" onNavigate={onNavigate} user={mockUserProfile}>
+      <div className="space-y-6">
+        {/* Welcome Greeting Header */}
+        <WelcomeHeader
+          user={mockUserProfile}
+          account={mockAccountHolder}
+          onTransferClick={handleTransferClick}
+          onWithdrawClick={handleWithdrawClick}
+          onExportClick={handleExport}
+        />
+
+        {/* Balance Hero Tile & Stat Cards */}
+        <BalanceHeroSection
+          balance={mockLatestBalance.runningBalance}
+          currency={mockAccountHolder.currency}
+          accountNumber={mockAccountHolder.accountNumber}
+          accountStatus={mockAccountHolder.accountStatus}
+          approvedAt={mockAccountHolder.approvedAt}
+          onTransferClick={handleTransferClick}
+          onWithdrawClick={handleWithdrawClick}
+          onViewDetails={() =>
+            addToast({
+              type: 'info',
+              title: 'Account Summary',
+              message: `Viewing details for ${mockAccountHolder.accountNumber}`,
+            })
+          }
+        />
+
+        {/* Recent Activity Table & Tabbed Section */}
+        <RecentActivityPanel
+          transactions={mockTransactions}
+          onRowClick={handleRowClick}
+          onExport={handleExport}
+        />
+
+        {/* Transaction Detail Modal */}
+        <TransactionDetailModal
+          transaction={selectedTransaction}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      </div>
+    </AppShell>
+  );
+};
+
+export default DashboardPage;
