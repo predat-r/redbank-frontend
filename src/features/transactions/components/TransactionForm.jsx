@@ -4,7 +4,7 @@ import { Card } from '../../../components/ui/Card';
 import { Stepper } from '../../../components/ui/Stepper';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { useToast } from '../../../hooks/useToast';
-import { createTransfer, createWithdrawal } from '../../../api/transactions';
+import { useCreateTransfer, useCreateWithdrawal } from '../transactions.queries';
 import { TransactionInitiateStep } from './TransactionInitiateStep';
 import { TransactionVerifyStep } from './TransactionVerifyStep';
 import { TransactionReceiptStep } from './TransactionReceiptStep';
@@ -14,11 +14,12 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const location = useLocation();
   const { addToast } = useToast();
 
-  const [mode, setMode] = useState(initialMode); // 'transfer' | 'withdrawal'
-  const [currentStep, setCurrentStep] = useState(0); // 0: Initiate, 1: Verify, 2: Receipt
-  const [loading, setLoading] = useState(false);
+  const transferMutation = useCreateTransfer();
+  const withdrawalMutation = useCreateWithdrawal();
 
-  // Form State
+  const [mode, setMode] = useState(initialMode);
+  const [currentStep, setCurrentStep] = useState(0);
+
   const [destinationAccountNumber, setDestinationAccountNumber] = useState(
     location?.state?.destinationAccountNumber || ''
   );
@@ -28,6 +29,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const [description, setDescription] = useState('');
   const [withdrawalMethod, setWithdrawalMethod] = useState('ATM_CODE');
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
 
   // Result / Receipt State
   const [receiptData, setReceiptData] = useState(null);
@@ -42,6 +44,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
     setMode(newMode);
     setCurrentStep(0);
     setErrors({});
+    setServerError(null);
   };
 
   const validateStep1 = () => {
@@ -50,10 +53,10 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
 
     if (!amount || isNaN(numAmount) || numAmount <= 0) {
       errs.amount = 'Please enter a valid amount greater than 0';
-    } else if (numAmount < 100) {
-      errs.amount = 'Minimum transaction amount is 100 PKR';
+    } else if (numAmount < 0.01) {
+      errs.amount = 'Minimum transaction amount is $0.01';
     } else if (numAmount > 500000) {
-      errs.amount = 'Maximum transaction limit is 500,000 PKR';
+      errs.amount = 'Maximum transaction limit is $500,000';
     }
 
     if (mode === 'transfer') {
@@ -70,25 +73,26 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
 
   const handleProceedToVerify = (e) => {
     e.preventDefault();
+    setServerError(null);
     if (validateStep1()) {
       setCurrentStep(1);
     }
   };
 
   const handleConfirmSubmit = async () => {
-    setLoading(true);
+    setServerError(null);
     try {
       let result;
       const numAmount = parseFloat(amount);
 
       if (mode === 'transfer') {
-        result = await createTransfer({
+        result = await transferMutation.mutateAsync({
           destinationAccountNumber: destinationAccountNumber.trim(),
           amount: numAmount,
           description: description.trim() || 'Fund Transfer',
         });
       } else {
-        result = await createWithdrawal({
+        result = await withdrawalMutation.mutateAsync({
           amount: numAmount,
           description: description.trim() || `Cash Withdrawal via ${withdrawalMethod}`,
         });
@@ -96,16 +100,23 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
 
       const txRef =
         result?.transactionReference ||
-        `TXN-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+        result?.id ||
+        `TXN-${Date.now().toString(36).toUpperCase()}`;
 
       setReceiptData({
         reference: txRef,
-        amount: numAmount,
-        type: mode === 'transfer' ? 'TRANSFER' : 'WITHDRAWAL',
-        destination: mode === 'transfer' ? destinationAccountNumber : withdrawalMethod,
-        date: new Date().toLocaleString(),
-        status: 'COMPLETED',
+        amount: result?.amount || numAmount,
+        type: result?.type || (mode === 'transfer' ? 'TRANSFER' : 'WITHDRAWAL'),
+        destination:
+          mode === 'transfer'
+            ? result?.destinationAccountNumber || destinationAccountNumber
+            : withdrawalMethod,
+        date: result?.createdAt
+          ? new Date(result.createdAt).toLocaleString()
+          : new Date().toLocaleString(),
+        status: result?.status || 'COMPLETED',
         description:
+          result?.description ||
           description ||
           (mode === 'transfer' ? 'Transfer to account' : 'Cash withdrawal'),
       });
@@ -114,16 +125,22 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
       addToast({
         type: 'success',
         title: mode === 'transfer' ? 'Transfer Successful' : 'Withdrawal Processed',
-        message: `${mode === 'transfer' ? 'Transferred' : 'Withdrawn'} PKR ${numAmount.toLocaleString()} successfully.`,
+        message: `${mode === 'transfer' ? 'Transferred' : 'Withdrawn'} $${numAmount.toLocaleString()} successfully.`,
       });
     } catch (err) {
+      const errorMessage =
+        err?.message ||
+        err?.details?.message ||
+        err?.details?.error ||
+        'An error occurred while processing your request.';
+
+      setServerError(errorMessage);
+
       addToast({
         type: 'error',
         title: 'Transaction Failed',
-        message: err.message || 'An error occurred while processing your request.',
+        message: errorMessage,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -132,9 +149,12 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
     setAmount('');
     setDescription('');
     setErrors({});
+    setServerError(null);
     setReceiptData(null);
     setCurrentStep(0);
   };
+
+  const isSubmitting = transferMutation.isPending || withdrawalMutation.isPending;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -192,8 +212,12 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
               withdrawalMethod={withdrawalMethod}
               amount={amount}
               description={description}
-              loading={loading}
-              onBack={() => setCurrentStep(0)}
+              loading={isSubmitting}
+              error={serverError}
+              onBack={() => {
+                setServerError(null);
+                setCurrentStep(0);
+              }}
               onConfirm={handleConfirmSubmit}
             />
           )}
