@@ -25,7 +25,9 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Current Balance')).toBeInTheDocument();
     expect(screen.getByText('Transfer Funds')).toBeInTheDocument();
     expect(screen.getByText('Withdraw Cash')).toBeInTheDocument();
-    expect(screen.getByText('Recent Activity')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Transaction History' })
+    ).toBeInTheDocument();
   });
 
   test('navigates to /transfer when Transfer Funds card is clicked', async () => {

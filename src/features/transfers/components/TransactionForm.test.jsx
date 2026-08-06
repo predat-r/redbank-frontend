@@ -26,7 +26,7 @@ describe('TransactionForm', () => {
   });
 
   test('validates required destination account and amount limits', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     const submitBtn = screen.getByRole('button', { name: /continue to verify/i });
@@ -61,7 +61,7 @@ describe('TransactionForm', () => {
       status: 'COMPLETED',
     });
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderComponent();
 
     // Step 1: Initiate
@@ -86,7 +86,9 @@ describe('TransactionForm', () => {
       });
     });
 
-    expect(await screen.findByText('Transfer Successful')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Transfer Successful' })
+    ).toBeInTheDocument();
     expect(screen.getByText('TXN-REF999')).toBeInTheDocument();
   });
 
@@ -117,6 +119,8 @@ describe('TransactionForm', () => {
       });
     });
 
-    expect(await screen.findByText('Withdrawal Completed')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Withdrawal Completed' })
+    ).toBeInTheDocument();
   });
 });

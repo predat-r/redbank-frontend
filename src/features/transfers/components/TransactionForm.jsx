@@ -178,7 +178,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
         <div className="lg:col-span-2">
           {currentStep === 0 && (
             <Card className="p-6">
-              <form onSubmit={handleProceedToVerify} className="space-y-5">
+              <form noValidate onSubmit={handleProceedToVerify} className="space-y-5">
                 <h2 className="text-base font-semibold text-neutral-800 pb-3 border-b border-neutral-200 flex items-center gap-2">
                   {mode === 'transfer' ? (
                     <ArrowLeftRight className="w-5 h-5 text-primary-600" />
