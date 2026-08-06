@@ -3,11 +3,12 @@ import { ProtectedRoute } from '../features/auth/components/ProtectedRoute.jsx';
 import { PublicRoute } from '../features/auth/components/PublicRoute.jsx';
 import { RoleRoute } from '../features/auth/components/RoleRoute.jsx';
 import { AuthLayout } from '../layouts/AuthLayout.jsx';
+import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
+import { DashboardPage } from '../pages/account/DashboardPage.jsx';
 import { LoginPage } from '../pages/auth/LoginPage.jsx';
 import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
 import { SecurityPage } from '../pages/auth/SecurityPage.jsx';
-import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
 import { RoutePlaceholder } from '../pages/system/RoutePlaceholder.jsx';
 import { HomeRedirect } from './HomeRedirect.jsx';
 
@@ -40,17 +41,7 @@ export const router = createBrowserRouter([
         element: (
           <RoleRoute redirectTo="/registration-status" roles={['ROLE_ACCOUNT_HOLDER']} />
         ),
-        children: [
-          {
-            path: '/dashboard',
-            element: (
-              <RoutePlaceholder
-                title="Dashboard"
-                message="Your authenticated dashboard is ready for its feature content."
-              />
-            ),
-          },
-        ],
+        children: [{ path: '/dashboard', element: <DashboardPage /> }],
       },
       {
         element: <RoleRoute roles={['ROLE_ADMIN']} />,
