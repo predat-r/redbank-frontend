@@ -1,22 +1,15 @@
 import { useState } from 'react';
-import { Search, Bell, Menu, User, LogOut, Settings, ShieldCheck } from 'lucide-react';
+import { Bell, Menu, User, LogOut, Settings, ShieldCheck } from 'lucide-react';
 
 export const Topbar = ({
   user = { name: 'John Doe', role: 'ROLE_ACCOUNT_HOLDER', email: 'john@example.com' },
   unreadNotifications = 0,
   onMenuToggle,
   onNotificationClick,
-  onSearchChange,
   onLogout,
   onSettingsClick,
 }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
-
-  const handleSearch = (e) => {
-    setSearchValue(e.target.value);
-    if (onSearchChange) onSearchChange(e.target.value);
-  };
 
   const roleLabel =
     user?.role === 'ROLE_ADMIN'
@@ -26,7 +19,7 @@ export const Topbar = ({
         : 'User';
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-neutral-0 border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-30 h-[72px] bg-neutral-0 border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between gap-4">
       {/* Left: Mobile Toggle & Page Search */}
       <div className="flex items-center gap-3 flex-1 max-w-md">
         <button
@@ -36,18 +29,6 @@ export const Topbar = ({
         >
           <Menu className="w-5 h-5" />
         </button>
-
-        {/* Pill Search Input */}
-        <div className="relative w-full max-w-sm hidden sm:block">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
-          <input
-            type="text"
-            value={searchValue}
-            onChange={handleSearch}
-            placeholder="Search accounts, transactions, or reference ID..."
-            className="w-full h-9 pl-10 pr-4 bg-neutral-100 border border-transparent rounded-full text-xs sm:text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-neutral-0 transition-all"
-          />
-        </div>
       </div>
 
       {/* Right: Notifications & User Avatar Profile */}
