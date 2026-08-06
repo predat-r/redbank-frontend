@@ -56,14 +56,20 @@
       "post": {
         "tags": ["auth-controller"],
         "operationId": "refresh",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/RefreshTokenRequest" }
-            }
+        "parameters": [
+          {
+            "name": "refresh-token",
+            "in": "cookie",
+            "required": false,
+            "schema": { "type": "string" }
           },
-          "required": true
-        },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -85,14 +91,20 @@
       "post": {
         "tags": ["auth-controller"],
         "operationId": "logout",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/RefreshTokenRequest" }
-            }
+        "parameters": [
+          {
+            "name": "refresh-token",
+            "in": "cookie",
+            "required": false,
+            "schema": { "type": "string" }
           },
-          "required": true
-        },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
         "responses": {
           "204": { "description": "No Content" },
           "400": { "$ref": "#/components/responses/BadRequest" },
@@ -909,10 +921,9 @@
         "type": "object",
         "properties": {
           "accessToken": { "type": "string" },
-          "refreshToken": { "type": "string" },
           "tokenType": { "type": "string" }
         },
-        "required": ["accessToken", "refreshToken", "tokenType"]
+        "required": ["accessToken", "tokenType"]
       },
       "RegisterResponse": {
         "type": "object",
@@ -926,11 +937,6 @@
           "tokens": { "$ref": "#/components/schemas/LoginResponse" }
         },
         "required": ["email", "id", "status", "tokens"]
-      },
-      "RefreshTokenRequest": {
-        "type": "object",
-        "properties": { "refreshToken": { "type": "string", "minLength": 1 } },
-        "required": ["refreshToken"]
       },
       "LoginRequest": {
         "type": "object",

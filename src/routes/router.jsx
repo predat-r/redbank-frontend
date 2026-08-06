@@ -1,29 +1,24 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute.jsx';
+import { PublicRoute } from '../features/auth/components/PublicRoute.jsx';
 import { RoleRoute } from '../features/auth/components/RoleRoute.jsx';
 import { AuthLayout } from '../layouts/AuthLayout.jsx';
+import { LoginPage } from '../pages/auth/LoginPage.jsx';
+import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RoutePlaceholder } from '../pages/system/RoutePlaceholder.jsx';
 import { HomeRedirect } from './HomeRedirect.jsx';
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomeRedirect /> },
   {
-    element: <AuthLayout />,
+    element: <PublicRoute />,
     children: [
       {
-        path: '/login',
-        element: (
-          <RoutePlaceholder title="Sign in" message="The login form is coming next." />
-        ),
-      },
-      {
-        path: '/register',
-        element: (
-          <RoutePlaceholder
-            title="Create account"
-            message="Registration is coming next."
-          />
-        ),
+        element: <AuthLayout />,
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/register', element: <RegisterPage /> },
+        ],
       },
     ],
   },

@@ -14,6 +14,7 @@ const clientOptions = {
   baseURL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
+  withCredentials: true,
 };
 
 const api = axios.create(clientOptions);
@@ -33,16 +34,17 @@ function isPublicAuthRequest(url = '') {
 }
 
 async function refreshTokens() {
-  const currentSession = getSession();
-  if (!currentSession?.refreshToken) {
-    clearSession();
-    throw new Error('No refresh token is available.');
-  }
-
-  const response = await refreshClient.post('/auth/refresh', {
-    refreshToken: currentSession.refreshToken,
-  });
+  const response = await refreshClient.post('/auth/refresh');
   return setSession(response.data);
+}
+
+export function restoreSession() {
+  if (!refreshPromise) {
+    refreshPromise = refreshTokens().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
 }
 
 api.interceptors.request.use(
@@ -73,13 +75,7 @@ api.interceptors.response.use(
     originalRequest._retry = true;
 
     try {
-      if (!refreshPromise) {
-        refreshPromise = refreshTokens().finally(() => {
-          refreshPromise = null;
-        });
-      }
-
-      const nextSession = await refreshPromise;
+      const nextSession = await restoreSession();
       originalRequest.headers.Authorization = `${nextSession.tokenType} ${nextSession.accessToken}`;
       return api.request(originalRequest);
     } catch (refreshError) {

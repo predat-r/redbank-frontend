@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 export function AuthLayout() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F8FA] px-4 py-8 sm:px-6">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-2xl">
         <header className="mb-6 text-center">
           <p className="font-['Poppins',Inter,sans-serif] text-3xl font-bold text-[#89221C]">
             RedBank

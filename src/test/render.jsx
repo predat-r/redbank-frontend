@@ -13,7 +13,7 @@ export function renderWithProviders(ui, options = {}) {
   function Wrapper({ children }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider restoreOnMount={false}>{children}</AuthProvider>
       </QueryClientProvider>
     );
   }

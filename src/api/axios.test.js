@@ -25,7 +25,6 @@ describe('Axios authentication', () => {
   beforeEach(() => {
     setSession({
       accessToken: 'old-access',
-      refreshToken: 'old-refresh',
       tokenType: 'Bearer',
     });
   });
@@ -52,10 +51,10 @@ describe('Axios authentication', () => {
     };
     refreshClient.defaults.adapter = async (config) => {
       refreshCalls += 1;
-      expect(JSON.parse(config.data)).toEqual({ refreshToken: 'old-refresh' });
+      expect(config.data).toBeUndefined();
+      expect(config.withCredentials).toBe(true);
       return response(config, {
         accessToken: 'new-access',
-        refreshToken: 'new-refresh',
         tokenType: 'Bearer',
       });
     };
@@ -70,7 +69,7 @@ describe('Axios authentication', () => {
       'Bearer new-access',
       'Bearer new-access',
     ]);
-    expect(getSession().refreshToken).toBe('new-refresh');
+    expect(getSession()).toEqual({ accessToken: 'new-access', tokenType: 'Bearer' });
   });
 
   test('clears the session when refresh fails', async () => {

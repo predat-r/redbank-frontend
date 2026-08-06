@@ -1,10 +1,9 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { LoadingState } from '../../../components/ui/LoadingState.jsx';
 import { useAuth } from '../useAuth.js';
 
-export function ProtectedRoute() {
+export function PublicRoute() {
   const { isAuthenticated, isInitializing } = useAuth();
-  const location = useLocation();
 
   if (isInitializing) {
     return (
@@ -14,9 +13,5 @@ export function ProtectedRoute() {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  return <Outlet />;
+  return isAuthenticated ? <Navigate to="/" replace /> : <Outlet />;
 }
