@@ -80,7 +80,15 @@ export async function deactivateAdminAccount(accountId) {
 
 export async function getAdminTransactions(options = {}) {
   const response = await api.get('/admin/transactions', {
-    params: pageableParams(options),
+    params: {
+      ...pageableParams(options),
+      ...(options.reference ? { reference: options.reference } : {}),
+      ...(options.accountNumber ? { accountNumber: options.accountNumber } : {}),
+      ...(options.type ? { type: options.type } : {}),
+      ...(options.status ? { status: options.status } : {}),
+      ...(options.fromDate ? { fromDate: options.fromDate } : {}),
+      ...(options.toDate ? { toDate: options.toDate } : {}),
+    },
   });
   return response.data;
 }

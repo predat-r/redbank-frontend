@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Search, ArrowLeftRight } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button.jsx';
 import { EmptyState } from '../../components/ui/EmptyState.jsx';
 import { Input } from '../../components/ui/Input.jsx';
@@ -9,9 +10,7 @@ import { Table } from '../../components/ui/Table.jsx';
 import { useAdminListParams } from '../../features/admin/useAdminListParams.js';
 import {
   useAdminTransaction,
-  useAdminTransactionByReference,
   useAdminTransactions,
-  useAdminTransactionsByAccount,
 } from '../../features/admin/admin.queries.js';
 
 const SORT_FIELDS = ['createdAt', 'completedAt', 'amount', 'type', 'status'];
@@ -60,32 +59,56 @@ function Detail({ transaction }) {
 }
 
 export function TransactionsPage() {
+  const [urlParams, setUrlParams] = useSearchParams();
   const params = useAdminListParams({
     allowedSortFields: SORT_FIELDS,
     defaultSort: 'createdAt,desc',
   });
-  const [mode, setMode] = useState('all');
-  const [term, setTerm] = useState('');
-  const [submitted, setSubmitted] = useState('');
   const [detailId, setDetailId] = useState(null);
-  const [reference, setReference] = useState(null);
-  const all = useAdminTransactions(params.queryOptions, mode === 'all' && !submitted);
-  const byAccount = useAdminTransactionsByAccount(submitted, params.queryOptions);
-  const byReference = useAdminTransactionByReference(reference);
+  const filters = {
+    reference: urlParams.get('reference') || '',
+    accountNumber: urlParams.get('accountNumber') || '',
+    type: urlParams.get('type') || '',
+    status: urlParams.get('status') || '',
+    fromDate: urlParams.get('fromDate') || '',
+    toDate: urlParams.get('toDate') || '',
+  };
+  const toApiDate = (value) => (value ? new Date(value).toISOString() : '');
+  const queryOptions = {
+    ...params.queryOptions,
+    ...filters,
+    fromDate: toApiDate(filters.fromDate),
+    toDate: toApiDate(filters.toDate),
+  };
+  const transactions = useAdminTransactions(queryOptions);
   const detail = useAdminTransaction(detailId);
-  const result = mode === 'account' && submitted ? byAccount : all;
-  const data = result.data?.content ?? [];
-  const meta = result.data?.page;
-  function search(e) {
-    e.preventDefault();
-    setReference(null);
-    setSubmitted(term.trim());
-    if (mode === 'reference') setReference(term.trim());
+  const data = transactions.data?.content ?? [];
+  const metadata = transactions.data?.page;
+  function updateFilters(event) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setUrlParams((current) => {
+      const next = new URLSearchParams(current);
+      ['reference', 'accountNumber', 'type', 'status', 'fromDate', 'toDate'].forEach(
+        (key) => {
+          const value = form.get(key);
+          if (value) next.set(key, value);
+          else next.delete(key);
+        }
+      );
+      next.set('page', '0');
+      return next;
+    });
   }
-  function clear() {
-    setTerm('');
-    setSubmitted('');
-    setReference(null);
+  function clearFilters() {
+    setUrlParams((current) => {
+      const next = new URLSearchParams(current);
+      ['reference', 'accountNumber', 'type', 'status', 'fromDate', 'toDate'].forEach(
+        (key) => next.delete(key)
+      );
+      next.set('page', '0');
+      return next;
+    });
   }
   const columns = [
     { key: 'transactionReference', header: 'Reference', numeric: true },
@@ -111,93 +134,95 @@ export function TransactionsPage() {
         </p>
       </header>
       <form
-        onSubmit={search}
+        onSubmit={updateFilters}
         className="rounded-xl border border-neutral-200 bg-neutral-0 p-4 shadow-sm"
       >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <label className="text-sm font-medium text-neutral-700">
-            Search mode
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <Input
+            label="Transaction reference"
+            name="reference"
+            defaultValue={filters.reference}
+          />
+          <Input
+            label="Account number"
+            name="accountNumber"
+            defaultValue={filters.accountNumber}
+          />
+          <label className="text-xs font-medium text-neutral-700">
+            Type
             <select
-              className="mt-1 block h-11 rounded-lg border border-neutral-200 px-3"
-              value={mode}
-              onChange={(e) => {
-                setMode(e.target.value);
-                clear();
-              }}
+              name="type"
+              defaultValue={filters.type}
+              className="mt-1 block h-11 w-full rounded-lg border border-neutral-200 px-3 text-sm"
             >
-              <option value="all">All transactions</option>
-              <option value="reference">Exact reference</option>
-              <option value="account">Account number</option>
+              <option value="">All types</option>
+              <option value="DEPOSIT">Deposit</option>
+              <option value="WITHDRAWAL">Withdrawal</option>
+              <option value="TRANSFER">Transfer</option>
             </select>
           </label>
-          {mode !== 'all' && (
-            <Input
-              label={mode === 'reference' ? 'Transaction reference' : 'Account number'}
-              value={term}
-              onChange={(e) => setTerm(e.target.value)}
-              required
-            />
-          )}
-          <Button icon={Search} type="submit" disabled={mode === 'all'}>
-            Search
+          <label className="text-xs font-medium text-neutral-700">
+            Status
+            <select
+              name="status"
+              defaultValue={filters.status}
+              className="mt-1 block h-11 w-full rounded-lg border border-neutral-200 px-3 text-sm"
+            >
+              <option value="">All statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </label>
+          <Input
+            label="From date"
+            name="fromDate"
+            type="datetime-local"
+            defaultValue={filters.fromDate}
+          />
+          <Input
+            label="To date"
+            name="toDate"
+            type="datetime-local"
+            defaultValue={filters.toDate}
+          />
+        </div>
+        <div className="mt-4 flex gap-2">
+          <Button icon={Search} type="submit">
+            Apply filters
           </Button>
-          {submitted && (
-            <Button type="button" variant="outline" onClick={clear}>
+          {Object.values(filters).some(Boolean) && (
+            <Button type="button" variant="outline" onClick={clearFilters}>
               Clear
             </Button>
           )}
         </div>
       </form>
-      {mode === 'reference' && reference ? (
-        byReference.isError ? (
-          <EmptyState
-            title="Transaction not found"
-            description={byReference.error.message}
-          />
-        ) : byReference.isLoading ? (
-          <p className="text-sm text-neutral-500">Loading transaction…</p>
-        ) : (
-          <button
-            type="button"
-            className="w-full rounded-xl border border-neutral-200 bg-neutral-0 p-5 text-left shadow-sm"
-            onClick={() => setDetailId(byReference.data.id)}
-          >
-            <div className="flex justify-between">
-              <span className="font-mono font-semibold">
-                {byReference.data.transactionReference}
-              </span>
-              <StatusBadge status={byReference.data.status} />
-            </div>
-            <p className="mt-2 text-sm text-neutral-500">
-              {byReference.data.type} · {money(byReference.data.amount)}
-            </p>
-          </button>
-        )
-      ) : result.isError ? (
+      {transactions.isError ? (
         <EmptyState
           title="Unable to load transactions"
-          description={result.error.message}
+          description={transactions.error.message}
           actionLabel="Try again"
-          onAction={() => result.refetch()}
+          onAction={() => transactions.refetch()}
           icon={ArrowLeftRight}
         />
-      ) : !result.isLoading && !data.length ? (
+      ) : !transactions.isLoading && !data.length ? (
         <EmptyState
           title="No transactions found"
-          description="No transaction records match this request."
+          description="No transaction records match these filters."
           icon={ArrowLeftRight}
         />
       ) : (
         <Table
           columns={columns}
           data={data}
-          loading={result.isLoading}
+          loading={transactions.isLoading}
           onRowClick={(row) => setDetailId(row.id)}
           pagination={{
-            page: meta?.number ?? params.page,
-            pageSize: meta?.size ?? params.size,
-            totalElements: meta?.totalElements ?? 0,
-            totalPages: meta?.totalPages ?? 1,
+            page: metadata?.number ?? params.page,
+            pageSize: metadata?.size ?? params.size,
+            totalElements: metadata?.totalElements ?? 0,
+            totalPages: metadata?.totalPages ?? 1,
             onPageChange: params.setPage,
             onPageSizeChange: params.setPageSize,
           }}
