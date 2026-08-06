@@ -225,7 +225,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelAdminUserResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelAdminUserResponse"
+                }
               }
             }
           },
@@ -278,7 +280,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/RejectRegistrationRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/RejectRegistrationRequest"
+              }
             }
           },
           "required": true
@@ -555,7 +559,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/RegistrationStatusResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationStatusResponse"
+                }
               }
             }
           },
@@ -588,13 +594,19 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"] }
+            "schema": {
+              "type": "string",
+              "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+            }
           },
           {
             "name": "status",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "enum": ["PENDING", "COMPLETED", "CANCELLED"] }
+            "schema": {
+              "type": "string",
+              "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+            }
           },
           {
             "name": "fromDate",
@@ -620,7 +632,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBankTransactionDto"
+                }
               }
             }
           },
@@ -648,7 +662,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AdminBankTransactionDetailDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBankTransactionDetailDto"
+                }
               }
             }
           },
@@ -677,7 +693,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AdminBankTransactionDetailDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBankTransactionDetailDto"
+                }
               }
             }
           },
@@ -736,7 +754,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PendingRegistrationResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PendingRegistrationResponse"
+                }
               }
             }
           },
@@ -772,7 +792,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBalanceDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBalanceDto"
+                }
               }
             }
           },
@@ -829,7 +851,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelAuditLogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelAuditLogResponse"
+                }
               }
             }
           },
@@ -886,7 +910,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelAccountHolderDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelAccountHolderDto"
+                }
               }
             }
           },
@@ -920,7 +946,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBankTransactionDto"
+                }
               }
             }
           },
@@ -1026,13 +1054,19 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"] }
+            "schema": {
+              "type": "string",
+              "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+            }
           },
           {
             "name": "status",
             "in": "query",
             "required": false,
-            "schema": { "type": "string", "enum": ["PENDING", "COMPLETED", "CANCELLED"] }
+            "schema": {
+              "type": "string",
+              "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+            }
           },
           {
             "name": "fromDate",
@@ -1058,7 +1092,9 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBankTransactionDto"
+                }
               }
             }
           },
@@ -1175,7 +1211,10 @@
           "userId": { "type": "integer", "format": "int64" },
           "accountNumber": { "type": "string" },
           "currency": { "type": "string" },
-          "accountStatus": { "type": "string", "enum": ["ACTIVE", "FROZEN", "CLOSED"] },
+          "accountStatus": {
+            "type": "string",
+            "enum": ["ACTIVE", "FROZEN", "CLOSED"]
+          },
           "approvedAt": { "type": "string", "format": "date-time" },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
@@ -1202,7 +1241,11 @@
       "RejectRegistrationRequest": {
         "type": "object",
         "properties": {
-          "rejectionReason": { "type": "string", "maxLength": 500, "minLength": 0 }
+          "rejectionReason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
         }
       },
       "DepositRequest": {
@@ -1221,10 +1264,16 @@
           "transactionReference": { "type": "string" },
           "sourceAccountNumber": { "type": "string" },
           "destinationAccountNumber": { "type": "string" },
-          "type": { "type": "string", "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"] },
+          "type": {
+            "type": "string",
+            "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+          },
           "description": { "type": "string" },
           "amount": { "type": "number" },
-          "status": { "type": "string", "enum": ["PENDING", "COMPLETED", "CANCELLED"] },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+          },
           "createdAt": { "type": "string", "format": "date-time" },
           "completedAt": { "type": "string", "format": "date-time" }
         },
@@ -1324,10 +1373,16 @@
         "properties": {
           "id": { "type": "integer", "format": "int64" },
           "transactionReference": { "type": "string" },
-          "type": { "type": "string", "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"] },
+          "type": {
+            "type": "string",
+            "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+          },
           "description": { "type": "string" },
           "amount": { "type": "number" },
-          "status": { "type": "string", "enum": ["PENDING", "COMPLETED", "CANCELLED"] },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+          },
           "createdAt": { "type": "string", "format": "date-time" },
           "completedAt": { "type": "string", "format": "date-time" },
           "sourceAccountNumber": { "type": "string" },
@@ -1363,7 +1418,9 @@
         "properties": {
           "content": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PendingRegistrationResponse" }
+            "items": {
+              "$ref": "#/components/schemas/PendingRegistrationResponse"
+            }
           },
           "page": { "$ref": "#/components/schemas/PageMetadata" }
         },
@@ -1427,7 +1484,10 @@
               "ADMIN_DEPOSIT_RECORDED"
             ]
           },
-          "targetType": { "type": "string", "enum": ["USER", "ACCOUNT", "TRANSACTION"] },
+          "targetType": {
+            "type": "string",
+            "enum": ["USER", "ACCOUNT", "TRANSACTION"]
+          },
           "targetIdentifier": { "type": "string" },
           "details": { "type": "string" },
           "createdAt": { "type": "string", "format": "date-time" }
@@ -1480,42 +1540,58 @@
       "BadRequest": {
         "description": "Bad Request",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiError" }
+          }
         }
       },
       "Unauthorized": {
         "description": "Unauthorized",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiError" }
+          }
         }
       },
       "Forbidden": {
         "description": "Forbidden",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiError" }
+          }
         }
       },
       "NotFound": {
         "description": "Not Found",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiError" }
+          }
         }
       },
       "Conflict": {
         "description": "Conflict",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiError" }
+          }
         }
       },
       "InternalServerError": {
         "description": "Internal Server Error",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiError" }
+          }
         }
       }
     },
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     }
   }
 }

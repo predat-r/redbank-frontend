@@ -8,6 +8,12 @@ import {
   getAdminAccount,
   getAdminAccounts,
   getAdminTransactions,
+  getAdminTransaction,
+  getAdminTransactionByReference,
+  getAdminTransactionsByAccount,
+  createAdminDeposit,
+  getAdminLatestBalance,
+  getAdminBalanceLedger,
   getAdminUser,
   getAdminUsers,
   getPendingRegistration,
@@ -105,6 +111,56 @@ export function useAdminAccounts(options) {
   return useQuery({
     queryKey: adminKeys.accountList(options),
     queryFn: () => getAdminAccounts(options),
+  });
+}
+
+export function useAdminTransactions(options, enabled = true) {
+  return useQuery({
+    queryKey: adminKeys.transactionList(options),
+    queryFn: () => getAdminTransactions(options),
+    enabled,
+  });
+}
+export function useAdminTransactionsByAccount(accountNumber, options) {
+  return useQuery({
+    queryKey: ['admin', 'transactions', 'account', accountNumber, options],
+    queryFn: () => getAdminTransactionsByAccount(accountNumber, options),
+    enabled: Boolean(accountNumber),
+  });
+}
+export function useAdminTransaction(id) {
+  return useQuery({
+    queryKey: ['admin', 'transactions', 'detail', id],
+    queryFn: () => getAdminTransaction(id),
+    enabled: id != null,
+  });
+}
+export function useAdminTransactionByReference(reference) {
+  return useQuery({
+    queryKey: ['admin', 'transactions', 'reference', reference],
+    queryFn: () => getAdminTransactionByReference(reference),
+    enabled: Boolean(reference),
+  });
+}
+export function useAdminLatestBalance(accountId) {
+  return useQuery({
+    queryKey: ['admin', 'balance', 'latest', accountId],
+    queryFn: () => getAdminLatestBalance(accountId),
+    enabled: accountId != null,
+  });
+}
+export function useAdminBalanceLedger(accountId, options) {
+  return useQuery({
+    queryKey: ['admin', 'balance', 'ledger', accountId, options],
+    queryFn: () => getAdminBalanceLedger(accountId, options),
+    enabled: accountId != null,
+  });
+}
+export function useCreateAdminDeposit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createAdminDeposit,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.transactions }),
   });
 }
 

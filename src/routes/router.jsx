@@ -9,6 +9,9 @@ import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage.jsx';
 import { AccountHoldersPage } from '../pages/admin/AccountHoldersPage.jsx';
 import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
 import { UsersPage } from '../pages/admin/UsersPage.jsx';
+import { TransactionsPage } from '../pages/admin/TransactionsPage.jsx';
+import { DepositsPage } from '../pages/admin/DepositsPage.jsx';
+import { BalancePage } from '../pages/admin/BalancePage.jsx';
 import { DashboardPage } from '../pages/account/DashboardPage.jsx';
 import { TransferPage } from '../pages/account/TransferPage.jsx';
 import { WithdrawPage } from '../pages/account/WithdrawPage.jsx';
@@ -79,11 +82,15 @@ export const router = createBrowserRouter([
               },
               {
                 path: 'deposits',
-                element: <AdminModulePlaceholder title="Deposits" />,
+                element: <DepositsPage />,
               },
               {
                 path: 'transactions',
-                element: <AdminModulePlaceholder title="Transactions" />,
+                element: <TransactionsPage />,
+              },
+              {
+                path: 'balance/:accountId',
+                element: <BalancePage />,
               },
               {
                 path: 'audit-logs',

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Eye, Snowflake, UserPlus, UserRoundCog, XCircle } from 'lucide-react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -116,6 +117,13 @@ export function AccountHoldersPage() {
   function actionButtons(account) {
     return (
       <div className="flex flex-wrap justify-end gap-2">
+        <Link
+          className="inline-flex h-9 items-center rounded-lg border border-neutral-200 px-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          to={`/admin/balance/${account.id}`}
+          onClick={(event) => event.stopPropagation()}
+        >
+          Balance
+        </Link>
         <Button
           icon={Eye}
           onClick={(event) => stopAndRun(event, () => setDetailId(account.id))}

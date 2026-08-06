@@ -84,3 +84,42 @@ export async function getAdminTransactions(options = {}) {
   });
   return response.data;
 }
+
+export async function getAdminTransaction(id) {
+  const response = await api.get(`/admin/transactions/${id}`);
+  return response.data;
+}
+
+export async function getAdminTransactionByReference(reference) {
+  const response = await api.get(
+    `/admin/transactions/reference/${encodeURIComponent(reference)}`
+  );
+  return response.data;
+}
+
+export async function getAdminTransactionsByAccount(accountNumber, options = {}) {
+  const response = await api.get(
+    `/admin/accounts/${encodeURIComponent(accountNumber)}/transactions`,
+    {
+      params: pageableParams(options),
+    }
+  );
+  return response.data;
+}
+
+export async function createAdminDeposit(payload) {
+  const response = await api.post('/admin/deposits', payload);
+  return response.data;
+}
+
+export async function getAdminLatestBalance(accountId) {
+  const response = await api.get(`/admin/balance/${accountId}/latest`);
+  return response.data;
+}
+
+export async function getAdminBalanceLedger(accountId, options = {}) {
+  const response = await api.get(`/admin/balance/${accountId}/ledger`, {
+    params: pageableParams(options),
+  });
+  return response.data;
+}
