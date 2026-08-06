@@ -34,23 +34,11 @@ export const DashboardPage = ({ onNavigate }) => {
   };
 
   const handleTransferClick = () => {
-    if (handleNavigate) {
-      handleNavigate('/transfer');
-    } else {
-      addToast({
-        type: 'info',
-        title: 'Fund Transfer',
-        message: 'Navigating to transfer screen...',
-      });
-    }
+    navigate('/transfer');
   };
 
   const handleWithdrawClick = () => {
-    addToast({
-      type: 'info',
-      title: 'Withdrawal',
-      message: 'Withdrawal feature requested.',
-    });
+    navigate('/withdraw');
   };
 
   return (

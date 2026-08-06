@@ -5,6 +5,8 @@ import { RoleRoute } from '../features/auth/components/RoleRoute.jsx';
 import { AuthLayout } from '../layouts/AuthLayout.jsx';
 import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
 import { DashboardPage } from '../pages/account/DashboardPage.jsx';
+import { TransferPage } from '../pages/account/TransferPage.jsx';
+import { WithdrawPage } from '../pages/account/WithdrawPage.jsx';
 import { LoginPage } from '../pages/auth/LoginPage.jsx';
 import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
@@ -41,7 +43,11 @@ export const router = createBrowserRouter([
         element: (
           <RoleRoute redirectTo="/registration-status" roles={['ROLE_ACCOUNT_HOLDER']} />
         ),
-        children: [{ path: '/dashboard', element: <DashboardPage /> }],
+        children: [
+          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/transfer', element: <TransferPage /> },
+          { path: '/withdraw', element: <WithdrawPage /> },
+        ],
       },
       {
         element: <RoleRoute roles={['ROLE_ADMIN']} />,
