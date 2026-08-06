@@ -8,7 +8,7 @@ vi.mock('../features/auth/useAuth.js', () => ({ useAuth: vi.fn() }));
 
 const destinations = [
   ['/login', 'Login'],
-  ['/admin/registrations', 'Admin registrations'],
+  ['/admin', 'Admin overview'],
   ['/dashboard', 'Dashboard'],
   ['/registration-status', 'Registration status'],
 ];
@@ -38,7 +38,7 @@ describe('HomeRedirect', () => {
   beforeEach(() => vi.clearAllMocks());
 
   test.each([
-    [['ROLE_ADMIN'], 'Admin registrations'],
+    [['ROLE_ADMIN'], 'Admin overview'],
     [['ROLE_ACCOUNT_HOLDER'], 'Dashboard'],
     [['ROLE_PENDING_USER'], 'Registration status'],
     [[], 'Registration status'],

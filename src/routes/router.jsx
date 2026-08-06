@@ -3,6 +3,9 @@ import { ProtectedRoute } from '../features/auth/components/ProtectedRoute.jsx';
 import { PublicRoute } from '../features/auth/components/PublicRoute.jsx';
 import { RoleRoute } from '../features/auth/components/RoleRoute.jsx';
 import { AuthLayout } from '../layouts/AuthLayout.jsx';
+import { AdminLayout } from '../layouts/AdminLayout.jsx';
+import { AdminModulePlaceholder } from '../pages/admin/AdminModulePlaceholder.jsx';
+import { AdminOverviewPage } from '../pages/admin/AdminOverviewPage.jsx';
 import { RegistrationsPage } from '../pages/admin/RegistrationsPage.jsx';
 import { DashboardPage } from '../pages/account/DashboardPage.jsx';
 import { TransferPage } from '../pages/account/TransferPage.jsx';
@@ -59,8 +62,32 @@ export const router = createBrowserRouter([
         element: <RoleRoute roles={['ROLE_ADMIN']} />,
         children: [
           {
-            path: '/admin/registrations',
-            element: <RegistrationsPage />,
+            path: '/admin',
+            element: <AdminLayout />,
+            children: [
+              { index: true, element: <AdminOverviewPage /> },
+              { path: 'registrations', element: <RegistrationsPage /> },
+              {
+                path: 'users',
+                element: <AdminModulePlaceholder title="Users" />,
+              },
+              {
+                path: 'accounts',
+                element: <AdminModulePlaceholder title="Account holders" />,
+              },
+              {
+                path: 'deposits',
+                element: <AdminModulePlaceholder title="Deposits" />,
+              },
+              {
+                path: 'transactions',
+                element: <AdminModulePlaceholder title="Transactions" />,
+              },
+              {
+                path: 'audit-logs',
+                element: <AdminModulePlaceholder title="Audit logs" />,
+              },
+            ],
           },
         ],
       },
