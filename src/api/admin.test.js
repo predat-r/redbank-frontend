@@ -2,6 +2,9 @@ import { afterEach, describe, expect, test } from 'vitest';
 import api from './axios.js';
 import {
   approveRegistration,
+  getAdminAccounts,
+  getAdminTransactions,
+  getAdminUsers,
   getPendingRegistration,
   getPendingRegistrations,
   rejectRegistration,
@@ -54,6 +57,47 @@ describe('admin registration API', () => {
     expect(requests[1].url).toBe('/admin/registrations/9/reject');
     expect(JSON.parse(requests[1].data)).toEqual({
       rejectionReason: 'Unable to verify identity.',
+    });
+  });
+});
+
+describe('admin overview API', () => {
+  test('loads pageable totals from users, accounts, and transactions', async () => {
+    const requests = [];
+    api.defaults.adapter = async (config) => {
+      requests.push(config);
+      return response(config, { content: [], page: { totalElements: 0 } });
+    };
+
+    await getAdminUsers({ page: 0, size: 1 });
+    await getAdminAccounts({ page: 0, size: 1 });
+    await getAdminTransactions({ page: 0, size: 1 });
+
+    expect(requests.map(({ url }) => url)).toEqual([
+      '/admin/users',
+      '/admin/accounts',
+      '/admin/transactions',
+    ]);
+    expect(requests.map(({ params }) => params)).toEqual([
+      { page: 0, size: 1 },
+      { page: 0, size: 1 },
+      { page: 0, size: 1 },
+    ]);
+  });
+
+  test('includes sorting only when requested', async () => {
+    let request;
+    api.defaults.adapter = async (config) => {
+      request = config;
+      return response(config, { content: [], page: {} });
+    };
+
+    await getAdminTransactions({ page: 2, size: 20, sort: ['createdAt,desc'] });
+
+    expect(request.params).toEqual({
+      page: 2,
+      size: 20,
+      sort: ['createdAt,desc'],
     });
   });
 });
