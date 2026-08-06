@@ -76,28 +76,27 @@ export const BalanceHeroSection = ({
             <div className="text-3xl sm:text-4xl font-bold font-sans text-slate-900 tabular-nums tracking-tight">
               {showBalance ? formattedBalance : '••••••••••••'}
             </div>
-            <p className="text-xs text-neutral-500 mt-1">
-              Available for instant withdrawal or transfer
-            </p>
           </div>
         </div>
 
         {/* Hero Footer Actions */}
         <div className="flex items-center justify-between pt-6 mt-6 border-t border-neutral-200/80 relative z-10">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-neutral-500">Account No:</span>
-            <span className="text-xs font-mono font-semibold text-slate-700">
+            <span className="text-sm sm:text-base font-medium text-neutral-600">
+              Account No:
+            </span>
+            <span className="text-sm sm:text-base font-mono font-bold text-slate-800 tracking-wide">
               {accountNumber}
             </span>
             <button
               onClick={handleCopyAccount}
-              className="p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
+              className="p-1.5 text-neutral-400 hover:text-neutral-600 transition-colors"
               title="Copy Account Number"
             >
               {copied ? (
-                <Check className="w-3.5 h-3.5 text-success-600" />
+                <Check className="w-4 h-4 text-success-600" />
               ) : (
-                <Copy className="w-3.5 h-3.5" />
+                <Copy className="w-4 h-4" />
               )}
             </button>
           </div>
