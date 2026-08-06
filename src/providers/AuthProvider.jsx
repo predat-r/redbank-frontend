@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { restoreSession } from '../api/axios.js';
 import {
   clearSession,
@@ -10,7 +18,9 @@ import { decodeJwt, getRolesFromClaims, hasRole } from '../features/auth/jwt.js'
 import { AuthContext } from './AuthContext.js';
 
 export function AuthProvider({ children, restoreOnMount = true }) {
+  const queryClient = useQueryClient();
   const session = useSyncExternalStore(subscribeToSession, getSession, () => null);
+  const previousSession = useRef(session);
   const [isInitializing, setIsInitializing] = useState(restoreOnMount);
   const claims = useMemo(() => decodeJwt(session?.accessToken), [session?.accessToken]);
   const roles = useMemo(() => getRolesFromClaims(claims), [claims]);
@@ -36,6 +46,11 @@ export function AuthProvider({ children, restoreOnMount = true }) {
       active = false;
     };
   }, [restoreOnMount]);
+
+  useEffect(() => {
+    if (previousSession.current && !session) queryClient.clear();
+    previousSession.current = session;
+  }, [queryClient, session]);
 
   const value = useMemo(
     () => ({

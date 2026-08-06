@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { afterEach, describe, expect, test } from 'vitest';
 import { refreshClient } from '../api/axios.js';
@@ -17,6 +18,19 @@ function Probe() {
   );
 }
 
+function renderAuthProvider() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
+
 afterEach(() => {
   refreshClient.defaults.adapter = originalAdapter;
 });
@@ -31,11 +45,7 @@ describe('AuthProvider startup restoration', () => {
       statusText: 'OK',
     });
 
-    render(
-      <AuthProvider>
-        <Probe />
-      </AuthProvider>
-    );
+    renderAuthProvider();
 
     expect(screen.getByText('initializing')).toBeInTheDocument();
     expect(await screen.findByText('authenticated')).toBeInTheDocument();
@@ -52,11 +62,7 @@ describe('AuthProvider startup restoration', () => {
       throw new AxiosError('Unauthorized', 'ERR_BAD_REQUEST', config, null, response);
     };
 
-    render(
-      <AuthProvider>
-        <Probe />
-      </AuthProvider>
-    );
+    renderAuthProvider();
 
     expect(await screen.findByText('signed-out')).toBeInTheDocument();
   });
