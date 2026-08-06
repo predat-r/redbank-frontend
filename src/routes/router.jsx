@@ -37,13 +37,20 @@ export const router = createBrowserRouter([
         element: <SecurityPage />,
       },
       {
-        path: '/dashboard',
         element: (
-          <RoutePlaceholder
-            title="Dashboard"
-            message="Your authenticated dashboard is ready for its feature content."
-          />
+          <RoleRoute redirectTo="/registration-status" roles={['ROLE_ACCOUNT_HOLDER']} />
         ),
+        children: [
+          {
+            path: '/dashboard',
+            element: (
+              <RoutePlaceholder
+                title="Dashboard"
+                message="Your authenticated dashboard is ready for its feature content."
+              />
+            ),
+          },
+        ],
       },
       {
         element: <RoleRoute roles={['ROLE_ADMIN']} />,
