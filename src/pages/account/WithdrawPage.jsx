@@ -3,7 +3,7 @@ import { TransactionForm } from '../../features/transfers/components/Transaction
 
 export const WithdrawPage = () => {
   return (
-    <AppShell activePath="/transfer">
+    <AppShell activePath="/withdraw">
       <TransactionForm initialMode="withdrawal" />
     </AppShell>
   );

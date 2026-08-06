@@ -1,35 +1,67 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '../components/navigation/Sidebar';
 import { Topbar } from '../components/navigation/Topbar';
+import { useAuth } from '../features/auth/useAuth';
 import {
   LayoutDashboard,
-  Wallet,
   ArrowLeftRight,
-  History,
+  Banknote,
   Settings,
   ShieldCheck,
 } from 'lucide-react';
 
 export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user }) => {
+  const navigate = useNavigate();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
 
+  let auth = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    auth = useAuth();
+  } catch {
+    auth = null;
+  }
+
   const currentUser = user || {
-    name: 'Alexander Wright',
-    email: 'alexander.wright@example.com',
-    role: 'ROLE_ACCOUNT_HOLDER',
+    name: auth?.claims?.sub || 'Alexander Wright',
+    email: auth?.claims?.email || 'alexander.wright@example.com',
+    role: auth?.roles?.[0] || 'ROLE_ACCOUNT_HOLDER',
+  };
+
+  const handleNavigation = (path) => {
+    if (onNavigate) {
+      onNavigate(path);
+    } else {
+      navigate(path);
+    }
+    setMobileDrawerOpen(false);
   };
 
   const navItems = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Accounts', href: '/accounts', icon: Wallet },
     { label: 'Fund Transfer', href: '/transfer', icon: ArrowLeftRight },
-    { label: 'Transaction History', href: '/history', icon: History },
+    { label: 'Cash Withdrawal', href: '/withdraw', icon: Banknote },
     ...(currentUser.role === 'ROLE_ADMIN'
-      ? [{ label: 'Admin Panel', href: '/admin', icon: ShieldCheck, badge: 'Admin' }]
+      ? [
+          {
+            label: 'Admin Panel',
+            href: '/admin/registrations',
+            icon: ShieldCheck,
+            badge: 'Admin',
+          },
+        ]
       : []),
     { label: 'Settings', href: '/settings/security', icon: Settings },
   ];
+
+  const handleLogout = () => {
+    if (auth?.endSession) {
+      auth.endSession();
+    }
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col md:flex-row font-sans text-neutral-800 antialiased">
@@ -37,14 +69,11 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
       <Sidebar
         items={navItems}
         activePath={activePath}
-        onNavigate={(path) => {
-          if (onNavigate) onNavigate(path);
-          setMobileDrawerOpen(false);
-        }}
+        onNavigate={handleNavigation}
         isOpen={mobileDrawerOpen}
         onClose={() => setMobileDrawerOpen(false)}
         isCollapsed={sidebarCollapsed}
-        onSwitchAccount={() => alert('Switch Account feature clicked')}
+        onSwitchAccount={() => handleNavigation('/dashboard')}
       />
 
       {/* Main Content Viewport */}
@@ -54,9 +83,9 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
           user={currentUser}
           unreadNotifications={2}
           onMenuToggle={() => setMobileDrawerOpen((prev) => !prev)}
-          onNotificationClick={() => alert('Notifications dropdown clicked')}
-          onSettingsClick={() => onNavigate && onNavigate('/settings/security')}
-          onLogout={() => alert('Logged out successfully')}
+          onNotificationClick={() => {}}
+          onSettingsClick={() => handleNavigation('/settings/security')}
+          onLogout={handleLogout}
         />
 
         {/* Page Container */}
