@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Card } from '../../../components/ui/Card';
 import { Stepper } from '../../../components/ui/Stepper';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
@@ -10,6 +11,7 @@ import { TransactionReceiptStep } from './TransactionReceiptStep';
 import { TransactionLimitsCard } from './TransactionLimitsCard';
 
 export const TransactionForm = ({ initialMode = 'transfer' }) => {
+  const location = useLocation();
   const { addToast } = useToast();
 
   const [mode, setMode] = useState(initialMode); // 'transfer' | 'withdrawal'
@@ -17,8 +19,12 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const [loading, setLoading] = useState(false);
 
   // Form State
-  const [destinationAccountNumber, setDestinationAccountNumber] = useState('');
-  const [amount, setAmount] = useState('');
+  const [destinationAccountNumber, setDestinationAccountNumber] = useState(
+    location?.state?.destinationAccountNumber || ''
+  );
+  const [amount, setAmount] = useState(
+    location?.state?.amount ? String(location.state.amount) : ''
+  );
   const [description, setDescription] = useState('');
   const [withdrawalMethod, setWithdrawalMethod] = useState('ATM_CODE');
   const [errors, setErrors] = useState({});

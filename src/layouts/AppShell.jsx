@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   ArrowLeftRight,
   Banknote,
+  History,
   Settings,
   ShieldCheck,
 } from 'lucide-react';
@@ -43,6 +44,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Fund Transfer', href: '/transfer', icon: ArrowLeftRight },
     { label: 'Cash Withdrawal', href: '/withdraw', icon: Banknote },
+    { label: 'Transaction History', href: '/history', icon: History },
     ...(currentUser.role === 'ROLE_ADMIN'
       ? [
           {
