@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, StatusBadge, Button } from '../../../components/ui';
+import { useMyTransactionById } from '../transactions.queries';
+import { useMyAccount } from '../../account/account.queries';
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -12,20 +14,40 @@ import {
   Calendar,
   Building,
   FileText,
+  User,
+  Clock,
+  Loader2,
 } from 'lucide-react';
 
 export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
   const navigate = useNavigate();
   const [copied, setCopied] = React.useState(false);
 
-  if (!transaction) return null;
+  // Fetch logged in user account to distinguish incoming vs outgoing transfer
+  const { data: myAccount } = useMyAccount();
+  const myAccountNumber = myAccount?.accountNumber;
 
-  const isCredit = transaction.type === 'DEPOSIT';
-  const isTransfer = transaction.type === 'TRANSFER';
-  const isWithdrawal = transaction.type === 'WITHDRAWAL';
+  // Fetch full transaction details using endpoint GET /api/accounts/me/transactions/{id}
+  const transactionId = isOpen ? transaction?.id : null;
+  const { data: detailedTxn, isLoading } = useMyTransactionById(transactionId);
+
+  // Fallback to initial prop if detailed query is still fetching
+  const item = detailedTxn || transaction;
+
+  if (!isOpen || !transaction) return null;
+
+  const isDeposit = item?.type === 'DEPOSIT';
+  const isTransfer = item?.type === 'TRANSFER';
+  const isWithdrawal = item?.type === 'WITHDRAWAL';
+
+  const isIncomingTransfer =
+    isTransfer &&
+    Boolean(myAccountNumber) &&
+    item?.destinationAccountNumber === myAccountNumber;
+  const isCredit = isDeposit || isIncomingTransfer;
 
   const handleCopyRef = () => {
-    const ref = transaction.transactionReference || transaction.id || '';
+    const ref = item?.transactionReference || item?.id || '';
     if (ref) {
       navigator.clipboard.writeText(String(ref));
       setCopied(true);
@@ -36,26 +58,29 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
   const handleRepeatTransaction = () => {
     onClose();
     if (isTransfer) {
+      const destAcc = isIncomingTransfer
+        ? item?.sourceAccountNumber
+        : item?.destinationAccountNumber;
       navigate('/transfer', {
         state: {
-          destinationAccountNumber: transaction.destinationAccountNumber || '',
-          amount: transaction.amount,
+          destinationAccountNumber: destAcc || '',
+          amount: item?.amount,
         },
       });
     } else if (isWithdrawal) {
       navigate('/withdraw', {
         state: {
-          amount: transaction.amount,
+          amount: item?.amount,
         },
       });
     }
   };
 
-  // Aesthetic configuration based on transaction type
+  // Aesthetic configuration based on transaction type and credit status
   const getTypeTheme = () => {
     if (isCredit) {
       return {
-        label: 'Deposit',
+        label: isDeposit ? 'Deposit' : 'Transfer Received',
         badgeBg: 'bg-emerald-50 text-emerald-600 border border-emerald-200/80',
         amountColor: 'text-emerald-600',
         icon: <ArrowDownLeft className="w-6 h-6 text-emerald-600" />,
@@ -79,6 +104,14 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
 
   const theme = getTypeTheme();
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -88,7 +121,7 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
       maxWidth="max-w-md"
     >
       <div className="space-y-6 pt-2">
-        {/* Top Header Highlight Hero (Light & Classy) */}
+        {/* Top Header Highlight Hero */}
         <div className="flex flex-col items-center justify-center text-center pb-2">
           {/* Centered Circular Icon Badge */}
           <div
@@ -102,7 +135,7 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
             <span className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums block text-neutral-900">
               <span className={theme.amountColor}>
                 {isCredit ? '+' : '-'}$
-                {transaction.amount?.toLocaleString(undefined, {
+                {item?.amount?.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -113,9 +146,14 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
             </p>
           </div>
 
-          {/* Status Badge */}
-          <div className="mt-3">
-            <StatusBadge status={transaction.status} />
+          {/* Status Badge & Inline Fetching Indicator */}
+          <div className="mt-3 flex items-center gap-2">
+            <StatusBadge status={item?.status} />
+            {isLoading && (
+              <span className="text-xs text-neutral-400 flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin" />
+              </span>
+            )}
           </div>
         </div>
 
@@ -129,7 +167,7 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
             </span>
             <div className="flex items-center gap-1.5 bg-neutral-0 px-2.5 py-1 rounded-lg border border-neutral-200 shadow-2xs">
               <span className="font-mono font-bold text-neutral-800 text-xs sm:text-sm">
-                {transaction.transactionReference || transaction.id || 'N/A'}
+                {item?.transactionReference || item?.id || 'N/A'}
               </span>
               <button
                 type="button"
@@ -148,49 +186,107 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Account Detail Row */}
-          {(transaction.destinationAccountNumber || transaction.sourceAccountNumber) && (
+          {/* Transfer Flow: Sender Account & Holder */}
+          {isTransfer && (item?.sourceAccountNumber || item?.sourceAccountHolderName) && (
+            <div className="flex items-start justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
+              <span className="text-neutral-500 font-medium flex items-center gap-2 shrink-0">
+                <User className="w-4 h-4 text-neutral-400" />
+                <span>Sender Account</span>
+              </span>
+              <div className="text-right">
+                {item?.sourceAccountHolderName && (
+                  <span className="block font-semibold text-neutral-900">
+                    {item.sourceAccountHolderName}
+                  </span>
+                )}
+                {item?.sourceAccountNumber && (
+                  <span className="font-mono text-xs text-neutral-500 font-medium">
+                    {item.sourceAccountNumber}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Destination / Recipient Account & Holder (For Transfer & Deposit) */}
+          {(isTransfer || isDeposit) &&
+            (item?.destinationAccountNumber || item?.destinationAccountHolderName) && (
+              <div className="flex items-start justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
+                <span className="text-neutral-500 font-medium flex items-center gap-2 shrink-0">
+                  <Building className="w-4 h-4 text-neutral-400" />
+                  <span>Destination Account</span>
+                </span>
+                <div className="text-right">
+                  {item?.destinationAccountHolderName && (
+                    <span className="block font-semibold text-neutral-900">
+                      {item.destinationAccountHolderName}
+                    </span>
+                  )}
+                  {item?.destinationAccountNumber && (
+                    <span className="font-mono text-xs text-neutral-500 font-medium">
+                      {item.destinationAccountNumber}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+          {/* Withdrawal Account & Holder */}
+          {isWithdrawal &&
+            (item?.sourceAccountNumber || item?.sourceAccountHolderName) && (
+              <div className="flex items-start justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
+                <span className="text-neutral-500 font-medium flex items-center gap-2 shrink-0">
+                  <Building className="w-4 h-4 text-neutral-400" />
+                  <span>Account</span>
+                </span>
+                <div className="text-right">
+                  {item?.sourceAccountHolderName && (
+                    <span className="block font-semibold text-neutral-900">
+                      {item.sourceAccountHolderName}
+                    </span>
+                  )}
+                  {item?.sourceAccountNumber && (
+                    <span className="font-mono text-xs text-neutral-500 font-medium">
+                      {item.sourceAccountNumber}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+          {/* Created At Date & Time Row */}
+          <div className="flex items-center justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
+            <span className="text-neutral-500 font-medium flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-neutral-400" />
+              <span>Created At</span>
+            </span>
+            <span className="font-semibold text-neutral-700 font-mono text-xs">
+              {formatDate(item?.createdAt)}
+            </span>
+          </div>
+
+          {/* Completed At Date & Time Row (If available) */}
+          {item?.completedAt && (
             <div className="flex items-center justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
               <span className="text-neutral-500 font-medium flex items-center gap-2">
-                <Building className="w-4 h-4 text-neutral-400" />
-                <span>
-                  {isTransfer || isCredit ? 'Destination Account' : 'Account Number'}
-                </span>
+                <Clock className="w-4 h-4 text-neutral-400" />
+                <span>Completed At</span>
               </span>
-              <span className="font-mono font-semibold text-neutral-800">
-                {transaction.destinationAccountNumber || transaction.sourceAccountNumber}
+              <span className="font-semibold text-neutral-700 font-mono text-xs">
+                {formatDate(item.completedAt)}
               </span>
             </div>
           )}
 
-          {/* Date & Time Row */}
-          <div className="flex items-center justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
-            <span className="text-neutral-500 font-medium flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-neutral-400" />
-              <span>Date & Time</span>
-            </span>
-            <span className="font-semibold text-neutral-700 font-mono text-xs">
-              {transaction.createdAt
-                ? new Date(transaction.createdAt).toLocaleString(undefined, {
-                    dateStyle: 'medium',
-                    timeStyle: 'short',
-                  })
-                : new Date().toLocaleString(undefined, {
-                    dateStyle: 'medium',
-                    timeStyle: 'short',
-                  })}
-            </span>
-          </div>
-
           {/* Description / Memo Row */}
-          {transaction.description && (
+          {item?.description && (
             <div className="flex items-start justify-between py-1 text-xs sm:text-sm">
               <span className="text-neutral-500 font-medium flex items-center gap-2 shrink-0">
                 <FileText className="w-4 h-4 text-neutral-400" />
                 <span>Memo / Note</span>
               </span>
               <span className="font-medium text-neutral-800 text-right max-w-[210px] break-words">
-                {transaction.description}
+                {item.description}
               </span>
             </div>
           )}
@@ -209,7 +305,11 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
               onClick={handleRepeatTransaction}
               className="shadow-xs"
             >
-              {isTransfer ? 'Repeat Transfer' : 'Repeat Withdrawal'}
+              {isIncomingTransfer
+                ? 'Send Back'
+                : isTransfer
+                  ? 'Repeat Transfer'
+                  : 'Repeat Withdrawal'}
             </Button>
           )}
         </div>

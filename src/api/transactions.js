@@ -17,3 +17,8 @@ export async function getMyTransactions(params = {}) {
   const response = await api.get('/accounts/me/transactions', { params: cleanParams });
   return response.data;
 }
+
+export async function getMyTransactionById(id) {
+  const response = await api.get(`/accounts/me/transactions/${id}`);
+  return response.data;
+}
