@@ -11,10 +11,10 @@ export const Stepper = ({ steps = [], currentStep = 0, className = '' }) => {
 
         return (
           <React.Fragment key={step.id || index}>
-            <div className="flex flex-col items-center gap-2 z-10">
+            <div className="flex flex-col items-center gap-1.5 sm:gap-2 z-10 shrink-0">
               <div
                 className={`
-                  w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-250 ease-out
+                  w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-bold transition-all duration-250 ease-out
                   ${
                     isCompleted
                       ? 'bg-success-600 text-white shadow-sm ring-2 ring-success-50'
@@ -24,10 +24,14 @@ export const Stepper = ({ steps = [], currentStep = 0, className = '' }) => {
                   }
                 `}
               >
-                {isCompleted ? <Check className="w-4 h-4 text-white" /> : index + 1}
+                {isCompleted ? (
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+                ) : (
+                  index + 1
+                )}
               </div>
               <span
-                className={`text-xs font-medium text-center transition-colors max-w-[80px] sm:max-w-[120px] truncate ${
+                className={`text-[10px] sm:text-xs font-medium text-center transition-colors max-w-[65px] xs:max-w-[80px] sm:max-w-[120px] truncate ${
                   isCurrent
                     ? 'text-primary-600 font-semibold'
                     : isCompleted
@@ -40,7 +44,7 @@ export const Stepper = ({ steps = [], currentStep = 0, className = '' }) => {
             </div>
 
             {!isLast && (
-              <div className="flex-1 h-0.5 mx-2 mb-6 transition-all duration-250">
+              <div className="flex-1 h-0.5 mx-1 sm:mx-2 mb-5 sm:mb-6 transition-all duration-250">
                 <div
                   className={`h-full ${
                     index < currentStep ? 'bg-success-600' : 'bg-neutral-200'
