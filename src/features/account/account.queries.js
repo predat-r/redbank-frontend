@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getMyAccount,
   freezeMyAccount,
+  unfreezeMyAccount,
   deactivateMyAccount,
 } from '../../api/accounts.js';
 import { getLatestBalance } from '../../api/balance.js';
@@ -44,6 +45,19 @@ export function useFreezeAccount() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: freezeMyAccount,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: accountKeys.me });
+    },
+  });
+}
+
+/**
+ * Hook to execute PATCH /api/accounts/unfreeze/me
+ */
+export function useUnfreezeAccount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: unfreezeMyAccount,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountKeys.me });
     },

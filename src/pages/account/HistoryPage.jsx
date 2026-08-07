@@ -4,7 +4,6 @@ import { AppShell } from '../../layouts/AppShell';
 import { TransactionHistory } from '../../features/transactions/components/TransactionHistory';
 import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
 import { useToast } from '../../hooks/useToast';
-import { mockUserProfile } from '../../features/dashboard/mockData';
 
 export const HistoryPage = () => {
   const navigate = useNavigate();
@@ -35,7 +34,7 @@ export const HistoryPage = () => {
   };
 
   return (
-    <AppShell activePath="/history" user={mockUserProfile}>
+    <AppShell activePath="/history">
       <div className="space-y-6">
         <div>
           <h1 className="text-xl font-bold text-neutral-800 tracking-tight">

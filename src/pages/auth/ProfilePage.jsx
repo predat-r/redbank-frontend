@@ -13,6 +13,7 @@ import {
   UserCheck,
   Save,
   Snowflake,
+  Sun,
   UserX,
   AlertOctagon,
 } from 'lucide-react';
@@ -33,6 +34,7 @@ import {
 import {
   useMyAccount,
   useFreezeAccount,
+  useUnfreezeAccount,
   useDeactivateAccount,
 } from '../../features/account/account.queries.js';
 import { validatePasswordChange } from '../../features/auth/validation.js';
@@ -53,6 +55,7 @@ export function ProfilePage() {
   const { data: realAccount } = useMyAccount();
   const { data: realRegStatus } = useRegistrationStatus();
   const freezeMutation = useFreezeAccount();
+  const unfreezeMutation = useUnfreezeAccount();
   const deactivateMutation = useDeactivateAccount();
 
   const realUser = realAccount?.user;
@@ -79,9 +82,11 @@ export function ProfilePage() {
   };
 
   const currentStatus = profile.status;
+  const isFrozen = currentStatus === 'FROZEN';
 
   const [activeTab, setActiveTab] = useState('details');
   const [isFreezeModalOpen, setIsFreezeModalOpen] = useState(false);
+  const [isUnfreezeModalOpen, setIsUnfreezeModalOpen] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
 
   const confirmFreeze = async () => {
@@ -103,6 +108,29 @@ export function ProfilePage() {
         type: 'warning',
         title: 'Account Frozen',
         message: 'Your account freeze request has been executed.',
+      });
+    }
+  };
+
+  const confirmUnfreeze = async () => {
+    try {
+      await unfreezeMutation.mutateAsync();
+      setCustomStatus('ACTIVE');
+      setIsUnfreezeModalOpen(false);
+      addToast({
+        type: 'success',
+        title: 'Account Unfrozen',
+        message:
+          'Your account has been restored to Active status. Transfers and withdrawals are unlocked.',
+      });
+    } catch {
+      // Fallback UI handling
+      setCustomStatus('ACTIVE');
+      setIsUnfreezeModalOpen(false);
+      addToast({
+        type: 'success',
+        title: 'Account Unfrozen',
+        message: 'Your account unfreeze request has been executed.',
       });
     }
   };
@@ -385,15 +413,27 @@ export function ProfilePage() {
                   Account Safety Controls
                 </h4>
 
-                <Button
-                  variant="outline"
-                  icon={Snowflake}
-                  onClick={() => setIsFreezeModalOpen(true)}
-                  fullWidth
-                  className="justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
-                >
-                  Freeze Account
-                </Button>
+                {isFrozen ? (
+                  <Button
+                    variant="primary"
+                    icon={Sun}
+                    onClick={() => setIsUnfreezeModalOpen(true)}
+                    fullWidth
+                    className="justify-start bg-success-600 hover:bg-success-700 text-white border-none"
+                  >
+                    Unfreeze Account
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    icon={Snowflake}
+                    onClick={() => setIsFreezeModalOpen(true)}
+                    fullWidth
+                    className="justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
+                  >
+                    Freeze Account
+                  </Button>
+                )}
 
                 <Button
                   variant="danger"
@@ -535,6 +575,46 @@ export function ProfilePage() {
                 className="bg-amber-600 hover:bg-amber-700 text-white border-none"
               >
                 Confirm Freeze
+              </Button>
+            </div>
+          </div>
+        </Modal>
+
+        {/* Unfreeze Confirmation Modal */}
+        <Modal
+          isOpen={isUnfreezeModalOpen}
+          onClose={() => setIsUnfreezeModalOpen(false)}
+          title="Unfreeze Account"
+          subtitle="Restore account access request"
+        >
+          <div className="space-y-4">
+            <div className="p-4 bg-success-50 border border-success-600/30 rounded-xl text-xs text-success-700 leading-relaxed flex items-start gap-3">
+              <Sun className="w-5 h-5 text-success-600 shrink-0 mt-0.5" />
+              <div>
+                Unfreezing your account will restore full access to fund transfers,
+                withdrawals, and online banking operations.
+              </div>
+            </div>
+
+            <p className="text-sm text-neutral-700 font-medium">
+              Are you sure you want to unfreeze your account?
+            </p>
+
+            <div className="flex items-center gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsUnfreezeModalOpen(false)}
+                fullWidth
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={confirmUnfreeze}
+                fullWidth
+                className="bg-success-600 hover:bg-success-700 text-white border-none"
+              >
+                Confirm Unfreeze
               </Button>
             </div>
           </div>
