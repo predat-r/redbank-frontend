@@ -6,6 +6,7 @@ import { BalanceHeroSection } from '../../features/dashboard/components/BalanceH
 import { TransactionHistory } from '../../features/transactions/components/TransactionHistory';
 import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
 import { useToast } from '../../hooks/useToast';
+import { useMyAccount, useLatestBalance } from '../../features/account/account.queries';
 import {
   mockAccountHolder,
   mockLatestBalance,
@@ -19,6 +20,19 @@ export const DashboardPage = ({ onNavigate }) => {
   const handleNavigate = onNavigate || navigate;
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Real Backend API Queries for Account & Balance
+  const { data: realAccount, isLoading: isLoadingAccount } = useMyAccount();
+  const { data: realBalance, isLoading: isLoadingBalance } = useLatestBalance();
+
+  const account = realAccount || mockAccountHolder;
+  const runningBalance = realBalance?.runningBalance ?? mockLatestBalance.runningBalance;
+
+  const userProfile = {
+    name: realAccount?.user?.name || mockUserProfile.name || 'Ahmad Tariq',
+    email: realAccount?.user?.email || mockUserProfile.email || 'test@gmail.com',
+    role: mockUserProfile.role,
+  };
 
   const handleRowClick = (transaction) => {
     setSelectedTransaction(transaction);
@@ -42,12 +56,12 @@ export const DashboardPage = ({ onNavigate }) => {
   };
 
   return (
-    <AppShell activePath="/dashboard" onNavigate={handleNavigate} user={mockUserProfile}>
+    <AppShell activePath="/dashboard" onNavigate={handleNavigate} user={userProfile}>
       <div className="space-y-6">
         {/* Welcome Greeting Header */}
         <WelcomeHeader
-          user={mockUserProfile}
-          account={mockAccountHolder}
+          user={userProfile}
+          account={account}
           onTransferClick={handleTransferClick}
           onWithdrawClick={handleWithdrawClick}
           onExportClick={handleExport}
@@ -55,18 +69,19 @@ export const DashboardPage = ({ onNavigate }) => {
 
         {/* Balance Hero Tile & Stat Cards */}
         <BalanceHeroSection
-          balance={mockLatestBalance.runningBalance}
-          currency={mockAccountHolder.currency}
-          accountNumber={mockAccountHolder.accountNumber}
-          accountStatus={mockAccountHolder.accountStatus}
-          approvedAt={mockAccountHolder.approvedAt}
+          balance={runningBalance}
+          currency={account.currency || 'USD'}
+          accountNumber={account.accountNumber || 'RB-8492048192'}
+          accountStatus={account.accountStatus || 'ACTIVE'}
+          approvedAt={account.approvedAt}
+          isLoading={isLoadingAccount || isLoadingBalance}
           onTransferClick={handleTransferClick}
           onWithdrawClick={handleWithdrawClick}
           onViewDetails={() =>
             addToast({
               type: 'info',
               title: 'Account Summary',
-              message: `Viewing details for ${mockAccountHolder.accountNumber}`,
+              message: `Viewing details for ${account.accountNumber}`,
             })
           }
         />

@@ -11,13 +11,6 @@ export const WelcomeHeader = ({ user, account, onExportClick }) => {
           </h1>
           {account?.accountStatus && <StatusBadge status={account.accountStatus} />}
         </div>
-        <p className="text-xs sm:text-sm text-neutral-500 mt-1">
-          Here is an overview of your account{' '}
-          <span className="font-mono font-medium text-neutral-700">
-            {account?.accountNumber}
-          </span>{' '}
-          today.
-        </p>
       </div>
 
       <div className="flex items-center gap-2">
