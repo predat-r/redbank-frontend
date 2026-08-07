@@ -8,11 +8,18 @@ import {
 } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
-import { mockTransactions } from '../../dashboard/mockData';
+import { useMyTransactions } from '../transactions.queries';
 
 export const TransactionLimitsCard = () => {
   const navigate = useNavigate();
-  const recentItems = mockTransactions.slice(0, 5);
+
+  const { data: apiResponse, isLoading } = useMyTransactions({
+    page: 0,
+    size: 5,
+    sort: 'createdAt,desc',
+  });
+
+  const recentItems = apiResponse?.content || [];
 
   return (
     <div className="space-y-4">
@@ -36,48 +43,63 @@ export const TransactionLimitsCard = () => {
         </div>
 
         <div className="space-y-3">
-          {recentItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => navigate('/history')}
-              className="p-3.5 bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/80 rounded-xl flex items-center justify-between cursor-pointer transition-colors"
-            >
-              <div className="flex items-center gap-3 min-w-0 pr-2">
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                    item.type === 'DEPOSIT'
-                      ? 'bg-success-50 text-success-600'
-                      : 'bg-neutral-200/60 text-neutral-600'
+          {isLoading ? (
+            <div className="py-6 text-center text-xs text-neutral-400">
+              Loading recent transactions...
+            </div>
+          ) : recentItems.length === 0 ? (
+            <div className="py-6 text-center text-xs text-neutral-400">
+              No recent transactions found.
+            </div>
+          ) : (
+            recentItems.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => navigate('/history')}
+                className="p-3.5 bg-neutral-50 hover:bg-neutral-100/90 border border-neutral-200/80 rounded-xl flex items-center justify-between cursor-pointer transition-colors"
+              >
+                <div className="flex items-center gap-3 min-w-0 pr-2">
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                      item.type === 'DEPOSIT'
+                        ? 'bg-success-50 text-success-600'
+                        : 'bg-neutral-200/60 text-neutral-600'
+                    }`}
+                  >
+                    {item.type === 'DEPOSIT' ? (
+                      <ArrowDownLeft className="w-4 h-4" />
+                    ) : item.type === 'WITHDRAWAL' ? (
+                      <ArrowUpRight className="w-4 h-4" />
+                    ) : (
+                      <ArrowLeftRight className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <p className="text-xs font-semibold text-neutral-800 truncate">
+                      {item.description || 'Transaction'}
+                    </p>
+                    <p className="text-[10px] font-mono text-neutral-400">
+                      {item.transactionReference ||
+                        item.destinationAccountNumber ||
+                        item.sourceAccountNumber}{' '}
+                      •{' '}
+                      {item.createdAt
+                        ? new Date(item.createdAt).toLocaleDateString()
+                        : ''}
+                    </p>
+                  </div>
+                </div>
+
+                <span
+                  className={`text-sm font-bold tabular-nums shrink-0 ${
+                    item.type === 'DEPOSIT' ? 'text-success-600' : 'text-neutral-800'
                   }`}
                 >
-                  {item.type === 'DEPOSIT' ? (
-                    <ArrowDownLeft className="w-4 h-4" />
-                  ) : item.type === 'WITHDRAWAL' ? (
-                    <ArrowUpRight className="w-4 h-4" />
-                  ) : (
-                    <ArrowLeftRight className="w-4 h-4" />
-                  )}
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <p className="text-xs font-semibold text-neutral-800 truncate">
-                    {item.description}
-                  </p>
-                  <p className="text-[10px] font-mono text-neutral-400">
-                    {item.transactionReference} •{' '}
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
+                  {item.type === 'DEPOSIT' ? '+' : '-'}${item.amount?.toFixed(2)}
+                </span>
               </div>
-
-              <span
-                className={`text-sm font-bold tabular-nums shrink-0 ${
-                  item.type === 'DEPOSIT' ? 'text-success-600' : 'text-neutral-800'
-                }`}
-              >
-                {item.type === 'DEPOSIT' ? '+' : '-'}${item.amount.toFixed(2)}
-              </span>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </Card>
     </div>
