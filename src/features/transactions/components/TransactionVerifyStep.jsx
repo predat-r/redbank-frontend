@@ -63,11 +63,6 @@ export const TransactionVerifyStep = ({
           </span>
         </div>
 
-        <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
-          <span className="text-neutral-500 font-medium">Processing Fee</span>
-          <span className="font-semibold text-success-600">FREE ($0)</span>
-        </div>
-
         {description && (
           <div className="flex justify-between items-center text-sm py-1">
             <span className="text-neutral-500 font-medium">Description</span>

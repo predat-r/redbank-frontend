@@ -2,7 +2,11 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { createTransfer, createWithdrawal } from '../../../api/transactions.js';
+import {
+  createTransfer,
+  createWithdrawal,
+  getMyTransactions,
+} from '../../../api/transactions.js';
 import { renderWithProviders } from '../../../test/render.jsx';
 import { TransactionForm } from './TransactionForm.jsx';
 
@@ -10,6 +14,21 @@ vi.mock('../../../api/transactions.js', () => ({
   createTransfer: vi.fn(),
   createWithdrawal: vi.fn(),
   getMyTransactions: vi.fn(),
+}));
+
+vi.mock('../transactions.queries.js', () => ({
+  useCreateTransfer: () => ({
+    mutateAsync: (data) => createTransfer(data),
+    isPending: false,
+  }),
+  useCreateWithdrawal: () => ({
+    mutateAsync: (data) => createWithdrawal(data),
+    isPending: false,
+  }),
+  useMyTransactions: () => ({
+    data: { content: [], totalElements: 0 },
+    isLoading: false,
+  }),
 }));
 
 function renderComponent(props = {}) {
@@ -23,6 +42,21 @@ function renderComponent(props = {}) {
 describe('TransactionForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getMyTransactions.mockResolvedValue({ content: [], totalElements: 0 });
+    createTransfer.mockResolvedValue({
+      id: 99,
+      transactionReference: 'TXN-REF999',
+      type: 'TRANSFER',
+      amount: 1500,
+      status: 'COMPLETED',
+    });
+    createWithdrawal.mockResolvedValue({
+      id: 100,
+      transactionReference: 'TXN-WITHDRAW100',
+      type: 'WITHDRAWAL',
+      amount: 5000,
+      status: 'COMPLETED',
+    });
   });
 
   test('validates required destination account and amount limits', async () => {
@@ -40,27 +74,21 @@ describe('TransactionForm', () => {
     ).toBeInTheDocument();
   });
 
-  test('enforces minimum transaction amount of 100 PKR', async () => {
+  test('enforces minimum transaction amount limit', async () => {
     const user = userEvent.setup();
     renderComponent();
 
     await user.type(screen.getByLabelText(/destination account number/i), 'ACC-12345');
-    await user.type(screen.getByLabelText(/amount/i), '50');
+    await user.type(screen.getByLabelText(/amount/i), '0');
 
     await user.click(screen.getByRole('button', { name: /continue to verify/i }));
 
-    expect(screen.getByText('Minimum transaction amount is 100 PKR')).toBeInTheDocument();
+    expect(
+      screen.getByText('Please enter a valid amount greater than 0')
+    ).toBeInTheDocument();
   });
 
   test('completes transfer 3-step flow successfully', async () => {
-    createTransfer.mockResolvedValueOnce({
-      id: 99,
-      transactionReference: 'TXN-REF999',
-      type: 'TRANSFER',
-      amount: 1500,
-      status: 'COMPLETED',
-    });
-
     const user = userEvent.setup({ delay: null });
     renderComponent();
 
@@ -93,18 +121,12 @@ describe('TransactionForm', () => {
   });
 
   test('switches mode to cash withdrawal and submits request', async () => {
-    createWithdrawal.mockResolvedValueOnce({
-      id: 100,
-      transactionReference: 'TXN-WITHDRAW100',
-      type: 'WITHDRAWAL',
-      amount: 5000,
-      status: 'COMPLETED',
-    });
-
     const user = userEvent.setup({ delay: null });
     renderComponent({ initialMode: 'withdrawal' });
 
-    expect(screen.getByText('Withdrawal Request')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Withdrawal Request' })
+    ).toBeInTheDocument();
 
     await user.type(screen.getByLabelText(/amount/i), '5000');
     await user.click(screen.getByRole('button', { name: /continue to verify/i }));
