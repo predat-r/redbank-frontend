@@ -3,11 +3,13 @@ import {
   createTransfer,
   createWithdrawal,
   getMyTransactions,
+  getMyTransactionById,
 } from '../../api/transactions.js';
 
 export const transactionKeys = {
   all: ['transactions'],
   myTransactions: (filters) => ['transactions', 'me', filters],
+  detail: (id) => ['transactions', 'detail', id],
 };
 
 export function useMyTransactions(filters = {}) {
@@ -16,6 +18,15 @@ export function useMyTransactions(filters = {}) {
     queryFn: () => getMyTransactions(filters),
     staleTime: 30000,
     keepPreviousData: true,
+  });
+}
+
+export function useMyTransactionById(id) {
+  return useQuery({
+    queryKey: transactionKeys.detail(id),
+    queryFn: () => getMyTransactionById(id),
+    enabled: Boolean(id),
+    staleTime: 30000,
   });
 }
 

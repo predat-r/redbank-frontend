@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Table, StatusBadge, SegmentedControl, Button } from '../../../components/ui';
 import { useMyTransactions } from '../transactions.queries';
+import { useMyAccount } from '../../account/account.queries';
 
 export const TransactionHistory = ({
   transactions,
@@ -33,6 +34,10 @@ export const TransactionHistory = ({
   const [endDate, setEndDate] = useState('');
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(limit || 10);
+
+  // Current logged in user account to distinguish incoming vs outgoing transfers
+  const { data: myAccount } = useMyAccount();
+  const myAccountNumber = myAccount?.accountNumber;
 
   // Construct backend query params (accountNumber, type, status, fromDate, toDate, page, size, sort)
   const queryParams = useMemo(() => {
@@ -135,7 +140,13 @@ export const TransactionHistory = ({
     let outflow = 0;
 
     filteredData.forEach((tx) => {
-      if (tx.type === 'DEPOSIT') {
+      const isCredit =
+        tx.type === 'DEPOSIT' ||
+        (tx.type === 'TRANSFER' &&
+          Boolean(myAccountNumber) &&
+          tx.destinationAccountNumber === myAccountNumber);
+
+      if (isCredit) {
         inflow += tx.amount;
       } else {
         outflow += tx.amount;
@@ -148,7 +159,7 @@ export const TransactionHistory = ({
       count: apiResponse?.page?.totalElements ?? filteredData.length,
       net: inflow - outflow,
     };
-  }, [filteredData, apiResponse]);
+  }, [filteredData, apiResponse, myAccountNumber]);
 
   // Paginated/Limited content
   const displayData = useMemo(() => {
@@ -205,7 +216,13 @@ export const TransactionHistory = ({
       header: 'Type',
       key: 'type',
       width: '140px',
-      render: (type) => {
+      render: (type, row) => {
+        const isCredit =
+          type === 'DEPOSIT' ||
+          (type === 'TRANSFER' &&
+            Boolean(myAccountNumber) &&
+            row.destinationAccountNumber === myAccountNumber);
+
         if (type === 'DEPOSIT') {
           return (
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-success-600">
@@ -220,9 +237,16 @@ export const TransactionHistory = ({
             </span>
           );
         }
+        if (isCredit) {
+          return (
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-success-600">
+              <ArrowDownLeft className="w-4 h-4" /> Transfer In
+            </span>
+          );
+        }
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600">
-            <ArrowLeftRight className="w-4 h-4" /> Transfer
+            <ArrowLeftRight className="w-4 h-4" /> Transfer Out
           </span>
         );
       },
@@ -247,7 +271,11 @@ export const TransactionHistory = ({
       align: 'right',
       numeric: true,
       render: (val, row) => {
-        const isCredit = row.type === 'DEPOSIT';
+        const isCredit =
+          row.type === 'DEPOSIT' ||
+          (row.type === 'TRANSFER' &&
+            Boolean(myAccountNumber) &&
+            row.destinationAccountNumber === myAccountNumber);
         const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'USD',
@@ -464,38 +492,50 @@ export const TransactionHistory = ({
                   },
                 }
           }
-          renderMobileCard={(row) => (
-            <div className="space-y-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-xs font-mono text-neutral-400">
-                    {row.createdAt ? row.createdAt.split('T')[0] : ''}
-                  </span>
-                  <h4 className="text-sm font-semibold text-neutral-800">
-                    {row.description}
-                  </h4>
-                  <p className="text-[11px] font-mono text-neutral-500">
-                    {row.destinationAccountNumber || row.sourceAccountNumber}
-                  </p>
+          renderMobileCard={(row) => {
+            const isCredit =
+              row.type === 'DEPOSIT' ||
+              (row.type === 'TRANSFER' &&
+                Boolean(myAccountNumber) &&
+                row.destinationAccountNumber === myAccountNumber);
+
+            return (
+              <div className="space-y-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-xs font-mono text-neutral-400">
+                      {row.createdAt ? row.createdAt.split('T')[0] : ''}
+                    </span>
+                    <h4 className="text-sm font-semibold text-neutral-800">
+                      {row.description}
+                    </h4>
+                    <p className="text-[11px] font-mono text-neutral-500">
+                      {row.destinationAccountNumber || row.sourceAccountNumber}
+                    </p>
+                  </div>
+                  <StatusBadge status={row.status} />
                 </div>
-                <StatusBadge status={row.status} />
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-neutral-100">
-                <span className="text-xs uppercase font-semibold text-neutral-500">
-                  {row.type}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-base font-bold tabular-nums ${
-                      row.type === 'DEPOSIT' ? 'text-success-600' : 'text-neutral-800'
-                    }`}
-                  >
-                    {row.type === 'DEPOSIT' ? '+' : '-'}${row.amount?.toFixed(2)}
+                <div className="flex justify-between items-center pt-2 border-t border-neutral-100">
+                  <span className="text-xs uppercase font-semibold text-neutral-500">
+                    {row.type === 'TRANSFER'
+                      ? isCredit
+                        ? 'TRANSFER IN'
+                        : 'TRANSFER OUT'
+                      : row.type}
                   </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-base font-bold tabular-nums ${
+                        isCredit ? 'text-success-600' : 'text-neutral-800'
+                      }`}
+                    >
+                      {isCredit ? '+' : '-'}${row.amount?.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          }}
         />
       </div>
     </div>
