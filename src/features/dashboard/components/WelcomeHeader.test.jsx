@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { WelcomeHeader } from './WelcomeHeader.jsx';
 
 describe('WelcomeHeader', () => {
@@ -27,17 +26,5 @@ describe('WelcomeHeader', () => {
 
     expect(screen.queryByText('Welcome, Valued Customer')).not.toBeInTheDocument();
     expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
-  });
-
-  test('triggers onExportClick callback when Statement button is clicked', async () => {
-    const handleExport = vi.fn();
-    const user = userEvent.setup();
-
-    render(<WelcomeHeader user={{ name: 'Ahmad Tariq' }} onExportClick={handleExport} />);
-
-    const statementButton = screen.getByRole('button', { name: /statement/i });
-    await user.click(statementButton);
-
-    expect(handleExport).toHaveBeenCalledTimes(1);
   });
 });

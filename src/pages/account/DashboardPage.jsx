@@ -38,14 +38,6 @@ export const DashboardPage = ({ onNavigate }) => {
     setIsModalOpen(true);
   };
 
-  const handleExport = () => {
-    addToast({
-      type: 'success',
-      title: 'Statement Downloaded',
-      message: 'Your recent activity report (CSV) has been generated successfully.',
-    });
-  };
-
   const handleTransferClick = () => {
     navigate('/transfer');
   };
@@ -62,9 +54,6 @@ export const DashboardPage = ({ onNavigate }) => {
           user={userProfile}
           account={account}
           isLoading={isLoadingAccount}
-          onTransferClick={handleTransferClick}
-          onWithdrawClick={handleWithdrawClick}
-          onExportClick={handleExport}
         />
 
         {/* Balance Hero Tile & Stat Cards */}
