@@ -17,6 +17,18 @@ export const WelcomeHeader = ({ user, account, isLoading = false }) => {
           )}
         </div>
       </div>
+
+      <div className="flex items-center gap-2 self-start sm:self-auto">
+        <Button
+          variant="outline"
+          size="sm"
+          icon={Download}
+          onClick={onExportClick}
+          title="Export Statement"
+        >
+          Statement
+        </Button>
+      </div>
     </div>
   );
 };
