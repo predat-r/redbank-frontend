@@ -35,7 +35,7 @@ export const TransactionInitiateStep = ({
         {mode === 'transfer' ? (
           <Input
             label="Destination Account Number"
-            placeholder="e.g. ACC-892104912"
+            placeholder="e.g. RB1000000001"
             value={destinationAccountNumber}
             onChange={(e) => setDestinationAccountNumber(e.target.value)}
             error={errors.destinationAccountNumber}
