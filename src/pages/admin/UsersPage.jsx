@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Edit3, Eye, Power, PowerOff, UserPlus, Users } from 'lucide-react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -10,6 +11,7 @@ import { AdminActionModal } from '../../features/admin/components/AdminActionMod
 import { AdminUserFormModal } from '../../features/admin/components/AdminUserFormModal.jsx';
 import {
   useAdminUser,
+  useAdminAccounts,
   useAdminUsers,
   useDeactivateAdminUser,
   useReactivateAdminUser,
@@ -56,11 +58,13 @@ function UserDetails({ user }) {
 }
 
 export function UsersPage() {
+  const navigate = useNavigate();
   const listParams = useAdminListParams({
     allowedSortFields: SORT_FIELDS,
     defaultSort: 'createdAt,desc',
   });
   const users = useAdminUsers(listParams.queryOptions);
+  const accounts = useAdminAccounts({ page: 0, size: 50, sort: ['createdAt,desc'] });
   const [detailId, setDetailId] = useState(null);
   const [formState, setFormState] = useState(null);
   const [action, setAction] = useState(null);
@@ -239,6 +243,32 @@ export function UsersPage() {
         {detail.isLoading && <p className="text-sm text-neutral-500">Loading user…</p>}
         {detail.isError && <Alert tone="error">{detail.error.message}</Alert>}
         {detail.data && <UserDetails user={detail.data} />}
+        {detail.data && (
+          <div className="mt-6 border-t border-neutral-200 pt-4">
+            {accounts.isLoading ? (
+              <p className="text-sm text-neutral-500">Looking up linked account…</p>
+            ) : accounts.data?.content?.some(
+                (account) =>
+                  account.user?.id === detail.data.id || account.userId === detail.data.id
+              ) ? (
+              <Button
+                onClick={() => {
+                  const account = accounts.data.content.find(
+                    (item) =>
+                      item.user?.id === detail.data.id || item.userId === detail.data.id
+                  );
+                  setDetailId(null);
+                  navigate(`/admin/accounts?accountId=${account.id}`);
+                }}
+                variant="outline"
+              >
+                View linked account
+              </Button>
+            ) : (
+              <p className="text-sm text-neutral-500">No linked account found.</p>
+            )}
+          </div>
+        )}
       </Modal>
 
       {formState && (

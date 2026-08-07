@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, Snowflake, UserPlus, UserRoundCog, XCircle } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Eye, RefreshCw, Snowflake, UserPlus, UserRoundCog, XCircle } from 'lucide-react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { EmptyState } from '../../components/ui/EmptyState.jsx';
@@ -15,6 +16,7 @@ import {
   useAdminUser,
   useDeactivateAdminAccount,
   useFreezeAdminAccount,
+  useUnfreezeAdminAccount,
 } from '../../features/admin/admin.queries.js';
 import { useAdminListParams } from '../../features/admin/useAdminListParams.js';
 import { useToast } from '../../hooks/useToast.js';
@@ -36,11 +38,14 @@ function formatDate(value) {
 }
 
 function AccountDetails({ account, owner }) {
+  const accountOwner = account.user || owner;
   const details = [
     ['Account number', account.accountNumber],
     ['Currency', account.currency],
-    ['Owner', owner?.name],
-    ['Owner email', owner?.email],
+    ['Owner', accountOwner?.name],
+    ['Owner email', accountOwner?.email],
+    ['Phone number', accountOwner?.phoneNumber],
+    ['Address', accountOwner?.address],
     ['Approved', formatDate(account.approvedAt)],
     ['Created', formatDate(account.createdAt)],
   ];
@@ -64,19 +69,29 @@ function AccountDetails({ account, owner }) {
 }
 
 export function AccountHoldersPage() {
+  const [searchParams] = useSearchParams();
   const listParams = useAdminListParams({
     allowedSortFields: SORT_FIELDS,
     defaultSort: 'createdAt,desc',
   });
   const accounts = useAdminAccounts(listParams.queryOptions);
-  const [detailId, setDetailId] = useState(null);
+  const [detailId, setDetailId] = useState(() => {
+    const value = Number(searchParams.get('accountId'));
+    return Number.isInteger(value) && value > 0 ? value : null;
+  });
   const [showCreate, setShowCreate] = useState(false);
   const [action, setAction] = useState(null);
   const detail = useAdminAccount(detailId);
   const owner = useAdminUser(detail.data?.userId);
   const freeze = useFreezeAdminAccount();
+  const unfreeze = useUnfreezeAdminAccount();
   const deactivate = useDeactivateAdminAccount();
-  const mutation = action?.kind === 'freeze' ? freeze : deactivate;
+  const mutation =
+    action?.kind === 'freeze'
+      ? freeze
+      : action?.kind === 'unfreeze'
+        ? unfreeze
+        : deactivate;
   const { addToast } = useToast();
   const data = accounts.data?.content ?? [];
   const metadata = accounts.data?.page;
@@ -88,15 +103,26 @@ export function AccountHoldersPage() {
 
   function openAction(kind, account) {
     const freezeAccount = kind === 'freeze';
+    const unfreezeAccount = kind === 'unfreeze';
     setAction({
       kind,
       account,
-      title: freezeAccount ? 'Freeze account' : 'Deactivate account',
+      title: freezeAccount
+        ? 'Freeze account'
+        : unfreezeAccount
+          ? 'Unfreeze account'
+          : 'Deactivate account',
       subtitle: account.accountNumber,
       message: freezeAccount
         ? 'The account will be frozen and unavailable for further transactions.'
-        : 'The account will be closed while its financial history remains preserved.',
-      confirmLabel: freezeAccount ? 'Freeze Account' : 'Deactivate Account',
+        : unfreezeAccount
+          ? 'The account will be restored to active status and available for transactions.'
+          : 'The account will be closed while its financial history remains preserved.',
+      confirmLabel: freezeAccount
+        ? 'Freeze Account'
+        : unfreezeAccount
+          ? 'Unfreeze Account'
+          : 'Deactivate Account',
     });
   }
 
@@ -105,7 +131,12 @@ export function AccountHoldersPage() {
       await mutation.mutateAsync(action.account.id);
       addToast({
         type: 'success',
-        title: action.kind === 'freeze' ? 'Account frozen' : 'Account deactivated',
+        title:
+          action.kind === 'freeze'
+            ? 'Account frozen'
+            : action.kind === 'unfreeze'
+              ? 'Account unfrozen'
+              : 'Account deactivated',
         message: `${action.account.accountNumber}'s status was updated.`,
       });
       setAction(null);
@@ -140,6 +171,16 @@ export function AccountHoldersPage() {
             variant="outline"
           >
             Freeze
+          </Button>
+        )}
+        {account.accountStatus === 'FROZEN' && (
+          <Button
+            icon={RefreshCw}
+            onClick={(event) => stopAndRun(event, () => openAction('unfreeze', account))}
+            size="sm"
+            variant="outline"
+          >
+            Unfreeze
           </Button>
         )}
         {account.accountStatus !== 'CLOSED' && (
