@@ -22,3 +22,8 @@ export async function getRegistrationStatus() {
 export async function changePassword(payload) {
   await api.put('/auth/password', payload);
 }
+
+export async function updateMyProfile(payload) {
+  const response = await api.patch('/users/me', payload);
+  return response.data;
+}
