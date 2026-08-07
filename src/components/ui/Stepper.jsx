@@ -5,9 +5,9 @@ export const Stepper = ({ steps = [], currentStep = 0, className = '' }) => {
   return (
     <div className={`w-full flex items-center justify-between relative ${className}`}>
       {steps.map((step, index) => {
-        const isCompleted = index < currentStep;
-        const isCurrent = index === currentStep;
         const isLast = index === steps.length - 1;
+        const isCompleted = index < currentStep || (index === currentStep && isLast);
+        const isCurrent = index === currentStep && !isLast;
 
         return (
           <React.Fragment key={step.id || index}>
