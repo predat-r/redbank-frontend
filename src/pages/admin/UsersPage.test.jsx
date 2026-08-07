@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   useAdminUser,
   useAdminUsers,
+  useAdminAccounts,
   useCreateAdminUser,
   useDeactivateAdminUser,
   useReactivateAdminUser,
@@ -16,6 +17,7 @@ import { UsersPage } from './UsersPage.jsx';
 vi.mock('../../features/admin/admin.queries.js', () => ({
   useAdminUser: vi.fn(),
   useAdminUsers: vi.fn(),
+  useAdminAccounts: vi.fn(),
   useCreateAdminUser: vi.fn(),
   useDeactivateAdminUser: vi.fn(),
   useReactivateAdminUser: vi.fn(),
@@ -85,6 +87,7 @@ describe('UsersPage', () => {
     deactivate = mutationResult();
     reactivate = mutationResult();
     useAdminUsers.mockReturnValue(queryResult());
+    useAdminAccounts.mockReturnValue({ data: null, isLoading: false });
     useAdminUser.mockReturnValue({
       data: adminUser,
       isLoading: false,
