@@ -26,6 +26,7 @@ const adminNavItems = [
   { label: 'Deposits', href: '/admin/deposits', icon: Landmark },
   { label: 'Transactions', href: '/admin/transactions', icon: ArrowLeftRight },
   { label: 'Audit Logs', href: '/admin/audit-logs', icon: ScrollText },
+  { label: 'Profile', href: '/profile', icon: UserRoundCog },
 ];
 
 function activeAdminPath(pathname) {
@@ -39,7 +40,7 @@ function activeAdminPath(pathname) {
   return matchingItem?.href ?? pathname;
 }
 
-export function AdminLayout() {
+export function AdminLayout({ children }) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const { claims } = useAuth();
   const logout = useLogout();
@@ -80,7 +81,7 @@ export function AdminLayout() {
         />
 
         <main className="mx-auto w-full max-w-7xl flex-1 space-y-6 p-4 sm:p-6 lg:p-8">
-          <Outlet />
+          {children || <Outlet />}
         </main>
       </div>
     </div>
