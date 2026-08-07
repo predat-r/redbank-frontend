@@ -159,10 +159,12 @@ export const TransactionHistory = ({
       }
     });
 
+    const volumeCount = apiResponse?.content?.length ?? filteredData.length;
+
     return {
       inflow,
       outflow,
-      count: apiResponse?.page?.totalElements ?? filteredData.length,
+      count: volumeCount,
       net: inflow - outflow,
     };
   }, [filteredData, apiResponse, myAccountNumber]);
