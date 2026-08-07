@@ -6,15 +6,14 @@ import {
   ArrowUpRight,
   ArrowLeftRight,
   Download,
-  Calendar,
   TrendingUp,
   TrendingDown,
   Activity,
   ArrowRight,
-  X,
   Filter,
+  RotateCcw,
 } from 'lucide-react';
-import { Table, StatusBadge, SegmentedControl, Button } from '../../../components/ui';
+import { Table, StatusBadge, Button } from '../../../components/ui';
 import { useMyTransactions } from '../transactions.queries';
 import { useMyAccount } from '../../account/account.queries';
 
@@ -27,11 +26,25 @@ export const TransactionHistory = ({
   hideSummaryKpi = false,
 }) => {
   const navigate = useNavigate();
-  const [filterType, setFilterType] = useState('ALL');
-  const [status, setStatus] = useState('ALL');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+
+  // Draft filter state (user selections before clicking Apply Filters)
+  const [draftFilters, setDraftFilters] = useState({
+    accountNumber: '',
+    type: 'ALL',
+    status: 'ALL',
+    startDate: '',
+    endDate: '',
+  });
+
+  // Applied filter state (triggers API call only when Apply Filters is clicked)
+  const [appliedFilters, setAppliedFilters] = useState({
+    accountNumber: '',
+    type: 'ALL',
+    status: 'ALL',
+    startDate: '',
+    endDate: '',
+  });
+
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(limit || 10);
 
@@ -39,7 +52,7 @@ export const TransactionHistory = ({
   const { data: myAccount } = useMyAccount();
   const myAccountNumber = myAccount?.accountNumber;
 
-  // Construct backend query params (accountNumber, type, status, fromDate, toDate, page, size, sort)
+  // Construct backend query params using appliedFilters (updated on form submit)
   const queryParams = useMemo(() => {
     const params = {
       page,
@@ -47,26 +60,26 @@ export const TransactionHistory = ({
       sort: 'createdAt,desc',
     };
 
-    if (filterType !== 'ALL') {
-      params.type = filterType;
+    if (appliedFilters.type !== 'ALL') {
+      params.type = appliedFilters.type;
     }
-    if (status !== 'ALL') {
-      params.status = status;
+    if (appliedFilters.status !== 'ALL') {
+      params.status = appliedFilters.status;
     }
-    if (accountNumber.trim()) {
-      params.accountNumber = accountNumber.trim();
+    if (appliedFilters.accountNumber.trim()) {
+      params.accountNumber = appliedFilters.accountNumber.trim();
     }
-    if (startDate) {
-      params.fromDate = `${startDate}T00:00:00Z`;
+    if (appliedFilters.startDate) {
+      params.fromDate = `${appliedFilters.startDate}T00:00:00Z`;
     }
-    if (endDate) {
-      params.toDate = `${endDate}T23:59:59Z`;
+    if (appliedFilters.endDate) {
+      params.toDate = `${appliedFilters.endDate}T23:59:59Z`;
     }
 
     return params;
-  }, [page, pageSize, limit, filterType, status, accountNumber, startDate, endDate]);
+  }, [page, pageSize, limit, appliedFilters]);
 
-  // Fetch transactions from API if custom transactions array isn't provided
+  // Fetch transactions from API using active query parameters
   const { data: apiResponse, isLoading: apiLoading } = useMyTransactions(queryParams);
 
   const rawTransactions = useMemo(() => {
@@ -79,7 +92,7 @@ export const TransactionHistory = ({
     return [];
   }, [transactions, apiResponse]);
 
-  // Filter transactions locally if using passed mock array, or rely on API results
+  // Filter transactions locally if using passed custom mock array
   const filteredData = useMemo(() => {
     if (!transactions || transactions.length === 0) {
       return rawTransactions;
@@ -87,54 +100,47 @@ export const TransactionHistory = ({
 
     return rawTransactions.filter((item) => {
       // Type filter
-      if (filterType === 'DEPOSIT' && item.type !== 'DEPOSIT') return false;
+      if (appliedFilters.type === 'DEPOSIT' && item.type !== 'DEPOSIT') return false;
       if (
-        filterType === 'WITHDRAWAL' &&
+        appliedFilters.type === 'WITHDRAWAL' &&
         item.type !== 'WITHDRAWAL' &&
         item.type !== 'TRANSFER'
       )
         return false;
 
       // Status filter
-      if (status !== 'ALL' && item.status !== status) return false;
+      if (appliedFilters.status !== 'ALL' && item.status !== appliedFilters.status)
+        return false;
 
       // Account number filter
-      if (accountNumber.trim()) {
-        const query = accountNumber.trim().toLowerCase();
+      if (appliedFilters.accountNumber.trim()) {
+        const query = appliedFilters.accountNumber.trim().toLowerCase();
         const srcAcc = item.sourceAccountNumber?.toLowerCase() || '';
         const destAcc = item.destinationAccountNumber?.toLowerCase() || '';
         if (!srcAcc.includes(query) && !destAcc.includes(query)) return false;
       }
 
       // Start Date filter
-      if (startDate) {
+      if (appliedFilters.startDate) {
         const itemDate = new Date(item.createdAt);
-        const start = new Date(startDate);
+        const start = new Date(appliedFilters.startDate);
         start.setHours(0, 0, 0, 0);
         if (itemDate < start) return false;
       }
 
       // End Date filter
-      if (endDate) {
+      if (appliedFilters.endDate) {
         const itemDate = new Date(item.createdAt);
-        const end = new Date(endDate);
+        const end = new Date(appliedFilters.endDate);
         end.setHours(23, 59, 59, 999);
         if (itemDate > end) return false;
       }
 
       return true;
     });
-  }, [
-    transactions,
-    rawTransactions,
-    filterType,
-    status,
-    accountNumber,
-    startDate,
-    endDate,
-  ]);
+  }, [transactions, rawTransactions, appliedFilters]);
 
-  // KPI Metrics Calculation
+  // KPI Metrics Calculation based on filtered dataset
   const metrics = useMemo(() => {
     let inflow = 0;
     let outflow = 0;
@@ -181,21 +187,32 @@ export const TransactionHistory = ({
     ? displayData.length
     : (apiResponse?.page?.totalElements ?? filteredData.length);
 
-  const filterOptions = [
-    { label: 'All', value: 'ALL' },
-    { label: 'Credited', value: 'DEPOSIT' },
-    { label: 'Debited', value: 'WITHDRAWAL' },
-  ];
-
-  const handleClearFilters = () => {
-    setAccountNumber('');
-    setStatus('ALL');
-    setStartDate('');
-    setEndDate('');
+  const handleApplyFilters = (e) => {
+    if (e) e.preventDefault();
+    setAppliedFilters({ ...draftFilters });
     setPage(0);
   };
 
-  const isAnyFilterActive = accountNumber || startDate || endDate || status !== 'ALL';
+  const handleClearFilters = () => {
+    const empty = {
+      accountNumber: '',
+      type: 'ALL',
+      status: 'ALL',
+      startDate: '',
+      endDate: '',
+    };
+    setDraftFilters(empty);
+    setAppliedFilters(empty);
+    setPage(0);
+  };
+
+  const isAnyFilterApplied = Boolean(
+    appliedFilters.accountNumber ||
+    appliedFilters.startDate ||
+    appliedFilters.endDate ||
+    appliedFilters.type !== 'ALL' ||
+    appliedFilters.status !== 'ALL'
+  );
 
   const columns = [
     {
@@ -303,7 +320,142 @@ export const TransactionHistory = ({
 
   return (
     <div className="space-y-6">
-      {/* Top Summary KPI Cards (Hidden if hideSummaryKpi=true) */}
+      {/* Admin-inspired Dedicated Filter Controls Form Card */}
+      {!limit && (
+        <form
+          onSubmit={handleApplyFilters}
+          className="bg-neutral-0 border border-neutral-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4"
+        >
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-primary-600" />
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-700">
+                Filter Transactions
+              </span>
+            </div>
+            {isAnyFilterApplied && (
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="text-xs font-semibold text-neutral-500 hover:text-neutral-800 flex items-center gap-1 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Reset Filters
+              </button>
+            )}
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Account Number Input Filter */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-neutral-700">
+                Account Number
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={draftFilters.accountNumber}
+                  onChange={(e) =>
+                    setDraftFilters((prev) => ({
+                      ...prev,
+                      accountNumber: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. RB1000000001"
+                  className="w-full h-11 pl-10 pr-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 transition-all font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Type Select Filter */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-neutral-700">
+                Transaction Type
+              </label>
+              <select
+                value={draftFilters.type}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({ ...prev, type: e.target.value }))
+                }
+                className="w-full h-11 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-medium text-neutral-800 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 cursor-pointer transition-all"
+              >
+                <option value="ALL">All Types</option>
+                <option value="DEPOSIT">Deposit</option>
+                <option value="WITHDRAWAL">Cash Withdrawal</option>
+                <option value="TRANSFER">Fund Transfer</option>
+              </select>
+            </div>
+
+            {/* Status Select Filter */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-neutral-700">Status</label>
+              <select
+                value={draftFilters.status}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({ ...prev, status: e.target.value }))
+                }
+                className="w-full h-11 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-medium text-neutral-800 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 cursor-pointer transition-all"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="PENDING">Pending</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
+
+            {/* From Date Filter */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-neutral-700">From Date</label>
+              <input
+                type="date"
+                value={draftFilters.startDate}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({ ...prev, startDate: e.target.value }))
+                }
+                className="w-full h-11 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs text-neutral-800 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 cursor-pointer transition-all font-sans"
+              />
+            </div>
+
+            {/* To Date Filter */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-neutral-700">To Date</label>
+              <input
+                type="date"
+                value={draftFilters.endDate}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({ ...prev, endDate: e.target.value }))
+                }
+                className="w-full h-11 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs text-neutral-800 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 cursor-pointer transition-all font-sans"
+              />
+            </div>
+
+            {/* Filter Action Buttons grid cell aligned in row 2 column 3 */}
+            <div className="flex items-end justify-end gap-2 pt-1 sm:pt-0">
+              {isAnyFilterApplied && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleClearFilters}
+                  className="h-11 px-4 text-xs font-medium"
+                >
+                  Clear
+                </Button>
+              )}
+              <Button
+                type="submit"
+                variant="primary"
+                icon={Search}
+                className="h-11 px-6 text-xs font-semibold shadow-sm w-full sm:w-auto"
+              >
+                Apply Filters
+              </Button>
+            </div>
+          </div>
+        </form>
+      )}
+
+      {/* Summary KPI Cards reflecting applied filter results (Placed below filter form) */}
       {!hideSummaryKpi && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 bg-neutral-0 border border-neutral-200 rounded-xl shadow-xs flex items-center justify-between">
@@ -346,28 +498,19 @@ export const TransactionHistory = ({
       )}
 
       {/* Main Table Card */}
-      <div className="p-4 sm:p-6 bg-neutral-0 border border-neutral-200 rounded-xl shadow-md space-y-5">
-        {/* Header & Filter Controls */}
+      <div className="p-4 sm:p-6 bg-neutral-0 border border-neutral-200 rounded-2xl shadow-md space-y-5">
+        {/* Header Bar */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
           <div>
             <h2 className="text-lg font-bold text-neutral-800">Transaction History</h2>
             <p className="text-xs text-neutral-500">
               {limit
                 ? 'Showing your latest account transactions'
-                : 'Filter by account number, transaction type, status, or date range'}
+                : 'Account ledger records filtered by your preferences'}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <SegmentedControl
-              options={filterOptions}
-              value={filterType}
-              onChange={(val) => {
-                setFilterType(val);
-                setPage(0);
-              }}
-            />
-
             {showViewAll && (
               <Button
                 variant="primary"
@@ -387,87 +530,6 @@ export const TransactionHistory = ({
             )}
           </div>
         </div>
-
-        {/* Detailed Filters Bar (Account Number, Status, From Date & To Date) */}
-        {!limit && (
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-neutral-50/70 p-3 rounded-xl border border-neutral-200/80">
-            <div className="flex flex-wrap items-center gap-3 flex-1">
-              {/* Account Number Input Filter */}
-              <div className="relative flex-1 min-w-[200px] max-w-xs">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
-                <input
-                  type="text"
-                  value={accountNumber}
-                  onChange={(e) => {
-                    setAccountNumber(e.target.value);
-                    setPage(0);
-                  }}
-                  placeholder="Account number..."
-                  className="w-full h-9 pl-10 pr-4 bg-neutral-0 border border-neutral-200 rounded-lg text-xs placeholder:text-neutral-400 focus:outline-none focus:border-primary-500 transition-all"
-                />
-              </div>
-
-              {/* Status Select Filter */}
-              <div className="flex items-center gap-1.5">
-                <Filter className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                <select
-                  value={status}
-                  onChange={(e) => {
-                    setStatus(e.target.value);
-                    setPage(0);
-                  }}
-                  className="h-9 px-2.5 bg-neutral-0 border border-neutral-200 rounded-lg text-xs font-medium text-neutral-700 focus:outline-none focus:border-primary-500 cursor-pointer"
-                >
-                  <option value="ALL">All Statuses</option>
-                  <option value="COMPLETED">Completed</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="CANCELLED">Cancelled</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Date Range Selection (From Date to To Date) */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-neutral-0 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-600">
-                <Calendar className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                <span className="font-medium text-neutral-500">From:</span>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value);
-                    setPage(0);
-                  }}
-                  className="bg-transparent text-xs text-neutral-800 focus:outline-none font-sans cursor-pointer"
-                />
-              </div>
-
-              <div className="flex items-center gap-1.5 bg-neutral-0 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-600">
-                <span className="font-medium text-neutral-500">To:</span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => {
-                    setEndDate(e.target.value);
-                    setPage(0);
-                  }}
-                  className="bg-transparent text-xs text-neutral-800 focus:outline-none font-sans cursor-pointer"
-                />
-              </div>
-
-              {isAnyFilterActive && (
-                <button
-                  type="button"
-                  onClick={handleClearFilters}
-                  className="p-1.5 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 rounded-lg transition-colors"
-                  title="Clear Filters"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Paginated / Limited Table Component */}
         <Table
