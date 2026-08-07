@@ -1,9 +1,8 @@
-import { Download } from 'lucide-react';
-import { Button, StatusBadge, Skeleton } from '../../../components/ui';
+import { StatusBadge, Skeleton } from '../../../components/ui';
 
-export const WelcomeHeader = ({ user, account, onExportClick, isLoading = false }) => {
+export const WelcomeHeader = ({ user, account, isLoading = false }) => {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-neutral-200/80">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 border-b border-neutral-200/80">
       <div>
         <div className="flex items-center gap-3">
           {isLoading ? (
@@ -17,17 +16,6 @@ export const WelcomeHeader = ({ user, account, onExportClick, isLoading = false 
             <StatusBadge status={account.accountStatus} />
           )}
         </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          icon={Download}
-          onClick={onExportClick}
-          title="Export Statement"
-        >
-          Statement
-        </Button>
       </div>
     </div>
   );

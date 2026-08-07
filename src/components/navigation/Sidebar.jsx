@@ -1,4 +1,5 @@
 import { X, RefreshCw } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { NavItem } from './NavItem';
 import { Button } from '../ui/Button';
 
@@ -33,11 +34,13 @@ export const Sidebar = ({
         {/* Header / Brand Logo */}
         <div>
           <div className="flex items-center justify-between min-h-[72px] px-5 py-2 border-b border-neutral-200">
-            <img
-              src="/favicon_trans.svg"
-              alt="RedBank Logo"
-              className="h-10 md:h-[56px] w-auto shrink-0 object-contain transition-all"
-            />
+            <Link to="/">
+              <img
+                src="/favicon_trans.svg"
+                alt="RedBank Logo"
+                className="h-10 md:h-[56px] w-auto shrink-0 object-contain transition-all"
+              />
+            </Link>
 
             {/* Mobile Close Button */}
             {isOpen && (

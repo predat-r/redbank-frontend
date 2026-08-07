@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { ArrowLeftRight, Banknote } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Stepper } from '../../../components/ui/Stepper';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
@@ -157,11 +158,11 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const isSubmitting = transferMutation.isPending || withdrawalMutation.isPending;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       {/* Header Navigation Segmented Toggle */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-neutral-0 p-4 sm:p-5 rounded-xl border border-neutral-200 shadow-sm">
         <div>
-          <h1 className="text-xl font-bold text-neutral-800 tracking-tight">
+          <h1 className="text-lg sm:text-xl font-bold text-neutral-800 tracking-tight">
             {mode === 'transfer' ? 'Fund Transfer' : 'Cash Withdrawal'}
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
@@ -171,24 +172,26 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
           </p>
         </div>
 
-        <SegmentedControl
-          options={[
-            { label: 'Fund Transfer', value: 'transfer' },
-            { label: 'Cash Withdrawal', value: 'withdrawal' },
-          ]}
-          value={mode}
-          onChange={handleModeChange}
-        />
+        <div className="w-full sm:w-auto">
+          <SegmentedControl
+            options={[
+              { label: 'Fund Transfer', value: 'transfer', icon: ArrowLeftRight },
+              { label: 'Cash Withdrawal', value: 'withdrawal', icon: Banknote },
+            ]}
+            value={mode}
+            onChange={handleModeChange}
+          />
+        </div>
       </div>
 
       {/* 3-Step Stepper Progress Bar */}
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <Stepper steps={steps} currentStep={currentStep} />
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Main Step Form / Content View (7 Columns) */}
-        <div className="lg:col-span-7">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        {/* Main Step Form / Content View (7 Columns on XL screens 1280px+) */}
+        <div className="xl:col-span-7">
           {currentStep === 0 && (
             <TransactionInitiateStep
               mode={mode}
@@ -231,8 +234,8 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
           )}
         </div>
 
-        {/* Recent Activity Side Rail (5 Columns) */}
-        <div className="lg:col-span-5">
+        {/* Recent Activity Side Rail (5 Columns on XL screens 1280px+ / bottom on smaller viewports) */}
+        <div className="xl:col-span-5">
           <TransactionLimitsCard />
         </div>
       </div>

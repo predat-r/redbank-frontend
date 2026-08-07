@@ -39,14 +39,14 @@ export const BalanceHeroSection = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
       {/* Current Balance Hero Card - 7 Columns on Large Screens */}
-      <HeroCard className="lg:col-span-7 flex flex-col justify-between relative overflow-hidden">
+      <HeroCard className="lg:col-span-7 flex flex-col justify-between relative overflow-hidden p-5 sm:p-6 lg:p-7">
         {/* Subtle Decorative Background Pill Pattern */}
         <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-primary-600/5 rounded-full blur-2xl pointer-events-none" />
 
         <div className="space-y-4 relative z-10">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
               <span className="text-xs uppercase font-semibold tracking-wider text-slate-500">
                 Current Balance
@@ -89,9 +89,9 @@ export const BalanceHeroSection = ({
         </div>
 
         {/* Hero Footer Actions */}
-        <div className="flex items-center justify-between pt-6 mt-6 border-t border-neutral-200/80 relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="text-sm sm:text-base font-medium text-neutral-600">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-5 mt-6 border-t border-neutral-200/80 relative z-10">
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="text-xs sm:text-sm font-medium text-neutral-600">
               Account No:
             </span>
             {isLoading ? (
@@ -116,7 +116,12 @@ export const BalanceHeroSection = ({
             )}
           </div>
 
-          <Button variant="secondary" size="sm" onClick={onViewDetails}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onViewDetails}
+            className="w-full sm:w-auto text-xs justify-center"
+          >
             View Details
           </Button>
         </div>
