@@ -17,6 +17,7 @@ import {
   AlertOctagon,
 } from 'lucide-react';
 import { AppShell } from '../../layouts/AppShell.jsx';
+import { AdminLayout } from '../../layouts/AdminLayout.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Input } from '../../components/ui/Input.jsx';
@@ -148,8 +149,10 @@ export function ProfilePage() {
     });
   }
 
+  const Shell = profile.role === 'ROLE_ADMIN' ? AdminLayout : AppShell;
+
   return (
-    <AppShell
+    <Shell
       activePath="/profile"
       user={{ name: profile.name, email: profile.email, role: profile.role }}
     >
@@ -165,7 +168,6 @@ export function ProfilePage() {
               credentials.
             </p>
           </div>
-
           <Button
             variant="outline"
             icon={LogOut}
@@ -533,7 +535,7 @@ export function ProfilePage() {
           </div>
         </Modal>
       </div>
-    </AppShell>
+    </Shell>
   );
 }
 
