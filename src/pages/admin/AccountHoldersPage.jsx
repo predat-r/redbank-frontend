@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Eye, Snowflake, UserPlus, UserRoundCog, XCircle } from 'lucide-react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -36,11 +37,14 @@ function formatDate(value) {
 }
 
 function AccountDetails({ account, owner }) {
+  const accountOwner = account.user || owner;
   const details = [
     ['Account number', account.accountNumber],
     ['Currency', account.currency],
-    ['Owner', owner?.name],
-    ['Owner email', owner?.email],
+    ['Owner', accountOwner?.name],
+    ['Owner email', accountOwner?.email],
+    ['Phone number', accountOwner?.phoneNumber],
+    ['Address', accountOwner?.address],
     ['Approved', formatDate(account.approvedAt)],
     ['Created', formatDate(account.createdAt)],
   ];
@@ -64,12 +68,16 @@ function AccountDetails({ account, owner }) {
 }
 
 export function AccountHoldersPage() {
+  const [searchParams] = useSearchParams();
   const listParams = useAdminListParams({
     allowedSortFields: SORT_FIELDS,
     defaultSort: 'createdAt,desc',
   });
   const accounts = useAdminAccounts(listParams.queryOptions);
-  const [detailId, setDetailId] = useState(null);
+  const [detailId, setDetailId] = useState(() => {
+    const value = Number(searchParams.get('accountId'));
+    return Number.isInteger(value) && value > 0 ? value : null;
+  });
   const [showCreate, setShowCreate] = useState(false);
   const [action, setAction] = useState(null);
   const detail = useAdminAccount(detailId);
