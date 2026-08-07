@@ -8,7 +8,7 @@ export function AuthLayout() {
           <img
             src="/favicon_trans.svg"
             alt="RedBank"
-            className="mx-auto h-12 w-auto object-contain"
+            className="h-18 w-auto mx-auto mb-2 select-none"
           />
           <p className="mt-2 text-sm text-[#707886]">Secure, precise, modern banking</p>
         </header>
