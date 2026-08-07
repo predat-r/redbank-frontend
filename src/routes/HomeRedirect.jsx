@@ -14,7 +14,7 @@ export function HomeRedirect() {
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   if (hasRole('ROLE_ADMIN')) {
-    return <Navigate to="/admin/registrations" replace />;
+    return <Navigate to="/admin" replace />;
   }
 
   if (hasRole('ROLE_ACCOUNT_HOLDER')) {

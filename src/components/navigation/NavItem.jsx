@@ -3,13 +3,14 @@ export const NavItem = ({
   label,
   active = false,
   collapsed = false,
+  collapseOnTablet = false,
   onClick,
   badge,
 }) => {
   return (
     <button
       onClick={onClick}
-      title={collapsed ? label : undefined}
+      title={collapsed || collapseOnTablet ? label : undefined}
       className={`
         w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-120 relative group select-none text-left rounded-lg
         ${
@@ -18,6 +19,7 @@ export const NavItem = ({
             : 'text-neutral-600 hover:bg-slate-50 hover:text-neutral-800'
         }
         ${collapsed ? 'justify-center px-2' : ''}
+        ${collapseOnTablet ? 'md:justify-center md:px-2 lg:justify-start lg:px-4' : ''}
       `}
     >
       {/* Active Left Rail Indicator */}
@@ -33,10 +35,18 @@ export const NavItem = ({
         />
       )}
 
-      {!collapsed && <span className="truncate flex-1">{label}</span>}
+      {!collapsed && (
+        <span
+          className={`truncate flex-1 ${collapseOnTablet ? 'md:hidden lg:block' : ''}`}
+        >
+          {label}
+        </span>
+      )}
 
       {!collapsed && badge && (
-        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-primary-100 text-primary-800">
+        <span
+          className={`px-2 py-0.5 text-xs font-semibold rounded-full bg-primary-100 text-primary-800 ${collapseOnTablet ? 'md:hidden lg:inline-flex' : ''}`}
+        >
           {badge}
         </span>
       )}

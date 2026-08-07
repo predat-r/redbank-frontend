@@ -9,6 +9,7 @@ export const Sidebar = ({
   isOpen = false,
   onClose,
   isCollapsed = false,
+  collapseOnTablet = false,
   onSwitchAccount,
 }) => {
   return (
@@ -25,7 +26,7 @@ export const Sidebar = ({
       <aside
         className={`
           fixed md:sticky top-0 left-0 z-40 h-screen bg-neutral-0 border-r border-neutral-200 flex flex-col justify-between transition-all duration-200 ease-in-out shrink-0
-          ${isCollapsed ? 'w-18' : 'w-65'}
+          ${isCollapsed ? 'w-18' : collapseOnTablet ? 'w-65 md:w-18 lg:w-65' : 'w-65'}
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
@@ -58,6 +59,7 @@ export const Sidebar = ({
                 label={item.label}
                 active={activePath === item.href}
                 collapsed={isCollapsed}
+                collapseOnTablet={collapseOnTablet}
                 badge={item.badge}
                 onClick={() => {
                   if (onNavigate) onNavigate(item.href);
@@ -69,28 +71,30 @@ export const Sidebar = ({
         </div>
 
         {/* Footer / Account Switcher */}
-        <div className="p-3 border-t border-neutral-200 bg-neutral-50/50">
-          {!isCollapsed ? (
-            <Button
-              variant="outline"
-              size="sm"
-              fullWidth
-              icon={RefreshCw}
-              onClick={onSwitchAccount}
-              className="text-xs justify-center"
-            >
-              Switch Account
-            </Button>
-          ) : (
-            <button
-              onClick={onSwitchAccount}
-              title="Switch Account"
-              className="w-full h-9 flex items-center justify-center rounded-lg border border-neutral-300 text-slate-600 hover:bg-neutral-100"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        {onSwitchAccount && (
+          <div className="p-3 border-t border-neutral-200 bg-neutral-50/50">
+            {!isCollapsed ? (
+              <Button
+                variant="outline"
+                size="sm"
+                fullWidth
+                icon={RefreshCw}
+                onClick={onSwitchAccount}
+                className="text-xs justify-center"
+              >
+                Switch Account
+              </Button>
+            ) : (
+              <button
+                onClick={onSwitchAccount}
+                title="Switch Account"
+                className="w-full h-9 flex items-center justify-center rounded-lg border border-neutral-300 text-slate-600 hover:bg-neutral-100"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        )}
       </aside>
     </>
   );

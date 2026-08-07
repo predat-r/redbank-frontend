@@ -36,7 +36,7 @@ export const TransactionReceiptStep = ({ mode, receiptData, onReset }) => {
         <div className="flex justify-between items-center text-sm py-1">
           <span className="text-neutral-500">Amount</span>
           <span className="font-bold text-neutral-800 text-base tabular-nums">
-            PKR {receiptData.amount.toLocaleString()}
+            ${receiptData.amount.toLocaleString()}
           </span>
         </div>
 
