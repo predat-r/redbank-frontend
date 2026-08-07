@@ -1,11 +1,13 @@
 import { CheckCircle2, Clock3, RefreshCw, ShieldX, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 import { LoadingState } from '../../components/ui/LoadingState.jsx';
 import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
 import { useLogout, useRegistrationStatus } from '../../features/auth/auth.queries.js';
+import { restoreSession } from '../../api/axios.js';
 
 const statusContent = {
   PENDING_APPROVAL: {
@@ -41,6 +43,18 @@ export function RegistrationStatusPage() {
   const statusQuery = useRegistrationStatus();
   const logoutMutation = useLogout();
   const navigate = useNavigate();
+  const [isContinuing, setIsContinuing] = useState(false);
+
+  async function continueToDashboard() {
+    setIsContinuing(true);
+    try {
+      await restoreSession();
+      navigate('/dashboard', { replace: true });
+    } catch {
+      setIsContinuing(false);
+      statusQuery.refetch();
+    }
+  }
 
   function handleLogout() {
     logoutMutation.mutate(undefined, {
@@ -116,7 +130,9 @@ export function RegistrationStatusPage() {
 
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
           {statusQuery.data.status === 'ACTIVE' ? (
-            <Button onClick={() => navigate('/dashboard')}>Continue to Dashboard</Button>
+            <Button loading={isContinuing} onClick={continueToDashboard}>
+              Continue to Dashboard
+            </Button>
           ) : (
             <Button
               icon={RefreshCw}
