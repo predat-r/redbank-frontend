@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '../components/navigation/Sidebar';
 import { Topbar } from '../components/navigation/Topbar';
 import { useAuth } from '../features/auth/useAuth';
+import { useMyAccount } from '../features/account/account.queries';
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -16,6 +17,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
   const navigate = useNavigate();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
+  const { data: realAccount } = useMyAccount();
 
   let auth = null;
   try {
@@ -25,10 +27,11 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
     auth = null;
   }
 
-  const currentUser = user || {
-    name: auth?.claims?.sub || 'Alexander Wright',
-    email: auth?.claims?.email || 'alexander.wright@example.com',
-    role: auth?.roles?.[0] || 'ROLE_ACCOUNT_HOLDER',
+  const currentUser = {
+    name: user?.name || realAccount?.user?.name || auth?.claims?.sub || 'Ahmad Tariq',
+    email:
+      user?.email || realAccount?.user?.email || auth?.claims?.email || 'test@gmail.com',
+    role: user?.role || auth?.roles?.[0] || 'ROLE_ACCOUNT_HOLDER',
   };
 
   const handleNavigation = (path) => {

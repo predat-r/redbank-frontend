@@ -1,7 +1,16 @@
 {
   "openapi": "3.1.0",
-  "servers": [{ "url": "http://localhost:8080", "description": "Generated server url" }],
-  "security": [{ "bearerAuth": [] }],
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
   "paths": {
     "/api/auth/password": {
       "put": {
@@ -10,17 +19,128 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ChangePasswordRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/admin/users/{userId}": {
+      "get": {
+        "tags": ["admin-user-controller"],
+        "operationId": "findUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "tags": ["admin-user-controller"],
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -31,7 +151,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/RegisterRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
             }
           },
           "required": true
@@ -41,13 +163,21 @@
             "description": "Created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/RegisterResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         },
         "security": []
       }
@@ -61,13 +191,17 @@
             "name": "refresh-token",
             "in": "cookie",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "Origin",
             "in": "header",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -75,14 +209,24 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         },
         "security": []
       }
@@ -96,20 +240,32 @@
             "name": "refresh-token",
             "in": "cookie",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "Origin",
             "in": "header",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         },
         "security": []
       }
@@ -121,7 +277,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
             }
           },
           "required": true
@@ -131,16 +289,107 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         },
         "security": []
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "tags": ["admin-user-controller"],
+        "operationId": "findUsers",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelAdminUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
+      "post": {
+        "tags": ["admin-user-controller"],
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
       }
     },
     "/api/admin/registrations/{userId}/reject": {
@@ -152,25 +401,44 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/RejectRegistrationRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/RejectRegistrationRequest"
+              }
             }
           },
           "required": true
         },
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -183,17 +451,34 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -204,7 +489,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/DepositRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/DepositRequest"
+              }
             }
           },
           "required": true
@@ -214,15 +501,27 @@
             "description": "Deposit created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/BankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/BankTransactionDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -233,7 +532,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/WithdrawalRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawalRequest"
+              }
             }
           },
           "required": true
@@ -243,15 +544,27 @@
             "description": "Withdrawal created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/BankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/BankTransactionDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -262,7 +575,9 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/TransferRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/TransferRequest"
+              }
             }
           },
           "required": true
@@ -272,15 +587,107 @@
             "description": "Transfer created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/BankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/BankTransactionDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/admin/users/{userId}/reactivate": {
+      "patch": {
+        "tags": ["admin-user-controller"],
+        "operationId": "reactivateUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/api/admin/users/{userId}/deactivate": {
+      "patch": {
+        "tags": ["admin-user-controller"],
+        "operationId": "deactivateUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -293,17 +700,34 @@
             "name": "accountId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -316,17 +740,34 @@
             "name": "accountId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -335,13 +776,27 @@
         "tags": ["account-holder-controller"],
         "operationId": "freezeMyAccountHolder",
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -350,13 +805,27 @@
         "tags": ["account-holder-controller"],
         "operationId": "deactivateMyAccountHolder",
         "responses": {
-          "204": { "description": "No Content" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -369,14 +838,24 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/BalanceDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
@@ -389,72 +868,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/RegistrationStatusResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationStatusResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
-        }
-      }
-    },
-    "/api/admin/users": {
-      "get": {
-        "tags": ["admin-user-controller"],
-        "operationId": "findUsers",
-        "parameters": [
-          {
-            "name": "pageable",
-            "in": "query",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelAdminUserResponse" }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
-        }
-      }
-    },
-    "/api/admin/users/{userId}": {
-      "get": {
-        "tags": ["admin-user-controller"],
-        "operationId": "findUser",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer", "format": "int64" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/AdminUserResponse" }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
     },
@@ -467,7 +901,9 @@
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
           }
         ],
         "responses": {
@@ -475,14 +911,24 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBankTransactionDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
@@ -495,7 +941,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
@@ -503,15 +952,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AdminBankTransactionDetailDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBankTransactionDetailDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -524,7 +985,9 @@
             "name": "reference",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -532,15 +995,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AdminBankTransactionDetailDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBankTransactionDetailDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -553,7 +1028,9 @@
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
           }
         ],
         "responses": {
@@ -567,10 +1044,18 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
@@ -583,7 +1068,10 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
@@ -591,16 +1079,30 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PendingRegistrationResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PendingRegistrationResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -613,13 +1115,18 @@
             "name": "accountId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
           {
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
           }
         ],
         "responses": {
@@ -627,14 +1134,24 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBalanceDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBalanceDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
@@ -647,7 +1164,10 @@
             "name": "accountId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
@@ -655,15 +1175,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/BalanceDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -676,7 +1208,9 @@
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
           }
         ],
         "responses": {
@@ -684,14 +1218,24 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelAuditLogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelAuditLogResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
@@ -704,7 +1248,10 @@
             "name": "auditLogId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
@@ -712,15 +1259,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuditLogResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLogResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -733,7 +1292,9 @@
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
           }
         ],
         "responses": {
@@ -741,14 +1302,24 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelAccountHolderDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelAccountHolderDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
@@ -761,13 +1332,17 @@
             "name": "accountNumber",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
           }
         ],
         "responses": {
@@ -775,15 +1350,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBankTransactionDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -796,7 +1383,10 @@
             "name": "accountId",
             "in": "path",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
@@ -804,15 +1394,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountHolderDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountHolderDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -825,7 +1427,9 @@
             "name": "accountNumber",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -833,15 +1437,28 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "type": "object", "additionalProperties": {} }
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -854,15 +1471,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AccountHolderDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/AccountHolderDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -875,7 +1504,9 @@
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": { "$ref": "#/components/schemas/Pageable" }
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
           }
         ],
         "responses": {
@@ -883,15 +1514,27 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PagedModelBankTransactionDto" }
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelBankTransactionDto"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     }
@@ -901,79 +1544,320 @@
       "ChangePasswordRequest": {
         "type": "object",
         "properties": {
-          "currentPassword": { "type": "string", "minLength": 1 },
-          "newPassword": { "type": "string", "maxLength": 100, "minLength": 8 }
+          "currentPassword": {
+            "type": "string",
+            "minLength": 1
+          },
+          "newPassword": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 8
+          }
         },
         "required": ["currentPassword", "newPassword"]
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "phoneNumber": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 6
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 2
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5
+          }
+        },
+        "required": ["address", "email", "name", "phoneNumber"]
+      },
+      "AdminUserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING_APPROVAL", "ACTIVE", "REJECTED", "DEACTIVATED"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "address",
+          "createdAt",
+          "email",
+          "id",
+          "name",
+          "phoneNumber",
+          "status",
+          "updatedAt"
+        ]
       },
       "RegisterRequest": {
         "type": "object",
         "properties": {
-          "email": { "type": "string", "format": "email", "minLength": 1 },
-          "phoneNumber": { "type": "string", "maxLength": 20, "minLength": 6 },
-          "password": { "type": "string", "maxLength": 100, "minLength": 8 },
-          "name": { "type": "string", "maxLength": 150, "minLength": 2 },
-          "address": { "type": "string", "maxLength": 500, "minLength": 5 }
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "phoneNumber": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 6
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 8
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 2
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5
+          }
         },
         "required": ["address", "email", "name", "password", "phoneNumber"]
       },
       "LoginResponse": {
         "type": "object",
         "properties": {
-          "accessToken": { "type": "string" },
-          "tokenType": { "type": "string" }
+          "accessToken": {
+            "type": "string"
+          },
+          "tokenType": {
+            "type": "string"
+          }
         },
         "required": ["accessToken", "tokenType"]
       },
       "RegisterResponse": {
         "type": "object",
         "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "email": { "type": "string" },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
             "enum": ["PENDING_APPROVAL", "ACTIVE", "REJECTED", "DEACTIVATED"]
           },
-          "tokens": { "$ref": "#/components/schemas/LoginResponse" }
+          "tokens": {
+            "$ref": "#/components/schemas/LoginResponse"
+          }
         },
         "required": ["email", "id", "status", "tokens"]
       },
       "LoginRequest": {
         "type": "object",
         "properties": {
-          "email": { "type": "string", "format": "email", "minLength": 1 },
-          "password": { "type": "string", "minLength": 1 }
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "required": ["email", "password"]
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "phoneNumber": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 6
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 8
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 2
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5
+          }
+        },
+        "required": ["address", "email", "name", "password", "phoneNumber"]
+      },
+      "AccountHolderDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "accountStatus": {
+            "type": "string",
+            "enum": ["ACTIVE", "FROZEN", "CLOSED"]
+          },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "accountNumber",
+          "accountStatus",
+          "approvedAt",
+          "createdAt",
+          "currency",
+          "id",
+          "updatedAt",
+          "userId"
+        ]
+      },
+      "CreateUserResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/AdminUserResponse"
+          },
+          "accountHolder": {
+            "$ref": "#/components/schemas/AccountHolderDto"
+          }
+        },
+        "required": ["accountHolder", "user"]
       },
       "RejectRegistrationRequest": {
         "type": "object",
         "properties": {
-          "rejectionReason": { "type": "string", "maxLength": 500, "minLength": 0 }
+          "rejectionReason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
         }
       },
       "DepositRequest": {
         "type": "object",
         "properties": {
-          "accountNumber": { "type": "string", "minLength": 1 },
-          "amount": { "type": "number", "minimum": 0.01 },
-          "description": { "type": "string", "maxLength": 500, "minLength": 0 }
+          "accountNumber": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
         },
         "required": ["accountNumber", "amount"]
       },
       "BankTransactionDto": {
         "type": "object",
         "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "transactionReference": { "type": "string" },
-          "sourceAccountNumber": { "type": "string" },
-          "destinationAccountNumber": { "type": "string" },
-          "type": { "type": "string", "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"] },
-          "description": { "type": "string" },
-          "amount": { "type": "number" },
-          "status": { "type": "string", "enum": ["PENDING", "COMPLETED", "CANCELLED"] },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "completedAt": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "transactionReference": {
+            "type": "string"
+          },
+          "sourceAccountNumber": {
+            "type": "string"
+          },
+          "destinationAccountNumber": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
         "required": [
           "amount",
@@ -987,86 +1871,126 @@
       "WithdrawalRequest": {
         "type": "object",
         "properties": {
-          "amount": { "type": "number", "minimum": 0.01 },
-          "description": { "type": "string", "maxLength": 500, "minLength": 0 }
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          }
         },
         "required": ["amount"]
       },
       "TransferRequest": {
         "type": "object",
         "properties": {
-          "amount": { "type": "number", "minimum": 0.01 },
-          "description": { "type": "string", "maxLength": 500, "minLength": 0 },
-          "destinationAccountNumber": { "type": "string", "minLength": 1 }
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "destinationAccountNumber": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "required": ["amount", "destinationAccountNumber"]
       },
       "BalanceDto": {
         "type": "object",
         "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "accountHolderId": { "type": "integer", "format": "int64" },
-          "transactionId": { "type": "integer", "format": "int64" },
-          "entryDate": { "type": "string", "format": "date-time" },
-          "amount": { "type": "number" },
-          "indicator": { "type": "string", "enum": ["DEBIT", "CREDIT"] },
-          "runningBalance": { "type": "number" }
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "accountHolderId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "transactionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "entryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "indicator": {
+            "type": "string",
+            "enum": ["DEBIT", "CREDIT"]
+          },
+          "runningBalance": {
+            "type": "number"
+          }
         },
         "required": ["amount", "runningBalance"]
       },
       "RegistrationStatusResponse": {
         "type": "object",
         "properties": {
-          "userId": { "type": "integer", "format": "int64" },
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
           "status": {
             "type": "string",
             "enum": ["PENDING_APPROVAL", "ACTIVE", "REJECTED", "DEACTIVATED"]
           },
-          "rejectionReason": { "type": "string" }
+          "rejectionReason": {
+            "type": "string"
+          }
         },
         "required": ["status", "userId"]
       },
       "Pageable": {
         "type": "object",
         "properties": {
-          "page": { "type": "integer", "format": "int32", "minimum": 0 },
-          "size": { "type": "integer", "format": "int32", "minimum": 1 },
-          "sort": { "type": "array", "items": { "type": "string" } }
-        }
-      },
-      "AdminUserResponse": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "email": { "type": "string" },
-          "phoneNumber": { "type": "string" },
-          "name": { "type": "string" },
-          "address": { "type": "string" },
-          "status": {
-            "type": "string",
-            "enum": ["PENDING_APPROVAL", "ACTIVE", "REJECTED", "DEACTIVATED"]
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
           },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
-        },
-        "required": [
-          "address",
-          "createdAt",
-          "email",
-          "id",
-          "name",
-          "phoneNumber",
-          "status",
-          "updatedAt"
-        ]
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "PageMetadata": {
         "type": "object",
         "properties": {
-          "size": { "type": "integer", "format": "int64" },
-          "number": { "type": "integer", "format": "int64" },
-          "totalElements": { "type": "integer", "format": "int64" },
-          "totalPages": { "type": "integer", "format": "int64" }
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int64"
+          }
         },
         "required": ["number", "size", "totalElements", "totalPages"]
       },
@@ -1075,9 +1999,13 @@
         "properties": {
           "content": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/AdminUserResponse" }
+            "items": {
+              "$ref": "#/components/schemas/AdminUserResponse"
+            }
           },
-          "page": { "$ref": "#/components/schemas/PageMetadata" }
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
         },
         "required": ["content", "page"]
       },
@@ -1086,41 +2014,86 @@
         "properties": {
           "content": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/BankTransactionDto" }
+            "items": {
+              "$ref": "#/components/schemas/BankTransactionDto"
+            }
           },
-          "page": { "$ref": "#/components/schemas/PageMetadata" }
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
         },
         "required": ["content", "page"]
       },
       "AdminBankTransactionDetailDto": {
         "type": "object",
         "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "transactionReference": { "type": "string" },
-          "type": { "type": "string", "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"] },
-          "description": { "type": "string" },
-          "amount": { "type": "number" },
-          "status": { "type": "string", "enum": ["PENDING", "COMPLETED", "CANCELLED"] },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "completedAt": { "type": "string", "format": "date-time" },
-          "sourceAccountNumber": { "type": "string" },
-          "sourceAccountCurrency": { "type": "string" },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "transactionReference": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourceAccountNumber": {
+            "type": "string"
+          },
+          "sourceAccountCurrency": {
+            "type": "string"
+          },
           "sourceAccountStatus": {
             "type": "string",
             "enum": ["ACTIVE", "FROZEN", "CLOSED"]
           },
-          "sourceUserName": { "type": "string" },
-          "sourceUserEmail": { "type": "string" },
-          "sourceUserPhoneNumber": { "type": "string" },
-          "destinationAccountNumber": { "type": "string" },
-          "destinationAccountCurrency": { "type": "string" },
+          "sourceUserName": {
+            "type": "string"
+          },
+          "sourceUserEmail": {
+            "type": "string"
+          },
+          "sourceUserPhoneNumber": {
+            "type": "string"
+          },
+          "destinationAccountNumber": {
+            "type": "string"
+          },
+          "destinationAccountCurrency": {
+            "type": "string"
+          },
           "destinationAccountStatus": {
             "type": "string",
             "enum": ["ACTIVE", "FROZEN", "CLOSED"]
           },
-          "destinationUserName": { "type": "string" },
-          "destinationUserEmail": { "type": "string" },
-          "destinationUserPhoneNumber": { "type": "string" }
+          "destinationUserName": {
+            "type": "string"
+          },
+          "destinationUserEmail": {
+            "type": "string"
+          },
+          "destinationUserPhoneNumber": {
+            "type": "string"
+          }
         },
         "required": [
           "amount",
@@ -1136,25 +2109,43 @@
         "properties": {
           "content": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/PendingRegistrationResponse" }
+            "items": {
+              "$ref": "#/components/schemas/PendingRegistrationResponse"
+            }
           },
-          "page": { "$ref": "#/components/schemas/PageMetadata" }
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
         },
         "required": ["content", "page"]
       },
       "PendingRegistrationResponse": {
         "type": "object",
         "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "email": { "type": "string" },
-          "phoneNumber": { "type": "string" },
-          "name": { "type": "string" },
-          "address": { "type": "string" },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
             "enum": ["PENDING_APPROVAL", "ACTIVE", "REJECTED", "DEACTIVATED"]
           },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
         "required": [
           "address",
@@ -1171,23 +2162,37 @@
         "properties": {
           "content": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/BalanceDto" }
+            "items": {
+              "$ref": "#/components/schemas/BalanceDto"
+            }
           },
-          "page": { "$ref": "#/components/schemas/PageMetadata" }
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
         },
         "required": ["content", "page"]
       },
       "AuditLogResponse": {
         "type": "object",
         "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "actorUserId": { "type": "integer", "format": "int64" },
-          "actorEmail": { "type": "string" },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "actorUserId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "actorEmail": {
+            "type": "string"
+          },
           "action": {
             "type": "string",
             "enum": [
               "REGISTRATION_APPROVED",
               "REGISTRATION_REJECTED",
+              "USER_CREATED",
+              "USER_UPDATED",
               "USER_ACTIVATED",
               "USER_DEACTIVATED",
               "ACCOUNT_CREATED",
@@ -1198,10 +2203,20 @@
               "ADMIN_DEPOSIT_RECORDED"
             ]
           },
-          "targetType": { "type": "string", "enum": ["USER", "ACCOUNT", "TRANSACTION"] },
-          "targetIdentifier": { "type": "string" },
-          "details": { "type": "string" },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "targetType": {
+            "type": "string",
+            "enum": ["USER", "ACCOUNT", "TRANSACTION"]
+          },
+          "targetIdentifier": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
         "required": [
           "action",
@@ -1218,54 +2233,51 @@
         "properties": {
           "content": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/AuditLogResponse" }
+            "items": {
+              "$ref": "#/components/schemas/AuditLogResponse"
+            }
           },
-          "page": { "$ref": "#/components/schemas/PageMetadata" }
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
         },
         "required": ["content", "page"]
-      },
-      "AccountHolderDto": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer", "format": "int64" },
-          "userId": { "type": "integer", "format": "int64" },
-          "accountNumber": { "type": "string" },
-          "currency": { "type": "string" },
-          "accountStatus": { "type": "string", "enum": ["ACTIVE", "FROZEN", "CLOSED"] },
-          "approvedAt": { "type": "string", "format": "date-time" },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
-        },
-        "required": [
-          "accountNumber",
-          "accountStatus",
-          "approvedAt",
-          "createdAt",
-          "currency",
-          "id",
-          "updatedAt",
-          "userId"
-        ]
       },
       "PagedModelAccountHolderDto": {
         "type": "object",
         "properties": {
           "content": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/AccountHolderDto" }
+            "items": {
+              "$ref": "#/components/schemas/AccountHolderDto"
+            }
           },
-          "page": { "$ref": "#/components/schemas/PageMetadata" }
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
         },
         "required": ["content", "page"]
       },
       "ApiError": {
         "type": "object",
         "properties": {
-          "timestamp": { "type": "string", "format": "date-time" },
-          "status": { "type": "integer", "format": "int32" },
-          "error": { "type": "string" },
-          "message": { "type": "string" },
-          "path": { "type": "string" }
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
         },
         "required": ["error", "message", "path", "status", "timestamp"]
       }
@@ -1274,42 +2286,70 @@
       "BadRequest": {
         "description": "Bad Request",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
         }
       },
       "Unauthorized": {
         "description": "Unauthorized",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
         }
       },
       "Forbidden": {
         "description": "Forbidden",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
         }
       },
       "NotFound": {
         "description": "Not Found",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
         }
       },
       "Conflict": {
         "description": "Conflict",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
         }
       },
       "InternalServerError": {
         "description": "Internal Server Error",
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } }
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiError"
+            }
+          }
         }
       }
     },
     "securitySchemes": {
-      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     }
   }
 }
