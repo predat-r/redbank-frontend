@@ -23,6 +23,48 @@ const api = axios.create(clientOptions);
 // Separate client prevents a failed refresh request from entering the response interceptor.
 export const refreshClient = axios.create(clientOptions);
 
+let csrfToken = null;
+let csrfTokenPromise = null;
+let csrfTokenLoaded = false;
+
+function isStateChangingRequest(config) {
+  return ['post', 'put', 'patch', 'delete'].includes(
+    (config.method || 'get').toLowerCase()
+  );
+}
+
+function isCsrfExemptRequest(url = '') {
+  return ['/auth/login', '/auth/register', '/auth/csrf'].some((path) =>
+    url.endsWith(path)
+  );
+}
+
+async function getCsrfToken() {
+  if (csrfTokenLoaded) return csrfToken;
+  if (!csrfTokenPromise) {
+    csrfTokenPromise = refreshClient
+      .get('/auth/csrf')
+      .then((response) => {
+        csrfToken = response.data?.token || null;
+        csrfTokenLoaded = true;
+        return csrfToken;
+      })
+      .finally(() => {
+        csrfTokenPromise = null;
+      });
+  }
+  return csrfTokenPromise;
+}
+
+async function addCsrfHeader(config) {
+  if (!isStateChangingRequest(config) || isCsrfExemptRequest(config.url)) return config;
+  const token = await getCsrfToken();
+  if (token) config.headers['X-XSRF-TOKEN'] = token;
+  return config;
+}
+
+refreshClient.interceptors.request.use(addCsrfHeader, (error) => Promise.reject(error));
+
 refreshClient.interceptors.response.use(
   (response) => response,
   (error) => Promise.reject(toApiError(error))
@@ -49,12 +91,12 @@ export function restoreSession() {
 }
 
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const currentSession = getSession();
     if (currentSession?.accessToken) {
       config.headers.Authorization = `${currentSession.tokenType} ${currentSession.accessToken}`;
     }
-    return config;
+    return addCsrfHeader(config);
   },
   (error) => Promise.reject(toApiError(error))
 );

@@ -59,9 +59,12 @@ describe('Axios authentication', () => {
       return response(config, { authorization: config.headers.Authorization });
     };
     refreshClient.defaults.adapter = async (config) => {
-      refreshCalls += 1;
+      if (config.url.endsWith('/auth/refresh')) refreshCalls += 1;
       expect(config.data).toBeUndefined();
       expect(config.withCredentials).toBe(true);
+      if (config.url.endsWith('/auth/csrf')) {
+        return response(config, { token: 'test-csrf-token' });
+      }
       return response(config, {
         accessToken: 'new-access',
         tokenType: 'Bearer',
