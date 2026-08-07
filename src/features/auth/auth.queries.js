@@ -5,6 +5,7 @@ import {
   login,
   logout,
   registerAccount,
+  updateMyProfile,
 } from '../../api/auth.js';
 import { useAuth } from './useAuth.js';
 
@@ -29,6 +30,18 @@ export function useRegistrationStatus() {
 
 export function useChangePassword() {
   return useMutation({ mutationFn: changePassword });
+}
+
+export function useUpdateMyProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateMyProfile,
+    onSuccess: (user) => {
+      queryClient.setQueryData(['accounts', 'me'], (account) =>
+        account ? { ...account, user } : account
+      );
+    },
+  });
 }
 
 export function useLogout() {

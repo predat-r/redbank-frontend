@@ -30,6 +30,7 @@ import {
   useChangePassword,
   useLogout,
   useRegistrationStatus,
+  useUpdateMyProfile,
 } from '../../features/auth/auth.queries.js';
 import {
   useMyAccount,
@@ -57,13 +58,13 @@ export function ProfilePage() {
   const freezeMutation = useFreezeAccount();
   const unfreezeMutation = useUnfreezeAccount();
   const deactivateMutation = useDeactivateAccount();
+  const updateProfileMutation = useUpdateMyProfile();
 
   const realUser = realAccount?.user;
 
   // Local form overrides
   const [formOverrides, setFormOverrides] = useState({});
   const [customStatus, setCustomStatus] = useState(null);
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   // Derived Profile Data from real backend response (or overrides)
   const profile = {
@@ -79,6 +80,11 @@ export function ProfilePage() {
       'ACTIVE',
     role: auth?.roles?.[0] ?? 'ROLE_ACCOUNT_HOLDER',
     createdAt: realUser?.createdAt ?? realAccount?.createdAt ?? '2026-08-06T12:20:11Z',
+  };
+  const profileForm = {
+    name: profile.name,
+    phoneNumber: profile.phoneNumber,
+    address: profile.address,
   };
 
   const currentStatus = profile.status;
@@ -169,18 +175,33 @@ export function ProfilePage() {
     setFormOverrides((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSaveProfile(e) {
+  async function handleSaveProfile(e) {
     e.preventDefault();
-    setIsSavingProfile(true);
-
-    setTimeout(() => {
-      setIsSavingProfile(false);
+    try {
+      const updatedUser = await updateProfileMutation.mutateAsync({
+        email: profile.email,
+        name: profileForm.name.trim(),
+        phoneNumber: profileForm.phoneNumber.trim(),
+        address: profileForm.address.trim(),
+      });
+      setFormOverrides({
+        name: updatedUser.name,
+        phoneNumber: updatedUser.phoneNumber,
+        address: updatedUser.address,
+      });
       addToast({
         type: 'success',
         title: 'Profile Updated',
         message: 'Your personal details have been saved successfully.',
       });
-    }, 400);
+    } catch {
+      addToast({
+        type: 'error',
+        title: 'Profile update failed',
+        message:
+          updateProfileMutation.error?.message || 'Unable to save your personal details.',
+      });
+    }
   }
 
   function updatePasswordFields(e) {
@@ -378,7 +399,7 @@ export function ProfilePage() {
                     type="submit"
                     variant="primary"
                     icon={Save}
-                    loading={isSavingProfile}
+                    loading={updateProfileMutation.isPending}
                   >
                     Save Profile Changes
                   </Button>
