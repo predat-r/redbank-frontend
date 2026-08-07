@@ -11,7 +11,6 @@ import {
   TrendingDown,
   Activity,
   ArrowRight,
-  RotateCcw,
   X,
   Filter,
 } from 'lucide-react';
@@ -22,7 +21,6 @@ export const TransactionHistory = ({
   transactions,
   onRowClick,
   onExport,
-  onSendAgain,
   limit,
   showViewAll = false,
   hideSummaryKpi = false,
@@ -188,20 +186,6 @@ export const TransactionHistory = ({
 
   const isAnyFilterActive = accountNumber || startDate || endDate || status !== 'ALL';
 
-  const handleSendAgain = (row, e) => {
-    if (e) e.stopPropagation();
-    if (onSendAgain) {
-      onSendAgain(row);
-    } else {
-      navigate('/transfer', {
-        state: {
-          destinationAccountNumber: row.destinationAccountNumber || 'ACC-892104912',
-          amount: row.amount,
-        },
-      });
-    }
-  };
-
   const columns = [
     {
       header: 'Date',
@@ -286,23 +270,6 @@ export const TransactionHistory = ({
       align: 'center',
       width: '130px',
       render: (st) => <StatusBadge status={st} />,
-    },
-    {
-      header: 'Action',
-      key: 'action',
-      align: 'right',
-      width: '120px',
-      render: (_, row) => (
-        <button
-          type="button"
-          onClick={(e) => handleSendAgain(row, e)}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-md border border-primary-200/50 transition-colors"
-          title="Repeat transaction"
-        >
-          <RotateCcw className="w-3 h-3 text-primary-600" />
-          <span>Send Again</span>
-        </button>
-      ),
     },
   ];
 
@@ -525,14 +492,6 @@ export const TransactionHistory = ({
                   >
                     {row.type === 'DEPOSIT' ? '+' : '-'}${row.amount?.toFixed(2)}
                   </span>
-                  <button
-                    type="button"
-                    onClick={(e) => handleSendAgain(row, e)}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded border border-primary-200/50 transition-colors"
-                  >
-                    <RotateCcw className="w-3 h-3 text-primary-600" />
-                    <span>Send Again</span>
-                  </button>
                 </div>
               </div>
             </div>
