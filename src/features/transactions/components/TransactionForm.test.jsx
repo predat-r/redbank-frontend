@@ -145,4 +145,27 @@ describe('TransactionForm', () => {
       await screen.findByRole('heading', { level: 2, name: 'Withdrawal Completed' })
     ).toBeInTheDocument();
   });
+
+  test('displays current balance of user on initiate step', () => {
+    renderComponent();
+
+    expect(screen.getAllByText(/Current Balance:/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText('$42,850.75').length).toBeGreaterThan(0);
+  });
+
+  test('prevents proceeding to verify stage when amount exceeds current balance', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderComponent();
+
+    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
+    await user.type(screen.getByLabelText(/amount/i), '50000.00');
+
+    await user.click(screen.getByRole('button', { name: /continue to verify/i }));
+
+    expect(
+      screen.getByText(/Amount exceeds your current available balance of \$42,850\.75/i)
+    ).toBeInTheDocument();
+
+    expect(screen.queryByText('Verify Transaction Details')).not.toBeInTheDocument();
+  });
 });

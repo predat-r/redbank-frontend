@@ -6,6 +6,8 @@ import { Stepper } from '../../../components/ui/Stepper';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { useToast } from '../../../hooks/useToast';
 import { useCreateTransfer, useCreateWithdrawal } from '../transactions.queries';
+import { useMyAccount, useLatestBalance } from '../../account/account.queries';
+import { mockAccountHolder, mockLatestBalance } from '../../dashboard/mockData';
 import { TransactionInitiateStep } from './TransactionInitiateStep';
 import { TransactionVerifyStep } from './TransactionVerifyStep';
 import { TransactionReceiptStep } from './TransactionReceiptStep';
@@ -17,6 +19,12 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
 
   const transferMutation = useCreateTransfer();
   const withdrawalMutation = useCreateWithdrawal();
+
+  const { data: realAccount } = useMyAccount();
+  const { data: realBalance } = useLatestBalance();
+
+  const currentBalance = realBalance?.runningBalance ?? mockLatestBalance.runningBalance;
+  const currency = realAccount?.currency || mockAccountHolder.currency || 'USD';
 
   const [mode, setMode] = useState(initialMode);
   const [currentStep, setCurrentStep] = useState(0);
@@ -51,11 +59,17 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const validateStep1 = () => {
     const errs = {};
     const numAmount = parseFloat(amount);
+    const formattedBalance = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+    }).format(currentBalance);
 
     if (!amount || isNaN(numAmount) || numAmount <= 0) {
       errs.amount = 'Please enter a valid amount greater than 0';
     } else if (numAmount < 0.01) {
       errs.amount = 'Minimum transaction amount is $0.01';
+    } else if (numAmount > currentBalance) {
+      errs.amount = `Amount exceeds your current available balance of ${formattedBalance}`;
     } else if (numAmount > 500000) {
       errs.amount = 'Maximum transaction limit is $500,000';
     }
@@ -205,6 +219,8 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
               setWithdrawalMethod={setWithdrawalMethod}
               errors={errors}
               onSubmit={handleProceedToVerify}
+              currentBalance={currentBalance}
+              currency={currency}
             />
           )}
 

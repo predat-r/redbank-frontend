@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeftRight, Banknote, ArrowRight } from 'lucide-react';
+import { ArrowLeftRight, Banknote, ArrowRight, Wallet } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
@@ -17,20 +17,36 @@ export const TransactionInitiateStep = ({
   setWithdrawalMethod,
   errors,
   onSubmit,
+  currentBalance = 42850.75,
+  currency = 'USD',
 }) => {
   const navigate = useNavigate();
+
+  const formattedBalance = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency || 'USD',
+  }).format(currentBalance);
 
   return (
     <Card className="p-4 sm:p-6">
       <form noValidate onSubmit={onSubmit} className="space-y-5">
-        <h2 className="text-base font-semibold text-neutral-800 pb-3 border-b border-neutral-200 flex items-center gap-2">
-          {mode === 'transfer' ? (
-            <ArrowLeftRight className="w-5 h-5 text-primary-600" />
-          ) : (
-            <Banknote className="w-5 h-5 text-primary-600" />
-          )}
-          <span>{mode === 'transfer' ? 'Transfer Details' : 'Withdrawal Request'}</span>
-        </h2>
+        <div className="pb-3 border-b border-neutral-200 flex items-center justify-between gap-2 flex-wrap">
+          <h2 className="text-base font-semibold text-neutral-800 flex items-center gap-2">
+            {mode === 'transfer' ? (
+              <ArrowLeftRight className="w-5 h-5 text-primary-600" />
+            ) : (
+              <Banknote className="w-5 h-5 text-primary-600" />
+            )}
+            <span>{mode === 'transfer' ? 'Transfer Details' : 'Withdrawal Request'}</span>
+          </h2>
+          <div className="flex items-center gap-1.5 text-xs text-neutral-600 bg-neutral-100 px-3 py-1.5 rounded-lg border border-neutral-200/70">
+            <Wallet className="w-3.5 h-3.5 text-primary-600" />
+            <span>Current Balance:</span>
+            <strong className="font-mono text-neutral-900 font-bold">
+              {formattedBalance}
+            </strong>
+          </div>
+        </div>
 
         {mode === 'transfer' ? (
           <Input
@@ -55,13 +71,23 @@ export const TransactionInitiateStep = ({
         )}
 
         <Input
-          label="Amount ($)"
+          label={
+            <span className="flex items-center justify-between w-full">
+              <span>Amount ($)</span>
+              <span className="text-xs font-normal text-neutral-500">
+                Available Balance:{' '}
+                <span className="font-semibold text-neutral-800 font-mono">
+                  {formattedBalance}
+                </span>
+              </span>
+            </span>
+          }
           type="number"
           placeholder="0.00"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           error={errors.amount}
-          helperText="Min: $0.01 · Max: $500,000"
+          helperText={`Current Balance: ${formattedBalance} · Min: $0.01 · Max: $500,000`}
           required
         />
 
