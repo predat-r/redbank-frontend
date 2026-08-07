@@ -5,7 +5,6 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   ArrowLeftRight,
-  Download,
   TrendingUp,
   TrendingDown,
   Activity,
@@ -20,7 +19,6 @@ import { useMyAccount } from '../../account/account.queries';
 export const TransactionHistory = ({
   transactions,
   onRowClick,
-  onExport,
   limit,
   showViewAll = false,
   hideSummaryKpi = false,
@@ -525,11 +523,11 @@ export const TransactionHistory = ({
               </Button>
             )}
 
-            {!limit && onExport && (
+            {/* {!limit && onExport && (
               <Button variant="ghost" size="sm" icon={Download} onClick={onExport}>
                 Export
               </Button>
-            )}
+            )} */}
           </div>
         </div>
 

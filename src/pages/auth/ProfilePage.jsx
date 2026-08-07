@@ -138,21 +138,22 @@ export function ProfilePage() {
   const confirmDeactivate = async () => {
     try {
       await deactivateMutation.mutateAsync();
-      setCustomStatus('DEACTIVATED');
       setIsDeactivateModalOpen(false);
       addToast({
-        type: 'error',
+        type: 'success',
         title: 'Account Deactivated',
-        message: 'Your account has been deactivated.',
+        message: 'Your account has been deactivated. Logging out...',
       });
-    } catch {
-      // Fallback UI handling
-      setCustomStatus('DEACTIVATED');
+      // Logout immediately after successful deactivation
+      logoutMutation.mutate(undefined, {
+        onSettled: () => navigate('/login', { replace: true }),
+      });
+    } catch (err) {
       setIsDeactivateModalOpen(false);
       addToast({
         type: 'error',
-        title: 'Account Deactivated',
-        message: 'Your account deactivation request has been executed.',
+        title: 'Deactivation Failed',
+        message: err?.message || 'Failed to deactivate account. Please try again.',
       });
     }
   };

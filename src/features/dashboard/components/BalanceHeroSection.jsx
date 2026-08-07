@@ -21,7 +21,6 @@ export const BalanceHeroSection = ({
   onTransferClick,
   onWithdrawClick,
 }) => {
-  const [selectedCurrency, setSelectedCurrency] = useState(currency);
   const [showBalance, setShowBalance] = useState(true);
   const [copied, setCopied] = useState(false);
 
@@ -29,7 +28,7 @@ export const BalanceHeroSection = ({
 
   const formattedBalance = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: selectedCurrency,
+    currency: currency,
   }).format(balance);
 
   const handleCopyAccount = () => {
@@ -63,17 +62,6 @@ export const BalanceHeroSection = ({
                 )}
               </button>
             </div>
-
-            {/* Currency Selector */}
-            <select
-              value={selectedCurrency}
-              onChange={(e) => setSelectedCurrency(e.target.value)}
-              className="h-8 px-2.5 bg-neutral-0 border border-neutral-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            >
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-            </select>
           </div>
 
           {/* Amount Display */}

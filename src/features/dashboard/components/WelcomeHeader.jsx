@@ -5,7 +5,7 @@ export const WelcomeHeader = ({ user, account, isLoading = false }) => {
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 border-b border-neutral-200/80">
       <div>
         <div className="flex items-center gap-3">
-          {isLoading ? (
+          {isLoading && !user?.name ? (
             <Skeleton className="h-8 w-48 sm:w-64 rounded-lg my-1" />
           ) : (
             <h1 className="text-2xl sm:text-3xl font-bold font-display text-neutral-800 tracking-tight">

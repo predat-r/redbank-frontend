@@ -3,10 +3,12 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { changePassword, getRegistrationStatus, logout } from '../../api/auth.js';
+import { deactivateMyAccount, getMyAccount } from '../../api/accounts.js';
 import { getSession, setSession } from '../../api/tokenStore.js';
 import { renderWithProviders } from '../../test/render.jsx';
 import { RegistrationStatusPage } from './RegistrationStatusPage.jsx';
 import { SecurityPage } from './SecurityPage.jsx';
+import { ProfilePage } from './ProfilePage.jsx';
 
 vi.mock('../../api/auth.js', () => ({
   changePassword: vi.fn(),
@@ -14,6 +16,13 @@ vi.mock('../../api/auth.js', () => ({
   login: vi.fn(),
   logout: vi.fn(),
   registerAccount: vi.fn(),
+}));
+
+vi.mock('../../api/accounts.js', () => ({
+  getMyAccount: vi.fn(),
+  freezeMyAccount: vi.fn(),
+  unfreezeMyAccount: vi.fn(),
+  deactivateMyAccount: vi.fn(),
 }));
 
 function renderStatusPage() {
@@ -124,5 +133,37 @@ describe('SecurityPage', () => {
       newPassword: 'new-password',
     });
     expect(await screen.findByText('Password updated')).toBeInTheDocument();
+  });
+});
+
+describe('ProfilePage', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  test('triggers deactivate API call first, and logs out the user on success', async () => {
+    const user = userEvent.setup();
+    getMyAccount.mockResolvedValue({
+      id: 1,
+      accountNumber: 'RB1000000001',
+      accountStatus: 'ACTIVE',
+      user: { name: 'Ahmad Tariq', email: 'ahmad@example.com' },
+    });
+    deactivateMyAccount.mockResolvedValue({ status: 'DEACTIVATED' });
+    logout.mockResolvedValue(undefined);
+
+    renderWithProviders(
+      <MemoryRouter initialEntries={['/profile']}>
+        <Routes>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/login" element={<div>Login Page Screen</div>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await user.click(await screen.findByRole('button', { name: /deactivate account/i }));
+    await user.click(screen.getByRole('button', { name: /confirm deactivation/i }));
+
+    expect(deactivateMyAccount).toHaveBeenCalledTimes(1);
+    expect(logout).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText('Login Page Screen')).toBeInTheDocument();
   });
 });
