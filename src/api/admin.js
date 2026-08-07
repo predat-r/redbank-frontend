@@ -74,6 +74,10 @@ export async function freezeAdminAccount(accountId) {
   await api.patch(`/admin/accounts/freeze/${accountId}`);
 }
 
+export async function unfreezeAdminAccount(accountId) {
+  await api.patch(`/admin/accounts/unfreeze/${accountId}`);
+}
+
 export async function deactivateAdminAccount(accountId) {
   await api.patch(`/admin/accounts/deactivate/${accountId}`);
 }
