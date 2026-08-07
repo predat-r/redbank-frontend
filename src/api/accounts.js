@@ -19,6 +19,15 @@ export async function freezeMyAccount() {
 }
 
 /**
+ * Request unfreezing of current user's account.
+ * PATCH /api/accounts/unfreeze/me -> AccountHolderDto
+ */
+export async function unfreezeMyAccount() {
+  const response = await api.patch('/accounts/unfreeze/me');
+  return response.data;
+}
+
+/**
  * Request deactivation of current user's account.
  * PATCH /api/accounts/deactivate/me -> AccountHolderDto
  */

@@ -61,6 +61,7 @@ export const DashboardPage = ({ onNavigate }) => {
         <WelcomeHeader
           user={userProfile}
           account={account}
+          isLoading={isLoadingAccount}
           onTransferClick={handleTransferClick}
           onWithdrawClick={handleWithdrawClick}
           onExportClick={handleExport}

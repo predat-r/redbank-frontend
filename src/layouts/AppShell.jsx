@@ -4,6 +4,7 @@ import { Sidebar } from '../components/navigation/Sidebar';
 import { Topbar } from '../components/navigation/Topbar';
 import { useAuth } from '../features/auth/useAuth';
 import { useMyAccount } from '../features/account/account.queries';
+import { useToast } from '../hooks/useToast';
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -11,10 +12,12 @@ import {
   History,
   User,
   ShieldCheck,
+  Snowflake,
 } from 'lucide-react';
 
 export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user }) => {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
   const { data: realAccount } = useMyAccount();
@@ -28,13 +31,33 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
   }
 
   const currentUser = {
-    name: user?.name || realAccount?.user?.name || auth?.claims?.sub || 'Ahmad Tariq',
+    name:
+      realAccount?.user?.name ||
+      (user?.name && user?.name !== 'Alexander Wright' ? user?.name : null) ||
+      auth?.claims?.sub ||
+      'Ahmad Tariq',
     email:
-      user?.email || realAccount?.user?.email || auth?.claims?.email || 'test@gmail.com',
+      realAccount?.user?.email ||
+      (user?.email && user?.email !== 'alexander.wright@example.com'
+        ? user?.email
+        : null) ||
+      auth?.claims?.email ||
+      'test@gmail.com',
     role: user?.role || auth?.roles?.[0] || 'ROLE_ACCOUNT_HOLDER',
   };
 
+  const isFrozen = realAccount?.accountStatus === 'FROZEN';
+
   const handleNavigation = (path) => {
+    if (isFrozen && (path === '/transfer' || path === '/withdraw')) {
+      addToast({
+        type: 'warning',
+        title: 'Account Frozen',
+        message: 'Your account is frozen. Outgoing transfers and withdrawals are locked.',
+      });
+      return;
+    }
+
     if (onNavigate) {
       onNavigate(path);
     } else {
@@ -45,8 +68,18 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
 
   const navItems = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Fund Transfer', href: '/transfer', icon: ArrowLeftRight },
-    { label: 'Cash Withdrawal', href: '/withdraw', icon: Banknote },
+    {
+      label: 'Fund Transfer',
+      href: '/transfer',
+      icon: ArrowLeftRight,
+      ...(isFrozen ? { badge: 'Locked' } : {}),
+    },
+    {
+      label: 'Cash Withdrawal',
+      href: '/withdraw',
+      icon: Banknote,
+      ...(isFrozen ? { badge: 'Locked' } : {}),
+    },
     { label: 'Transaction History', href: '/history', icon: History },
     ...(currentUser.role === 'ROLE_ADMIN'
       ? [
@@ -83,6 +116,25 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
 
       {/* Main Content Viewport */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Frozen Account Notice Banner */}
+        {isFrozen && (
+          <div className="bg-amber-600 text-white px-4 py-2.5 text-xs sm:text-sm font-medium flex items-center justify-between shadow-sm shrink-0">
+            <div className="flex items-center gap-2">
+              <Snowflake className="w-4 h-4 shrink-0" />
+              <span>
+                Your account is currently <strong>FROZEN</strong>. Outgoing transfers and
+                cash withdrawals are disabled.
+              </span>
+            </div>
+            <button
+              onClick={() => handleNavigation('/profile')}
+              className="underline hover:text-amber-100 transition-colors shrink-0 ml-4 font-bold"
+            >
+              Unfreeze Account →
+            </button>
+          </div>
+        )}
+
         {/* Sticky Topbar */}
         <Topbar
           user={currentUser}

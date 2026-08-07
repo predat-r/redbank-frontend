@@ -7,13 +7,16 @@ import {
   ArrowLeftRight,
   Banknote,
   ChevronRight,
+  Lock,
 } from 'lucide-react';
-import { HeroCard, Card, Button } from '../../../components/ui';
+import { HeroCard, Card, Button, Skeleton } from '../../../components/ui';
 
 export const BalanceHeroSection = ({
   balance = 42850.75,
   currency = 'USD',
   accountNumber = 'RB-8492048192',
+  accountStatus = 'ACTIVE',
+  isLoading = false,
   onViewDetails,
   onTransferClick,
   onWithdrawClick,
@@ -21,6 +24,8 @@ export const BalanceHeroSection = ({
   const [selectedCurrency, setSelectedCurrency] = useState(currency);
   const [showBalance, setShowBalance] = useState(true);
   const [copied, setCopied] = useState(false);
+
+  const isFrozen = accountStatus === 'FROZEN';
 
   const formattedBalance = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -73,9 +78,13 @@ export const BalanceHeroSection = ({
 
           {/* Amount Display */}
           <div>
-            <div className="text-3xl sm:text-4xl font-bold font-sans text-slate-900 tabular-nums tracking-tight">
-              {showBalance ? formattedBalance : '••••••••••••'}
-            </div>
+            {isLoading ? (
+              <Skeleton className="h-10 w-44 rounded-lg my-1" />
+            ) : (
+              <div className="text-3xl sm:text-4xl font-bold font-sans text-slate-900 tabular-nums tracking-tight">
+                {showBalance ? formattedBalance : '••••••••••••'}
+              </div>
+            )}
           </div>
         </div>
 
@@ -85,20 +94,26 @@ export const BalanceHeroSection = ({
             <span className="text-sm sm:text-base font-medium text-neutral-600">
               Account No:
             </span>
-            <span className="text-sm sm:text-base font-mono font-bold text-slate-800 tracking-wide">
-              {accountNumber}
-            </span>
-            <button
-              onClick={handleCopyAccount}
-              className="p-1.5 text-neutral-400 hover:text-neutral-600 transition-colors"
-              title="Copy Account Number"
-            >
-              {copied ? (
-                <Check className="w-4 h-4 text-success-600" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+            {isLoading ? (
+              <Skeleton className="h-5 w-36 rounded my-0.5" />
+            ) : (
+              <>
+                <span className="text-sm sm:text-base font-mono font-bold text-slate-800 tracking-wide">
+                  {accountNumber}
+                </span>
+                <button
+                  onClick={handleCopyAccount}
+                  className="p-1.5 text-neutral-400 hover:text-neutral-600 transition-colors"
+                  title="Copy Account Number"
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4 text-success-600" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </button>
+              </>
+            )}
           </div>
 
           <Button variant="secondary" size="sm" onClick={onViewDetails}>
@@ -111,36 +126,114 @@ export const BalanceHeroSection = ({
       <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
         {/* Transfer Action Card */}
         <Card
-          hoverable
-          onClick={onTransferClick}
-          className="flex items-center justify-between group cursor-pointer border-l-4 border-l-primary-600 p-5 sm:p-6"
+          hoverable={!isFrozen}
+          onClick={isFrozen ? undefined : onTransferClick}
+          className={`flex items-center justify-between group p-5 sm:p-6 border-l-4 ${
+            isFrozen
+              ? 'opacity-60 cursor-not-allowed border-l-amber-400 bg-neutral-50/80 select-none'
+              : 'cursor-pointer border-l-primary-600'
+          }`}
+          title={
+            isFrozen
+              ? 'Account is frozen - Outgoing operations disabled'
+              : 'Transfer Funds'
+          }
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div
+              className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform ${
+                isFrozen
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'bg-primary-50 text-primary-600 group-hover:scale-105'
+              }`}
+            >
               <ArrowLeftRight className="w-6 h-6" />
             </div>
-            <h3 className="text-lg sm:text-xl font-bold text-neutral-800 group-hover:text-primary-600 transition-colors">
-              Transfer Funds
-            </h3>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3
+                  className={`text-lg sm:text-xl font-bold transition-colors ${
+                    isFrozen
+                      ? 'text-neutral-500'
+                      : 'text-neutral-800 group-hover:text-primary-600'
+                  }`}
+                >
+                  Transfer Funds
+                </h3>
+                {isFrozen && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">
+                    Locked
+                  </span>
+                )}
+              </div>
+              {isFrozen && (
+                <p className="text-xs text-amber-700 mt-0.5">
+                  Account is currently frozen
+                </p>
+              )}
+            </div>
           </div>
-          <ChevronRight className="w-6 h-6 text-neutral-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+          {isFrozen ? (
+            <Lock className="w-5 h-5 text-amber-600 shrink-0 ml-2" />
+          ) : (
+            <ChevronRight className="w-6 h-6 text-neutral-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+          )}
         </Card>
 
         {/* Withdraw Action Card */}
         <Card
-          hoverable
-          onClick={onWithdrawClick}
-          className="flex items-center justify-between group cursor-pointer border-l-4 border-l-slate-600 p-5 sm:p-6"
+          hoverable={!isFrozen}
+          onClick={isFrozen ? undefined : onWithdrawClick}
+          className={`flex items-center justify-between group p-5 sm:p-6 border-l-4 ${
+            isFrozen
+              ? 'opacity-60 cursor-not-allowed border-l-amber-400 bg-neutral-50/80 select-none'
+              : 'cursor-pointer border-l-slate-600'
+          }`}
+          title={
+            isFrozen
+              ? 'Account is frozen - Outgoing operations disabled'
+              : 'Withdraw Cash'
+          }
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div
+              className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform ${
+                isFrozen
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'bg-slate-50 text-slate-600 group-hover:scale-105'
+              }`}
+            >
               <Banknote className="w-6 h-6" />
             </div>
-            <h3 className="text-lg sm:text-xl font-bold text-neutral-800 group-hover:text-slate-700 transition-colors">
-              Withdraw Cash
-            </h3>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3
+                  className={`text-lg sm:text-xl font-bold transition-colors ${
+                    isFrozen
+                      ? 'text-neutral-500'
+                      : 'text-neutral-800 group-hover:text-slate-700'
+                  }`}
+                >
+                  Withdraw Cash
+                </h3>
+                {isFrozen && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">
+                    Locked
+                  </span>
+                )}
+              </div>
+              {isFrozen && (
+                <p className="text-xs text-amber-700 mt-0.5">
+                  Account is currently frozen
+                </p>
+              )}
+            </div>
           </div>
-          <ChevronRight className="w-6 h-6 text-neutral-400 group-hover:text-slate-700 group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+          {isFrozen ? (
+            <Lock className="w-5 h-5 text-amber-600 shrink-0 ml-2" />
+          ) : (
+            <ChevronRight className="w-6 h-6 text-neutral-400 group-hover:text-slate-700 group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+          )}
         </Card>
       </div>
     </div>

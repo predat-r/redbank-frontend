@@ -1,14 +1,11 @@
 import { useState } from 'react';
-import { Bell, Menu, User, LogOut, ShieldCheck } from 'lucide-react';
+import { Menu, User, LogOut, ShieldCheck } from 'lucide-react';
 
 export const Topbar = ({
   user = { name: 'John Doe', role: 'ROLE_ACCOUNT_HOLDER', email: 'john@example.com' },
-  unreadNotifications = 0,
   onMenuToggle,
-  onNotificationClick,
   onLogout,
   onSettingsClick,
-  showSearch = true,
 }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -32,22 +29,8 @@ export const Topbar = ({
         </button>
       </div>
 
-      {/* Right: Notifications & User Avatar Profile */}
+      {/* Right: User Avatar Profile */}
       <div className="flex items-center gap-2 sm:gap-4">
-        {/* Notification Bell */}
-        {(onNotificationClick || unreadNotifications > 0) && (
-          <button
-            onClick={onNotificationClick}
-            className="relative p-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-300"
-            title="Notifications"
-          >
-            <Bell className="w-5 h-5" />
-            {unreadNotifications > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error-600 ring-2 ring-neutral-0 animate-pulse" />
-            )}
-          </button>
-        )}
-
         {/* User Profile Menu */}
         <div className="relative">
           <button
