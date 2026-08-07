@@ -43,6 +43,15 @@ describe('Axios authentication', () => {
     expect(result.data).toBe('Bearer old-access');
   });
 
+  test('serializes pageable sort arrays as repeated sort parameters', () => {
+    const uri = api.getUri({
+      url: '/admin/users',
+      params: { page: 0, size: 10, sort: ['createdAt,desc', 'name,asc'] },
+    });
+
+    expect(uri).toContain('page=0&size=10&sort=createdAt,desc&sort=name,asc');
+  });
+
   test('uses one refresh request for concurrent 401 responses and retries both requests', async () => {
     let refreshCalls = 0;
     api.defaults.adapter = async (config) => {

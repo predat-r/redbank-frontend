@@ -4,7 +4,7 @@ import { AppShell } from '../../layouts/AppShell';
 import { TransactionHistory } from '../../features/transactions/components/TransactionHistory';
 import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
 import { useToast } from '../../hooks/useToast';
-import { mockTransactions, mockUserProfile } from '../../features/dashboard/mockData';
+import { mockUserProfile } from '../../features/dashboard/mockData';
 
 export const HistoryPage = () => {
   const navigate = useNavigate();
@@ -47,7 +47,6 @@ export const HistoryPage = () => {
         </div>
 
         <TransactionHistory
-          transactions={mockTransactions}
           onRowClick={handleRowClick}
           onExport={handleExport}
           onSendAgain={handleSendAgain}

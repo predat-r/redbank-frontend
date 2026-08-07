@@ -27,21 +27,11 @@
           "required": true
         },
         "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          }
+          "204": { "description": "No Content" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
         }
       }
     },
@@ -54,10 +44,7 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+            "schema": { "type": "integer", "format": "int64" }
           }
         ],
         "responses": {
@@ -65,27 +52,15 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdminUserResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AdminUserResponse" }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       },
       "put": {
@@ -96,18 +71,13 @@
             "name": "userId",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+            "schema": { "type": "integer", "format": "int64" }
           }
         ],
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/UpdateUserRequest" }
             }
           },
           "required": true
@@ -117,30 +87,16 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdminUserResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/AdminUserResponse" }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
         }
       }
     },
@@ -320,9 +276,7 @@
             "name": "pageable",
             "in": "query",
             "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/Pageable"
-            }
+            "schema": { "$ref": "#/components/schemas/Pageable" }
           }
         ],
         "responses": {
@@ -336,18 +290,10 @@
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
         }
       },
       "post": {
@@ -356,9 +302,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/CreateUserRequest" }
             }
           },
           "required": true
@@ -368,27 +312,15 @@
             "description": "User created",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateUserResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/CreateUserResponse" }
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "409": { "$ref": "#/components/responses/Conflict" }
         }
       }
     },
@@ -593,25 +525,61 @@
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
     },
     "/api/admin/users/{userId}/reactivate": {
+      "patch": {
+        "tags": ["admin-user-controller"],
+        "operationId": "reactivateUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/admin/users/{userId}/deactivate": {
+      "patch": {
+        "tags": ["admin-user-controller"],
+        "operationId": "deactivateUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/admin/accounts/freeze/{accountId}": {
       "patch": {
         "tags": ["admin-user-controller"],
         "operationId": "reactivateUser",
@@ -688,6 +656,52 @@
           "409": {
             "$ref": "#/components/responses/Conflict"
           }
+        }
+      }
+    },
+    "/api/admin/users/{userId}/reactivate": {
+      "patch": {
+        "tags": ["admin-user-controller"],
+        "operationId": "reactivateUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/admin/users/{userId}/deactivate": {
+      "patch": {
+        "tags": ["admin-user-controller"],
+        "operationId": "deactivateUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
         }
       }
     },
@@ -874,21 +888,11 @@
               }
             }
           },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalServerError" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
     },
@@ -897,6 +901,48 @@
         "tags": ["admin-bank-transaction-controller"],
         "operationId": "getAllTransactions",
         "parameters": [
+          {
+            "name": "reference",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "accountNumber",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
           {
             "name": "pageable",
             "in": "query",
@@ -1501,6 +1547,42 @@
         "operationId": "getMyTransactions",
         "parameters": [
           {
+            "name": "accountNumber",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["PENDING", "COMPLETED", "CANCELLED"]
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
             "name": "pageable",
             "in": "query",
             "required": true,
@@ -1559,60 +1641,27 @@
       "UpdateUserRequest": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "minLength": 1
-          },
-          "phoneNumber": {
-            "type": "string",
-            "maxLength": 20,
-            "minLength": 6
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 150,
-            "minLength": 2
-          },
-          "address": {
-            "type": "string",
-            "maxLength": 500,
-            "minLength": 5
-          }
+          "email": { "type": "string", "format": "email", "minLength": 1 },
+          "phoneNumber": { "type": "string", "maxLength": 20, "minLength": 6 },
+          "name": { "type": "string", "maxLength": 150, "minLength": 2 },
+          "address": { "type": "string", "maxLength": 500, "minLength": 5 }
         },
         "required": ["address", "email", "name", "phoneNumber"]
       },
       "AdminUserResponse": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "email": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "address": {
-            "type": "string"
-          },
+          "id": { "type": "integer", "format": "int64" },
+          "email": { "type": "string" },
+          "phoneNumber": { "type": "string" },
+          "name": { "type": "string" },
+          "address": { "type": "string" },
           "status": {
             "type": "string",
             "enum": ["PENDING_APPROVAL", "ACTIVE", "REJECTED", "DEACTIVATED"]
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
         },
         "required": [
           "address",
@@ -1706,67 +1755,28 @@
       "CreateUserRequest": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "minLength": 1
-          },
-          "phoneNumber": {
-            "type": "string",
-            "maxLength": 20,
-            "minLength": 6
-          },
-          "password": {
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 8
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 150,
-            "minLength": 2
-          },
-          "address": {
-            "type": "string",
-            "maxLength": 500,
-            "minLength": 5
-          }
+          "email": { "type": "string", "format": "email", "minLength": 1 },
+          "phoneNumber": { "type": "string", "maxLength": 20, "minLength": 6 },
+          "password": { "type": "string", "maxLength": 100, "minLength": 8 },
+          "name": { "type": "string", "maxLength": 150, "minLength": 2 },
+          "address": { "type": "string", "maxLength": 500, "minLength": 5 }
         },
         "required": ["address", "email", "name", "password", "phoneNumber"]
       },
       "AccountHolderDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "userId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "accountNumber": {
-            "type": "string"
-          },
-          "currency": {
-            "type": "string"
-          },
+          "id": { "type": "integer", "format": "int64" },
+          "userId": { "type": "integer", "format": "int64" },
+          "accountNumber": { "type": "string" },
+          "currency": { "type": "string" },
           "accountStatus": {
             "type": "string",
             "enum": ["ACTIVE", "FROZEN", "CLOSED"]
           },
-          "approvedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
+          "approvedAt": { "type": "string", "format": "date-time" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
         },
         "required": [
           "accountNumber",
@@ -1782,12 +1792,8 @@
       "CreateUserResponse": {
         "type": "object",
         "properties": {
-          "user": {
-            "$ref": "#/components/schemas/AdminUserResponse"
-          },
-          "accountHolder": {
-            "$ref": "#/components/schemas/AccountHolderDto"
-          }
+          "user": { "$ref": "#/components/schemas/AdminUserResponse" },
+          "accountHolder": { "$ref": "#/components/schemas/AccountHolderDto" }
         },
         "required": ["accountHolder", "user"]
       },
@@ -1823,41 +1829,22 @@
       "BankTransactionDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "transactionReference": {
-            "type": "string"
-          },
-          "sourceAccountNumber": {
-            "type": "string"
-          },
-          "destinationAccountNumber": {
-            "type": "string"
-          },
+          "id": { "type": "integer", "format": "int64" },
+          "transactionReference": { "type": "string" },
+          "sourceAccountNumber": { "type": "string" },
+          "destinationAccountNumber": { "type": "string" },
           "type": {
             "type": "string",
             "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
           },
-          "description": {
-            "type": "string"
-          },
-          "amount": {
-            "type": "number"
-          },
+          "description": { "type": "string" },
+          "amount": { "type": "number" },
           "status": {
             "type": "string",
             "enum": ["PENDING", "COMPLETED", "CANCELLED"]
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "completedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
+          "createdAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time" }
         },
         "required": [
           "amount",
@@ -1975,22 +1962,10 @@
       "PageMetadata": {
         "type": "object",
         "properties": {
-          "size": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "number": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int64"
-          }
+          "size": { "type": "integer", "format": "int64" },
+          "number": { "type": "integer", "format": "int64" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int64" }
         },
         "required": ["number", "size", "totalElements", "totalPages"]
       },
@@ -2027,41 +2002,22 @@
       "AdminBankTransactionDetailDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "transactionReference": {
-            "type": "string"
-          },
+          "id": { "type": "integer", "format": "int64" },
+          "transactionReference": { "type": "string" },
           "type": {
             "type": "string",
             "enum": ["DEPOSIT", "WITHDRAWAL", "TRANSFER"]
           },
-          "description": {
-            "type": "string"
-          },
-          "amount": {
-            "type": "number"
-          },
+          "description": { "type": "string" },
+          "amount": { "type": "number" },
           "status": {
             "type": "string",
             "enum": ["PENDING", "COMPLETED", "CANCELLED"]
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "completedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "sourceAccountNumber": {
-            "type": "string"
-          },
-          "sourceAccountCurrency": {
-            "type": "string"
-          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time" },
+          "sourceAccountNumber": { "type": "string" },
+          "sourceAccountCurrency": { "type": "string" },
           "sourceAccountStatus": {
             "type": "string",
             "enum": ["ACTIVE", "FROZEN", "CLOSED"]
@@ -2207,16 +2163,9 @@
             "type": "string",
             "enum": ["USER", "ACCOUNT", "TRANSACTION"]
           },
-          "targetIdentifier": {
-            "type": "string"
-          },
-          "details": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
+          "targetIdentifier": { "type": "string" },
+          "details": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
         },
         "required": [
           "action",
@@ -2287,9 +2236,7 @@
         "description": "Bad Request",
         "content": {
           "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ApiError"
-            }
+            "schema": { "$ref": "#/components/schemas/ApiError" }
           }
         }
       },
@@ -2297,9 +2244,7 @@
         "description": "Unauthorized",
         "content": {
           "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ApiError"
-            }
+            "schema": { "$ref": "#/components/schemas/ApiError" }
           }
         }
       },
@@ -2307,9 +2252,7 @@
         "description": "Forbidden",
         "content": {
           "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ApiError"
-            }
+            "schema": { "$ref": "#/components/schemas/ApiError" }
           }
         }
       },
@@ -2317,9 +2260,7 @@
         "description": "Not Found",
         "content": {
           "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ApiError"
-            }
+            "schema": { "$ref": "#/components/schemas/ApiError" }
           }
         }
       },
@@ -2327,9 +2268,7 @@
         "description": "Conflict",
         "content": {
           "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ApiError"
-            }
+            "schema": { "$ref": "#/components/schemas/ApiError" }
           }
         }
       },
@@ -2337,9 +2276,7 @@
         "description": "Internal Server Error",
         "content": {
           "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ApiError"
-            }
+            "schema": { "$ref": "#/components/schemas/ApiError" }
           }
         }
       }

@@ -13,11 +13,13 @@ import {
   ArrowRight,
   RotateCcw,
   X,
+  Filter,
 } from 'lucide-react';
 import { Table, StatusBadge, SegmentedControl, Button } from '../../../components/ui';
+import { useMyTransactions } from '../transactions.queries';
 
 export const TransactionHistory = ({
-  transactions = [],
+  transactions,
   onRowClick,
   onExport,
   onSendAgain,
@@ -27,15 +29,60 @@ export const TransactionHistory = ({
 }) => {
   const navigate = useNavigate();
   const [filterType, setFilterType] = useState('ALL');
+  const [status, setStatus] = useState('ALL');
+  const [accountNumber, setAccountNumber] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(limit || 10);
 
-  // Filter transactions based on type, start/end date range, search query, and tab
+  // Construct backend query params (accountNumber, type, status, fromDate, toDate, page, size, sort)
+  const queryParams = useMemo(() => {
+    const params = {
+      page,
+      size: limit || pageSize,
+      sort: 'createdAt,desc',
+    };
+
+    if (filterType !== 'ALL') {
+      params.type = filterType;
+    }
+    if (status !== 'ALL') {
+      params.status = status;
+    }
+    if (accountNumber.trim()) {
+      params.accountNumber = accountNumber.trim();
+    }
+    if (startDate) {
+      params.fromDate = `${startDate}T00:00:00Z`;
+    }
+    if (endDate) {
+      params.toDate = `${endDate}T23:59:59Z`;
+    }
+
+    return params;
+  }, [page, pageSize, limit, filterType, status, accountNumber, startDate, endDate]);
+
+  // Fetch transactions from API if custom transactions array isn't provided
+  const { data: apiResponse, isLoading: apiLoading } = useMyTransactions(queryParams);
+
+  const rawTransactions = useMemo(() => {
+    if (transactions && Array.isArray(transactions) && transactions.length > 0) {
+      return transactions;
+    }
+    if (apiResponse?.content) {
+      return apiResponse.content;
+    }
+    return [];
+  }, [transactions, apiResponse]);
+
+  // Filter transactions locally if using passed mock array, or rely on API results
   const filteredData = useMemo(() => {
-    return transactions.filter((item) => {
+    if (!transactions || transactions.length === 0) {
+      return rawTransactions;
+    }
+
+    return rawTransactions.filter((item) => {
       // Type filter
       if (filterType === 'DEPOSIT' && item.type !== 'DEPOSIT') return false;
       if (
@@ -44,6 +91,17 @@ export const TransactionHistory = ({
         item.type !== 'TRANSFER'
       )
         return false;
+
+      // Status filter
+      if (status !== 'ALL' && item.status !== status) return false;
+
+      // Account number filter
+      if (accountNumber.trim()) {
+        const query = accountNumber.trim().toLowerCase();
+        const srcAcc = item.sourceAccountNumber?.toLowerCase() || '';
+        const destAcc = item.destinationAccountNumber?.toLowerCase() || '';
+        if (!srcAcc.includes(query) && !destAcc.includes(query)) return false;
+      }
 
       // Start Date filter
       if (startDate) {
@@ -61,17 +119,17 @@ export const TransactionHistory = ({
         if (itemDate > end) return false;
       }
 
-      // Search query
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchesRef = item.transactionReference?.toLowerCase().includes(query);
-        const matchesDesc = item.description?.toLowerCase().includes(query);
-        if (!matchesRef && !matchesDesc) return false;
-      }
-
       return true;
     });
-  }, [transactions, filterType, startDate, endDate, searchQuery]);
+  }, [
+    transactions,
+    rawTransactions,
+    filterType,
+    status,
+    accountNumber,
+    startDate,
+    endDate,
+  ]);
 
   // KPI Metrics Calculation
   const metrics = useMemo(() => {
@@ -89,27 +147,46 @@ export const TransactionHistory = ({
     return {
       inflow,
       outflow,
-      count: filteredData.length,
+      count: apiResponse?.page?.totalElements ?? filteredData.length,
       net: inflow - outflow,
     };
-  }, [filteredData]);
+  }, [filteredData, apiResponse]);
 
   // Paginated/Limited content
   const displayData = useMemo(() => {
     if (limit) {
       return filteredData.slice(0, limit);
     }
+    if (!transactions || transactions.length === 0) {
+      return filteredData; // API handles pagination
+    }
     const start = page * pageSize;
     return filteredData.slice(start, start + pageSize);
-  }, [filteredData, limit, page, pageSize]);
+  }, [filteredData, limit, transactions, page, pageSize]);
 
-  const totalPages = limit ? 1 : Math.ceil(filteredData.length / pageSize) || 1;
+  const totalPages = limit
+    ? 1
+    : (apiResponse?.page?.totalPages ?? (Math.ceil(filteredData.length / pageSize) || 1));
+
+  const totalElements = limit
+    ? displayData.length
+    : (apiResponse?.page?.totalElements ?? filteredData.length);
 
   const filterOptions = [
     { label: 'All', value: 'ALL' },
     { label: 'Credited', value: 'DEPOSIT' },
     { label: 'Debited', value: 'WITHDRAWAL' },
   ];
+
+  const handleClearFilters = () => {
+    setAccountNumber('');
+    setStatus('ALL');
+    setStartDate('');
+    setEndDate('');
+    setPage(0);
+  };
+
+  const isAnyFilterActive = accountNumber || startDate || endDate || status !== 'ALL';
 
   const handleSendAgain = (row, e) => {
     if (e) e.stopPropagation();
@@ -143,7 +220,7 @@ export const TransactionHistory = ({
     {
       header: 'Type',
       key: 'type',
-      width: '150px',
+      width: '140px',
       render: (type) => {
         if (type === 'DEPOSIT') {
           return (
@@ -167,13 +244,15 @@ export const TransactionHistory = ({
       },
     },
     {
-      header: 'Description / Reference',
+      header: 'Description / Account',
       key: 'description',
       render: (val, row) => (
         <div>
           <div className="font-medium text-neutral-800 text-sm">{val}</div>
           <div className="text-[11px] font-mono text-neutral-400">
-            {row.transactionReference}
+            {row.destinationAccountNumber ||
+              row.sourceAccountNumber ||
+              row.transactionReference}
           </div>
         </div>
       ),
@@ -206,7 +285,7 @@ export const TransactionHistory = ({
       key: 'status',
       align: 'center',
       width: '130px',
-      render: (status) => <StatusBadge status={status} />,
+      render: (st) => <StatusBadge status={st} />,
     },
     {
       header: 'Action',
@@ -280,7 +359,7 @@ export const TransactionHistory = ({
             <p className="text-xs text-neutral-500">
               {limit
                 ? 'Showing your latest account transactions'
-                : 'Filter by date range, transaction type, or search by reference'}
+                : 'Filter by account number, transaction type, status, or date range'}
             </p>
           </div>
 
@@ -314,27 +393,47 @@ export const TransactionHistory = ({
           </div>
         </div>
 
-        {/* Search Bar & Date Range Picker (Start Date & End Date) */}
+        {/* Detailed Filters Bar (Account Number, Status, From Date & To Date) */}
         {!limit && (
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-            {/* Search Input */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setPage(0);
-                }}
-                placeholder="Search by reference ID or description..."
-                className="w-full h-10 pl-10 pr-4 bg-neutral-50 border border-neutral-200 rounded-lg text-xs sm:text-sm placeholder:text-neutral-400 focus:outline-none focus:border-primary-500 focus:bg-neutral-0 transition-all"
-              />
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-neutral-50/70 p-3 rounded-xl border border-neutral-200/80">
+            <div className="flex flex-wrap items-center gap-3 flex-1">
+              {/* Account Number Input Filter */}
+              <div className="relative flex-1 min-w-[200px] max-w-xs">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+                <input
+                  type="text"
+                  value={accountNumber}
+                  onChange={(e) => {
+                    setAccountNumber(e.target.value);
+                    setPage(0);
+                  }}
+                  placeholder="Account number..."
+                  className="w-full h-9 pl-10 pr-4 bg-neutral-0 border border-neutral-200 rounded-lg text-xs placeholder:text-neutral-400 focus:outline-none focus:border-primary-500 transition-all"
+                />
+              </div>
+
+              {/* Status Select Filter */}
+              <div className="flex items-center gap-1.5">
+                <Filter className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                <select
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value);
+                    setPage(0);
+                  }}
+                  className="h-9 px-2.5 bg-neutral-0 border border-neutral-200 rounded-lg text-xs font-medium text-neutral-700 focus:outline-none focus:border-primary-500 cursor-pointer"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
+              </div>
             </div>
 
-            {/* Date Range Selection (Start Date to End Date) */}
+            {/* Date Range Selection (From Date to To Date) */}
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-600">
+              <div className="flex items-center gap-1.5 bg-neutral-0 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-600">
                 <Calendar className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                 <span className="font-medium text-neutral-500">From:</span>
                 <input
@@ -348,7 +447,7 @@ export const TransactionHistory = ({
                 />
               </div>
 
-              <div className="flex items-center gap-1.5 bg-neutral-50 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-600">
+              <div className="flex items-center gap-1.5 bg-neutral-0 border border-neutral-200 rounded-lg px-2.5 py-1.5 text-xs text-neutral-600">
                 <span className="font-medium text-neutral-500">To:</span>
                 <input
                   type="date"
@@ -361,16 +460,12 @@ export const TransactionHistory = ({
                 />
               </div>
 
-              {(startDate || endDate) && (
+              {isAnyFilterActive && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setStartDate('');
-                    setEndDate('');
-                    setPage(0);
-                  }}
-                  className="p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
-                  title="Clear Date Filter"
+                  onClick={handleClearFilters}
+                  className="p-1.5 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 rounded-lg transition-colors"
+                  title="Clear Filters"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -383,9 +478,10 @@ export const TransactionHistory = ({
         <Table
           columns={columns}
           data={displayData}
+          loading={apiLoading && (!transactions || transactions.length === 0)}
           keyField="id"
           onRowClick={onRowClick}
-          emptyMessage="No transactions matching your search or date range criteria."
+          emptyMessage="No transactions matching your specific filter criteria."
           pagination={
             limit
               ? null
@@ -393,7 +489,7 @@ export const TransactionHistory = ({
                   page,
                   totalPages,
                   pageSize,
-                  totalElements: filteredData.length,
+                  totalElements,
                   onPageChange: setPage,
                   onPageSizeChange: (sz) => {
                     setPageSize(sz);
@@ -406,13 +502,13 @@ export const TransactionHistory = ({
               <div className="flex justify-between items-start">
                 <div>
                   <span className="text-xs font-mono text-neutral-400">
-                    {row.createdAt.split('T')[0]}
+                    {row.createdAt ? row.createdAt.split('T')[0] : ''}
                   </span>
                   <h4 className="text-sm font-semibold text-neutral-800">
                     {row.description}
                   </h4>
                   <p className="text-[11px] font-mono text-neutral-500">
-                    {row.transactionReference}
+                    {row.destinationAccountNumber || row.sourceAccountNumber}
                   </p>
                 </div>
                 <StatusBadge status={row.status} />
@@ -427,7 +523,7 @@ export const TransactionHistory = ({
                       row.type === 'DEPOSIT' ? 'text-success-600' : 'text-neutral-800'
                     }`}
                   >
-                    {row.type === 'DEPOSIT' ? '+' : '-'}${row.amount.toFixed(2)}
+                    {row.type === 'DEPOSIT' ? '+' : '-'}${row.amount?.toFixed(2)}
                   </span>
                   <button
                     type="button"

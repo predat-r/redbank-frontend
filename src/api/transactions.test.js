@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 describe('transactions API', () => {
-  test('sends createTransfer with payload to /api/accounts/me/transfers', async () => {
+  test('sends createTransfer with payload to /accounts/me/transfers', async () => {
     let capturedRequest = null;
     api.defaults.adapter = async (config) => {
       capturedRequest = config;
@@ -38,13 +38,13 @@ describe('transactions API', () => {
 
     const result = await createTransfer(payload);
 
-    expect(capturedRequest.url).toContain('/api/accounts/me/transfers');
+    expect(capturedRequest.url).toContain('/accounts/me/transfers');
     expect(capturedRequest.method).toBe('post');
     expect(JSON.parse(capturedRequest.data)).toEqual(payload);
     expect(result.transactionReference).toBe('TXN-TRANSFER123');
   });
 
-  test('sends createWithdrawal with payload to /api/accounts/me/withdrawals', async () => {
+  test('sends createWithdrawal with payload to /accounts/me/withdrawals', async () => {
     let capturedRequest = null;
     api.defaults.adapter = async (config) => {
       capturedRequest = config;
@@ -68,7 +68,7 @@ describe('transactions API', () => {
 
     const result = await createWithdrawal(payload);
 
-    expect(capturedRequest.url).toContain('/api/accounts/me/withdrawals');
+    expect(capturedRequest.url).toContain('/accounts/me/withdrawals');
     expect(capturedRequest.method).toBe('post');
     expect(JSON.parse(capturedRequest.data)).toEqual(payload);
     expect(result.transactionReference).toBe('TXN-WITHDRAW456');
@@ -86,7 +86,7 @@ describe('transactions API', () => {
 
     await getMyTransactions({ page: 1, size: 5 });
 
-    expect(capturedRequest.url).toContain('/api/accounts/me/transactions');
+    expect(capturedRequest.url).toContain('/accounts/me/transactions');
     expect(capturedRequest.params).toEqual({ page: 1, size: 5 });
   });
 });
