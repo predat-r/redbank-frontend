@@ -1,7 +1,6 @@
-import { Download } from 'lucide-react';
-import { Button, StatusBadge, Skeleton } from '../../../components/ui';
+import { StatusBadge, Skeleton } from '../../../components/ui';
 
-export const WelcomeHeader = ({ user, account, onExportClick, isLoading = false }) => {
+export const WelcomeHeader = ({ user, account, isLoading = false }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 border-b border-neutral-200/80">
       <div>
