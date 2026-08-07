@@ -14,7 +14,7 @@ export const TransactionVerifyStep = ({
   onConfirm,
 }) => {
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="p-4 sm:p-6 space-y-6">
       <div className="pb-3 border-b border-neutral-200">
         <h2 className="text-base font-semibold text-neutral-800 flex items-center gap-2">
           <ShieldAlert className="w-5 h-5 text-warning-600" />
@@ -33,7 +33,7 @@ export const TransactionVerifyStep = ({
       )}
 
       <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 space-y-3">
-        <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm py-1 border-b border-neutral-200/60">
           <span className="text-neutral-500 font-medium">Transaction Type</span>
           <span className="font-semibold text-neutral-800">
             {mode === 'transfer' ? 'Fund Transfer' : 'Cash Withdrawal'}
@@ -41,14 +41,14 @@ export const TransactionVerifyStep = ({
         </div>
 
         {mode === 'transfer' ? (
-          <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm py-1 border-b border-neutral-200/60">
             <span className="text-neutral-500 font-medium">Destination Account</span>
-            <span className="font-semibold text-neutral-800 font-mono">
+            <span className="font-semibold text-neutral-800 font-mono break-all sm:break-normal">
               {destinationAccountNumber}
             </span>
           </div>
         ) : (
-          <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm py-1 border-b border-neutral-200/60">
             <span className="text-neutral-500 font-medium">Method</span>
             <span className="font-semibold text-neutral-800">
               {withdrawalMethod.replace('_', ' ')}
@@ -56,26 +56,36 @@ export const TransactionVerifyStep = ({
           </div>
         )}
 
-        <div className="flex justify-between items-center text-sm py-1 border-b border-neutral-200/60">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm py-1 border-b border-neutral-200/60">
           <span className="text-neutral-500 font-medium">Amount</span>
-          <span className="font-bold text-primary-600 text-lg tabular-nums">
+          <span className="font-bold text-primary-600 text-base sm:text-lg tabular-nums">
             ${parseFloat(amount || '0').toLocaleString()}
           </span>
         </div>
 
         {description && (
-          <div className="flex justify-between items-center text-sm py-1">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm py-1">
             <span className="text-neutral-500 font-medium">Description</span>
-            <span className="text-neutral-700 italic">{description}</span>
+            <span className="text-neutral-700 italic break-words">{description}</span>
           </div>
         )}
       </div>
 
-      <div className="pt-2 flex items-center justify-between gap-3">
-        <Button variant="outline" onClick={onBack} disabled={loading}>
+      <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <Button
+          variant="outline"
+          onClick={onBack}
+          disabled={loading}
+          className="w-full sm:w-auto text-xs justify-center"
+        >
           Back to Edit
         </Button>
-        <Button variant="primary" loading={loading} onClick={onConfirm}>
+        <Button
+          variant="primary"
+          loading={loading}
+          onClick={onConfirm}
+          className="w-full sm:w-auto text-xs justify-center"
+        >
           Confirm & Submit
         </Button>
       </div>

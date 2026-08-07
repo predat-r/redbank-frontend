@@ -21,7 +21,7 @@ export const TransactionInitiateStep = ({
   const navigate = useNavigate();
 
   return (
-    <Card className="p-6">
+    <Card className="p-4 sm:p-6">
       <form noValidate onSubmit={onSubmit} className="space-y-5">
         <h2 className="text-base font-semibold text-neutral-800 pb-3 border-b border-neutral-200 flex items-center gap-2">
           {mode === 'transfer' ? (
@@ -76,8 +76,12 @@ export const TransactionInitiateStep = ({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <div className="pt-4 flex items-center justify-end gap-3 border-t border-neutral-200">
-          <Button variant="outline" onClick={() => navigate('/dashboard')}>
+        <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-end gap-3 border-t border-neutral-200">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/dashboard')}
+            className="w-full sm:w-auto text-xs justify-center"
+          >
             Cancel
           </Button>
           <Button
@@ -85,6 +89,7 @@ export const TransactionInitiateStep = ({
             variant="primary"
             icon={ArrowRight}
             iconPosition="trailing"
+            className="w-full sm:w-auto text-xs justify-center"
           >
             Continue to Verify
           </Button>
