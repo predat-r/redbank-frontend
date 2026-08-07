@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
@@ -21,6 +22,8 @@ const initialValues = {
 export function RegisterPage() {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [registration, setRegistration] = useState(null);
   const registerMutation = useRegister();
   const { establishSession } = useAuth();
@@ -137,8 +140,22 @@ export function RegisterPage() {
             label="Password"
             name="password"
             onChange={updateField}
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={values.password}
+            action={
+              <button
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="rounded p-1 text-neutral-500 hover:text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                onClick={() => setShowPassword((visible) => !visible)}
+                type="button"
+              >
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
+              </button>
+            }
           />
           <Input
             autoComplete="new-password"
@@ -146,8 +163,24 @@ export function RegisterPage() {
             label="Confirm password"
             name="confirmPassword"
             onChange={updateField}
-            type="password"
+            type={showConfirmPassword ? 'text' : 'password'}
             value={values.confirmPassword}
+            action={
+              <button
+                aria-label={
+                  showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'
+                }
+                className="rounded p-1 text-neutral-500 hover:text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                onClick={() => setShowConfirmPassword((visible) => !visible)}
+                type="button"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
+              </button>
+            }
           />
         </div>
 

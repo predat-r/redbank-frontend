@@ -8,6 +8,7 @@ export const Input = React.forwardRef(
       helperText,
       prefix,
       suffix,
+      action,
       currency,
       tabular = false,
       alignRight = false,
@@ -79,6 +80,7 @@ export const Input = React.forwardRef(
               {suffix}
             </span>
           )}
+          {action && <span className="absolute right-2 flex items-center">{action}</span>}
         </div>
 
         {(error || helperText) && (
