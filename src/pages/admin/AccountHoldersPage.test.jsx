@@ -9,6 +9,7 @@ import {
   useCreateAdminUser,
   useDeactivateAdminAccount,
   useFreezeAdminAccount,
+  useUnfreezeAdminAccount,
   useUpdateAdminUser,
 } from '../../features/admin/admin.queries.js';
 import { renderWithProviders } from '../../test/render.jsx';
@@ -21,6 +22,7 @@ vi.mock('../../features/admin/admin.queries.js', () => ({
   useCreateAdminUser: vi.fn(),
   useDeactivateAdminAccount: vi.fn(),
   useFreezeAdminAccount: vi.fn(),
+  useUnfreezeAdminAccount: vi.fn(),
   useUpdateAdminUser: vi.fn(),
 }));
 
@@ -61,6 +63,7 @@ describe('AccountHoldersPage', () => {
     vi.clearAllMocks();
     freeze = mutationResult();
     deactivate = mutationResult();
+    useUnfreezeAdminAccount.mockReturnValue(mutationResult());
     useAdminAccounts.mockReturnValue({
       data: {
         content: [account],

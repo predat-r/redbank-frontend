@@ -5,6 +5,7 @@ import {
   deactivateAdminAccount,
   deactivateAdminUser,
   freezeAdminAccount,
+  unfreezeAdminAccount,
   getAdminAccount,
   getAdminAccounts,
   getAdminTransactions,
@@ -231,6 +232,13 @@ export function useReactivateAdminUser() {
 
 export function useFreezeAdminAccount() {
   return useAdminMutation(freezeAdminAccount, (accountId) => [
+    adminKeys.accounts,
+    adminKeys.account(accountId),
+  ]);
+}
+
+export function useUnfreezeAdminAccount() {
+  return useAdminMutation(unfreezeAdminAccount, (accountId) => [
     adminKeys.accounts,
     adminKeys.account(accountId),
   ]);
