@@ -9,15 +9,14 @@ import {
   ChevronRight,
   Lock,
 } from 'lucide-react';
-import { HeroCard, Card, Button, Skeleton } from '../../../components/ui';
+import { HeroCard, Card, Skeleton } from '../../../components/ui';
 
 export const BalanceHeroSection = ({
-  balance = 42850.75,
+  balance = 0,
   currency = 'USD',
-  accountNumber = 'RB-8492048192',
+  accountNumber = '',
   accountStatus = 'ACTIVE',
   isLoading = false,
-  onViewDetails,
   onTransferClick,
   onWithdrawClick,
 }) => {
@@ -103,15 +102,6 @@ export const BalanceHeroSection = ({
               </>
             )}
           </div>
-
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onViewDetails}
-            className="w-full sm:w-auto text-xs justify-center"
-          >
-            View Details
-          </Button>
         </div>
       </HeroCard>
 

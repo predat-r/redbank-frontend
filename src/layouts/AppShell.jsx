@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '../components/navigation/Sidebar';
 import { Topbar } from '../components/navigation/Topbar';
+import { SignOutConfirmModal } from '../components/ui/SignOutConfirmModal';
 import { useAuth } from '../features/auth/useAuth';
 import { useMyAccount } from '../features/account/account.queries';
 import { useToast } from '../hooks/useToast';
@@ -20,6 +21,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
   const { addToast } = useToast();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const { data: realAccount } = useMyAccount();
 
   let auth = null;
@@ -94,7 +96,11 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
     { label: 'Profile', href: '/profile', icon: User },
   ];
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowSignOutModal(true);
+  };
+
+  const handleConfirmLogout = () => {
     if (auth?.endSession) {
       auth.endSession();
     }
@@ -111,7 +117,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
         isOpen={mobileDrawerOpen}
         onClose={() => setMobileDrawerOpen(false)}
         isCollapsed={sidebarCollapsed}
-        onSwitchAccount={() => handleNavigation('/dashboard')}
+        onLogout={handleLogoutClick}
       />
 
       {/* Main Content Viewport */}
@@ -142,7 +148,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
           onMenuToggle={() => setMobileDrawerOpen((prev) => !prev)}
           onNotificationClick={() => {}}
           onSettingsClick={() => handleNavigation('/profile')}
-          onLogout={handleLogout}
+          onLogout={handleLogoutClick}
         />
 
         {/* Page Container */}
@@ -150,6 +156,13 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
           {children}
         </main>
       </div>
+
+      {/* Sign Out Confirmation Dialog */}
+      <SignOutConfirmModal
+        isOpen={showSignOutModal}
+        onClose={() => setShowSignOutModal(false)}
+        onConfirm={handleConfirmLogout}
+      />
     </div>
   );
 };

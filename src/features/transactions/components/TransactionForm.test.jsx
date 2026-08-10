@@ -31,6 +31,15 @@ vi.mock('../transactions.queries.js', () => ({
   }),
 }));
 
+vi.mock('../../account/account.queries.js', () => ({
+  useMyAccount: () => ({
+    data: { id: 1, accountNumber: 'ACC-12345', currency: 'USD' },
+  }),
+  useLatestBalance: () => ({
+    data: { runningBalance: 50000.0 },
+  }),
+}));
+
 function renderComponent(props = {}) {
   return renderWithProviders(
     <MemoryRouter>
@@ -150,7 +159,7 @@ describe('TransactionForm', () => {
     renderComponent();
 
     expect(screen.getAllByText(/Current Balance:/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText('$42,850.75').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('$50,000.00').length).toBeGreaterThan(0);
   });
 
   test('prevents proceeding to verify stage when amount exceeds current balance', async () => {
@@ -158,12 +167,12 @@ describe('TransactionForm', () => {
     renderComponent();
 
     await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
-    await user.type(screen.getByLabelText(/amount/i), '50000.00');
+    await user.type(screen.getByLabelText(/amount/i), '60000.00');
 
     await user.click(screen.getByRole('button', { name: /continue to verify/i }));
 
     expect(
-      screen.getByText(/Amount exceeds your current available balance of \$42,850\.75/i)
+      screen.getByText(/Amount exceeds your current available balance of \$50,000\.00/i)
     ).toBeInTheDocument();
 
     expect(screen.queryByText('Verify Transaction Details')).not.toBeInTheDocument();

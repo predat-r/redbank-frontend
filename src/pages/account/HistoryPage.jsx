@@ -27,7 +27,7 @@ export const HistoryPage = () => {
   const handleSendAgain = (transaction) => {
     navigate('/transfer', {
       state: {
-        destinationAccountNumber: transaction.destinationAccountNumber || 'RB1000000001',
+        destinationAccountNumber: transaction.destinationAccountNumber || '',
         amount: transaction.amount,
       },
     });

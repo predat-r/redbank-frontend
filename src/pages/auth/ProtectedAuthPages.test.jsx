@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
@@ -16,6 +16,7 @@ vi.mock('../../api/auth.js', () => ({
   login: vi.fn(),
   logout: vi.fn(),
   registerAccount: vi.fn(),
+  updateMyProfile: vi.fn(),
 }));
 
 vi.mock('../../api/accounts.js', () => ({
@@ -86,7 +87,11 @@ describe('RegistrationStatusPage', () => {
     const { queryClient } = renderStatusPage();
     queryClient.setQueryData(['private', 'data'], { secret: true });
 
-    await user.click(await screen.findByRole('button', { name: 'Sign Out' }));
+    const signOutBtn = await screen.findByRole('button', { name: 'Sign Out' });
+    await user.click(signOutBtn);
+    const dialog = screen.getByRole('dialog');
+    const confirmButton = within(dialog).getByRole('button', { name: 'Sign Out' });
+    await user.click(confirmButton);
 
     expect(await screen.findByText('Login destination')).toBeInTheDocument();
     expect(getSession()).toBeNull();

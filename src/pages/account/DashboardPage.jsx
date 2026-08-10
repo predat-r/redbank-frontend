@@ -5,11 +5,9 @@ import { WelcomeHeader } from '../../features/dashboard/components/WelcomeHeader
 import { BalanceHeroSection } from '../../features/dashboard/components/BalanceHeroSection';
 import { TransactionHistory } from '../../features/transactions/components/TransactionHistory';
 import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
-import { useToast } from '../../hooks/useToast';
 import { useMyAccount, useLatestBalance } from '../../features/account/account.queries';
 
 export const DashboardPage = ({ onNavigate }) => {
-  const { addToast } = useToast();
   const navigate = useNavigate();
   const handleNavigate = onNavigate || navigate;
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -19,12 +17,13 @@ export const DashboardPage = ({ onNavigate }) => {
   const { data: realAccount, isLoading: isLoadingAccount } = useMyAccount();
   const { data: realBalance, isLoading: isLoadingBalance } = useLatestBalance();
 
-  const account = realAccount;
+  const account = realAccount || {};
   const runningBalance = realBalance?.runningBalance;
 
   const userProfile = {
-    name: realAccount?.user?.name || 'Ahmad Tariq',
-    email: realAccount?.user?.email || 'test@gmail.com',
+    name: account.user?.name,
+    email: account.user?.email,
+    role: account.user?.role,
   };
 
   const handleRowClick = (transaction) => {
@@ -53,20 +52,13 @@ export const DashboardPage = ({ onNavigate }) => {
         {/* Balance Hero Tile & Stat Cards */}
         <BalanceHeroSection
           balance={runningBalance}
-          currency={account?.currency || 'USD'}
-          accountNumber={account?.accountNumber || 'RB-8492048192'}
-          accountStatus={account?.accountStatus || 'ACTIVE'}
-          approvedAt={account?.approvedAt}
+          currency={account.currency || 'USD'}
+          accountNumber={account.accountNumber || ''}
+          accountStatus={account.accountStatus || 'ACTIVE'}
+          approvedAt={account.approvedAt}
           isLoading={isLoadingAccount || isLoadingBalance}
           onTransferClick={handleTransferClick}
           onWithdrawClick={handleWithdrawClick}
-          onViewDetails={() =>
-            addToast({
-              type: 'info',
-              title: 'Account Summary',
-              message: `Viewing details for ${account?.accountNumber || 'Account'}`,
-            })
-          }
         />
 
         {/* Recent Activity Table with View All Button */}

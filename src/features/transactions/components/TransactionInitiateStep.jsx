@@ -17,7 +17,7 @@ export const TransactionInitiateStep = ({
   setWithdrawalMethod,
   errors,
   onSubmit,
-  currentBalance = 42850.75,
+  currentBalance = 0,
   currency = 'USD',
 }) => {
   const navigate = useNavigate();
