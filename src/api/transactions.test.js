@@ -10,7 +10,13 @@ function mockResponse(config, data, status = 200) {
 }
 
 beforeEach(() => {
-  refreshClient.defaults.adapter = async (config) => mockResponse(config, {});
+  refreshClient.defaults.adapter = async (config) => ({
+    config,
+    data: null,
+    headers: {},
+    status: 204,
+    statusText: 'No Content',
+  });
 });
 
 afterEach(() => {
