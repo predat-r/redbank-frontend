@@ -7,11 +7,6 @@ import { TransactionHistory } from '../../features/transactions/components/Trans
 import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
 import { useToast } from '../../hooks/useToast';
 import { useMyAccount, useLatestBalance } from '../../features/account/account.queries';
-import {
-  mockAccountHolder,
-  mockLatestBalance,
-  mockUserProfile,
-} from '../../features/dashboard/mockData';
 
 export const DashboardPage = ({ onNavigate }) => {
   const { addToast } = useToast();
@@ -24,13 +19,12 @@ export const DashboardPage = ({ onNavigate }) => {
   const { data: realAccount, isLoading: isLoadingAccount } = useMyAccount();
   const { data: realBalance, isLoading: isLoadingBalance } = useLatestBalance();
 
-  const account = realAccount || mockAccountHolder;
-  const runningBalance = realBalance?.runningBalance ?? mockLatestBalance.runningBalance;
+  const account = realAccount;
+  const runningBalance = realBalance?.runningBalance;
 
   const userProfile = {
-    name: realAccount?.user?.name || mockUserProfile.name || 'Ahmad Tariq',
-    email: realAccount?.user?.email || mockUserProfile.email || 'test@gmail.com',
-    role: mockUserProfile.role,
+    name: realAccount?.user?.name || 'Ahmad Tariq',
+    email: realAccount?.user?.email || 'test@gmail.com',
   };
 
   const handleRowClick = (transaction) => {
@@ -59,10 +53,10 @@ export const DashboardPage = ({ onNavigate }) => {
         {/* Balance Hero Tile & Stat Cards */}
         <BalanceHeroSection
           balance={runningBalance}
-          currency={account.currency || 'USD'}
-          accountNumber={account.accountNumber || 'RB-8492048192'}
-          accountStatus={account.accountStatus || 'ACTIVE'}
-          approvedAt={account.approvedAt}
+          currency={account?.currency || 'USD'}
+          accountNumber={account?.accountNumber || 'RB-8492048192'}
+          accountStatus={account?.accountStatus || 'ACTIVE'}
+          approvedAt={account?.approvedAt}
           isLoading={isLoadingAccount || isLoadingBalance}
           onTransferClick={handleTransferClick}
           onWithdrawClick={handleWithdrawClick}
@@ -70,7 +64,7 @@ export const DashboardPage = ({ onNavigate }) => {
             addToast({
               type: 'info',
               title: 'Account Summary',
-              message: `Viewing details for ${account.accountNumber}`,
+              message: `Viewing details for ${account?.accountNumber || 'Account'}`,
             })
           }
         />
