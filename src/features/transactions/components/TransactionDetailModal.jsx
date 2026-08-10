@@ -16,6 +16,7 @@ import {
   FileText,
   User,
   Clock,
+  Tag,
   Loader2,
 } from 'lucide-react';
 
@@ -274,6 +275,19 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
               </span>
               <span className="font-semibold text-neutral-700 font-mono text-xs">
                 {formatDate(item.completedAt)}
+              </span>
+            </div>
+          )}
+
+          {/* Category Row */}
+          {item?.category && (
+            <div className="flex items-center justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
+              <span className="text-neutral-500 font-medium flex items-center gap-2">
+                <Tag className="w-4 h-4 text-neutral-400" />
+                <span>Category</span>
+              </span>
+              <span className="font-semibold text-neutral-800 bg-neutral-100 px-2.5 py-0.5 rounded text-xs">
+                {item.category}
               </span>
             </div>
           )}
