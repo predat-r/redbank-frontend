@@ -1,4 +1,4 @@
-import { X, RefreshCw } from 'lucide-react';
+import { X, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { NavItem } from './NavItem';
 import { Button } from '../ui/Button';
@@ -11,7 +11,7 @@ export const Sidebar = ({
   onClose,
   isCollapsed = false,
   collapseOnTablet = false,
-  onSwitchAccount,
+  onLogout,
 }) => {
   return (
     <>
@@ -73,27 +73,27 @@ export const Sidebar = ({
           </nav>
         </div>
 
-        {/* Footer / Account Switcher */}
-        {onSwitchAccount && (
+        {/* Footer / Red Sign Out Button */}
+        {onLogout && (
           <div className="p-3 border-t border-neutral-200 bg-neutral-50/50">
             {!isCollapsed ? (
               <Button
-                variant="outline"
+                variant="danger"
                 size="sm"
                 fullWidth
-                icon={RefreshCw}
-                onClick={onSwitchAccount}
+                icon={LogOut}
+                onClick={onLogout}
                 className="text-xs justify-center"
               >
-                Switch Account
+                Sign Out
               </Button>
             ) : (
               <button
-                onClick={onSwitchAccount}
-                title="Switch Account"
-                className="w-full h-9 flex items-center justify-center rounded-lg border border-neutral-300 text-slate-600 hover:bg-neutral-100"
+                onClick={onLogout}
+                title="Sign Out"
+                className="w-full h-9 flex items-center justify-center rounded-lg border border-red-200 text-error-600 bg-error-50 hover:bg-error-100 transition-colors"
               >
-                <RefreshCw className="w-4 h-4" />
+                <LogOut className="w-4 h-4 text-error-600" />
               </button>
             )}
           </div>

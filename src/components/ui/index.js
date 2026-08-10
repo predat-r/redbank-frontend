@@ -13,3 +13,4 @@ export { EmptyState } from './EmptyState';
 export { Skeleton, SkeletonCard } from './Skeleton';
 export { Spinner } from './Spinner';
 export { ErrorBoundary } from '../ErrorBoundary';
+export { SignOutConfirmModal } from './SignOutConfirmModal';

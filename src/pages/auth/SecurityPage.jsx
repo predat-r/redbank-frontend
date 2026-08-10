@@ -1,10 +1,11 @@
-import { ArrowLeft, KeyRound, LockKeyhole, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, KeyRound, LockKeyhole, ShieldCheck, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 import { Input } from '../../components/ui/Input.jsx';
+import { SignOutConfirmModal } from '../../components/ui/SignOutConfirmModal.jsx';
 import { useToast } from '../../hooks/useToast.js';
 import { useChangePassword, useLogout } from '../../features/auth/auth.queries.js';
 import { validatePasswordChange } from '../../features/auth/validation.js';
@@ -15,6 +16,7 @@ const initialValues = { currentPassword: '', newPassword: '', confirmPassword: '
 export function SecurityPage() {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const changePasswordMutation = useChangePassword();
   const logoutMutation = useLogout();
   const { addToast } = useToast();
@@ -51,9 +53,15 @@ export function SecurityPage() {
     }
   }
 
-  function handleLogout() {
+  function handleLogoutClick() {
+    setShowSignOutModal(true);
+  }
+
+  function handleConfirmLogout() {
     logoutMutation.mutate(undefined, {
-      onSettled: () => navigate('/login', { replace: true }),
+      onSettled: () => {
+        navigate('/login', { replace: true });
+      },
     });
   }
 
@@ -84,8 +92,9 @@ export function SecurityPage() {
             </Button>
             <Button
               loading={logoutMutation.isPending}
-              onClick={handleLogout}
-              variant="ghost"
+              onClick={handleLogoutClick}
+              variant="danger"
+              icon={LogOut}
             >
               Sign Out
             </Button>
@@ -176,6 +185,13 @@ export function SecurityPage() {
           </Card>
         </div>
       </div>
+
+      <SignOutConfirmModal
+        isOpen={showSignOutModal}
+        onClose={() => setShowSignOutModal(false)}
+        onConfirm={handleConfirmLogout}
+        loading={logoutMutation.isPending}
+      />
     </main>
   );
 }

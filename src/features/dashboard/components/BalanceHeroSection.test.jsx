@@ -38,18 +38,14 @@ describe('BalanceHeroSection', () => {
     expect(screen.getByText('••••••••••••')).toBeInTheDocument();
   });
 
-  test('updates balance formatting when currency selector is changed', async () => {
-    const user = userEvent.setup();
+  test('formats balance according to passed currency prop', () => {
     render(
       <BalanceHeroSection
         balance={42850.75}
-        currency="USD"
+        currency="EUR"
         accountNumber="RBA4EFD3DFC8"
       />
     );
-
-    const currencySelect = screen.getByRole('combobox');
-    await user.selectOptions(currencySelect, 'EUR');
 
     expect(screen.getByText('€42,850.75')).toBeInTheDocument();
   });

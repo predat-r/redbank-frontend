@@ -25,6 +25,7 @@ import { Input } from '../../components/ui/Input.jsx';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
+import { SignOutConfirmModal } from '../../components/ui/SignOutConfirmModal.jsx';
 import { useToast } from '../../hooks/useToast.js';
 import {
   useChangePassword,
@@ -233,9 +234,17 @@ export function ProfilePage() {
     }
   }
 
-  function handleLogout() {
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+
+  function handleLogoutClick() {
+    setShowSignOutModal(true);
+  }
+
+  function handleConfirmLogout() {
     logoutMutation.mutate(undefined, {
-      onSettled: () => navigate('/login', { replace: true }),
+      onSettled: () => {
+        navigate('/login', { replace: true });
+      },
     });
   }
 
@@ -259,10 +268,10 @@ export function ProfilePage() {
             </p>
           </div>
           <Button
-            variant="outline"
+            variant="danger"
             icon={LogOut}
             loading={logoutMutation.isPending}
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
           >
             Sign Out
           </Button>
@@ -676,6 +685,13 @@ export function ProfilePage() {
             </div>
           </div>
         </Modal>
+
+        <SignOutConfirmModal
+          isOpen={showSignOutModal}
+          onClose={() => setShowSignOutModal(false)}
+          onConfirm={handleConfirmLogout}
+          loading={logoutMutation.isPending}
+        />
       </div>
     </Shell>
   );

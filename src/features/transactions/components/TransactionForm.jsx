@@ -7,7 +7,6 @@ import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { useToast } from '../../../hooks/useToast';
 import { useCreateTransfer, useCreateWithdrawal } from '../transactions.queries';
 import { useMyAccount, useLatestBalance } from '../../account/account.queries';
-import { mockAccountHolder, mockLatestBalance } from '../../dashboard/mockData';
 import { TransactionInitiateStep } from './TransactionInitiateStep';
 import { TransactionVerifyStep } from './TransactionVerifyStep';
 import { TransactionReceiptStep } from './TransactionReceiptStep';
@@ -23,8 +22,8 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const { data: realAccount } = useMyAccount();
   const { data: realBalance } = useLatestBalance();
 
-  const currentBalance = realBalance?.runningBalance ?? mockLatestBalance.runningBalance;
-  const currency = realAccount?.currency || mockAccountHolder.currency || 'USD';
+  const currentBalance = realBalance?.runningBalance ?? 0;
+  const currency = realAccount?.currency || 'USD';
 
   const [mode, setMode] = useState(initialMode);
   const [currentStep, setCurrentStep] = useState(0);

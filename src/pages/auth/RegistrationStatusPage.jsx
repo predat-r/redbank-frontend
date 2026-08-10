@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock3, RefreshCw, ShieldX, XCircle } from 'lucide-react';
+import { CheckCircle2, Clock3, RefreshCw, ShieldX, XCircle, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Alert } from '../../components/ui/Alert.jsx';
@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
 import { LoadingState } from '../../components/ui/LoadingState.jsx';
 import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
+import { SignOutConfirmModal } from '../../components/ui/SignOutConfirmModal.jsx';
 import { useLogout, useRegistrationStatus } from '../../features/auth/auth.queries.js';
 import { restoreSession } from '../../api/axios.js';
 
@@ -44,6 +45,7 @@ export function RegistrationStatusPage() {
   const logoutMutation = useLogout();
   const navigate = useNavigate();
   const [isContinuing, setIsContinuing] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   async function continueToDashboard() {
     setIsContinuing(true);
@@ -56,9 +58,15 @@ export function RegistrationStatusPage() {
     }
   }
 
-  function handleLogout() {
+  function handleLogoutClick() {
+    setShowSignOutModal(true);
+  }
+
+  function handleConfirmLogout() {
     logoutMutation.mutate(undefined, {
-      onSettled: () => navigate('/login', { replace: true }),
+      onSettled: () => {
+        navigate('/login', { replace: true });
+      },
     });
   }
 
@@ -88,13 +96,21 @@ export function RegistrationStatusPage() {
             </Button>
             <Button
               loading={logoutMutation.isPending}
-              onClick={handleLogout}
-              variant="outline"
+              onClick={handleLogoutClick}
+              variant="danger"
+              icon={LogOut}
             >
               Sign Out
             </Button>
           </div>
         </Card>
+
+        <SignOutConfirmModal
+          isOpen={showSignOutModal}
+          onClose={() => setShowSignOutModal(false)}
+          onConfirm={handleConfirmLogout}
+          loading={logoutMutation.isPending}
+        />
       </main>
     );
   }
@@ -144,13 +160,21 @@ export function RegistrationStatusPage() {
           )}
           <Button
             loading={logoutMutation.isPending}
-            onClick={handleLogout}
-            variant="ghost"
+            onClick={handleLogoutClick}
+            variant="danger"
+            icon={LogOut}
           >
             Sign Out
           </Button>
         </div>
       </Card>
+
+      <SignOutConfirmModal
+        isOpen={showSignOutModal}
+        onClose={() => setShowSignOutModal(false)}
+        onConfirm={handleConfirmLogout}
+        loading={logoutMutation.isPending}
+      />
     </main>
   );
 }
