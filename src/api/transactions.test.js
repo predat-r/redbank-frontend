@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, test } from 'vitest';
-import api from './axios.js';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import api, { refreshClient } from './axios.js';
 import { createTransfer, createWithdrawal, getMyTransactions } from './transactions.js';
 
 const originalAdapter = api.defaults.adapter;
+const originalRefreshAdapter = refreshClient.defaults.adapter;
 
 function mockResponse(config, data, status = 200) {
   return { config, data, headers: {}, status, statusText: 'OK' };
@@ -10,6 +11,17 @@ function mockResponse(config, data, status = 200) {
 
 afterEach(() => {
   api.defaults.adapter = originalAdapter;
+  refreshClient.defaults.adapter = originalRefreshAdapter;
+});
+
+beforeEach(() => {
+  refreshClient.defaults.adapter = async (config) => ({
+    config,
+    data: null,
+    headers: {},
+    status: 204,
+    statusText: 'No Content',
+  });
 });
 
 describe('transactions API', () => {
