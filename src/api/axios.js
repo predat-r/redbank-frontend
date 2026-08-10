@@ -27,6 +27,14 @@ let csrfToken = null;
 let csrfTokenPromise = null;
 let csrfTokenLoaded = false;
 
+function readCookie(name) {
+  const cookie = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(`${name}=`));
+
+  return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : null;
+}
+
 function isStateChangingRequest(config) {
   return ['post', 'put', 'patch', 'delete'].includes(
     (config.method || 'get').toLowerCase()
@@ -43,9 +51,9 @@ async function getCsrfToken() {
   if (csrfTokenLoaded) return csrfToken;
   if (!csrfTokenPromise) {
     csrfTokenPromise = refreshClient
-      .get('/auth/csrf')
-      .then((response) => {
-        csrfToken = response.data?.token || null;
+      .get('/auth/csrf', { withCredentials: true })
+      .then(() => {
+        csrfToken = readCookie('XSRF-TOKEN');
         csrfTokenLoaded = true;
         return csrfToken;
       })

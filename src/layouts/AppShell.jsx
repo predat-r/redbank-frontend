@@ -4,6 +4,7 @@ import { Sidebar } from '../components/navigation/Sidebar';
 import { Topbar } from '../components/navigation/Topbar';
 import { SignOutConfirmModal } from '../components/ui/SignOutConfirmModal';
 import { useAuth } from '../features/auth/useAuth';
+import { useLogout } from '../features/auth/auth.queries';
 import { useMyAccount } from '../features/account/account.queries';
 import { useToast } from '../hooks/useToast';
 import {
@@ -22,15 +23,10 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [sidebarCollapsed] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const logoutMutation = useLogout();
   const { data: realAccount } = useMyAccount();
 
-  let auth = null;
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    auth = useAuth();
-  } catch {
-    auth = null;
-  }
+  const auth = useAuth();
 
   const currentUser = {
     name:
@@ -101,10 +97,9 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
   };
 
   const handleConfirmLogout = () => {
-    if (auth?.endSession) {
-      auth.endSession();
-    }
-    navigate('/login');
+    logoutMutation.mutate(undefined, {
+      onSettled: () => navigate('/login', { replace: true }),
+    });
   };
 
   return (
@@ -162,6 +157,7 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
         isOpen={showSignOutModal}
         onClose={() => setShowSignOutModal(false)}
         onConfirm={handleConfirmLogout}
+        loading={logoutMutation.isPending}
       />
     </div>
   );

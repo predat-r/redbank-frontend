@@ -14,7 +14,6 @@ const initialValues = { email: '', password: '' };
 export function LoginPage() {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
-  const [showRecoveryNote, setShowRecoveryNote] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const loginMutation = useLogin();
   const { establishSession } = useAuth();
@@ -71,14 +70,6 @@ export function LoginPage() {
           <Alert tone="error">{loginMutation.error.message}</Alert>
         </div>
       )}
-      {showRecoveryNote && (
-        <div className="mb-5">
-          <Alert tone="info">
-            Password recovery is not available yet. Please contact your administrator for
-            help.
-          </Alert>
-        </div>
-      )}
 
       <form noValidate onSubmit={handleSubmit}>
         <div className="space-y-4">
@@ -115,16 +106,6 @@ export function LoginPage() {
               </button>
             }
           />
-        </div>
-
-        <div className="mt-3 text-right">
-          <button
-            className="min-h-11 text-sm font-semibold text-[#89221C] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D97771]"
-            onClick={() => setShowRecoveryNote(true)}
-            type="button"
-          >
-            Forgot password?
-          </button>
         </div>
 
         <Button
