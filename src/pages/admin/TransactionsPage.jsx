@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button.jsx';
 import { EmptyState } from '../../components/ui/EmptyState.jsx';
 import { Input } from '../../components/ui/Input.jsx';
+import { DateTimePicker } from '../../components/ui/DateTimePicker.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
 import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
 import { Table } from '../../components/ui/Table.jsx';
@@ -89,13 +90,17 @@ export function TransactionsPage() {
     const form = new FormData(event.currentTarget);
     setUrlParams((current) => {
       const next = new URLSearchParams(current);
-      ['reference', 'accountNumber', 'type', 'status', 'fromDate', 'toDate'].forEach(
-        (key) => {
-          const value = form.get(key);
-          if (value) next.set(key, value);
-          else next.delete(key);
-        }
-      );
+      ['reference', 'accountNumber', 'type', 'status'].forEach((key) => {
+        const value = form.get(key);
+        if (value) next.set(key, value);
+        else next.delete(key);
+      });
+      ['fromDate', 'toDate'].forEach((key) => {
+        const date = form.get(`${key}Date`);
+        const time = form.get(`${key}Time`);
+        if (date) next.set(key, `${date}T${time || '00:00'}`);
+        else next.delete(key);
+      });
       next.set('page', '0');
       return next;
     });
@@ -174,18 +179,12 @@ export function TransactionsPage() {
               <option value="CANCELLED">Cancelled</option>
             </select>
           </label>
-          <Input
-            label="From date"
+          <DateTimePicker
+            label="From date and time"
             name="fromDate"
-            type="datetime-local"
-            defaultValue={filters.fromDate}
+            value={filters.fromDate}
           />
-          <Input
-            label="To date"
-            name="toDate"
-            type="datetime-local"
-            defaultValue={filters.toDate}
-          />
+          <DateTimePicker label="To date and time" name="toDate" value={filters.toDate} />
         </div>
         <div className="mt-4 flex gap-2">
           <Button icon={Search} type="submit">
