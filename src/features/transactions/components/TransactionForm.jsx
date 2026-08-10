@@ -22,7 +22,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const { data: realAccount } = useMyAccount();
   const { data: realBalance } = useLatestBalance();
 
-  const currentBalance = realBalance?.runningBalance ?? 0;
+  const currentBalance = realBalance?.runningBalance || 0;
   const currency = realAccount?.currency || 'USD';
 
   const [mode, setMode] = useState(initialMode);
