@@ -147,3 +147,21 @@ export async function getAdminAuditLog(auditLogId) {
   const response = await api.get(`/admin/audit-logs/${auditLogId}`);
   return response.data;
 }
+
+export async function getAdminAnomalyReport(transactionId) {
+  const response = await api.get(`/admin/transactions/${transactionId}/anomaly-report`);
+  return response.data;
+}
+
+export async function approveAdminTransaction(transactionId) {
+  const response = await api.post(`/admin/transactions/${transactionId}/approve`);
+  return response.data;
+}
+
+export async function rejectAdminTransaction({ transactionId, reason }) {
+  const response = await api.post(
+    `/admin/transactions/${transactionId}/reject`,
+    reason ? { reason } : {}
+  );
+  return response.data;
+}

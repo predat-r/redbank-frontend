@@ -18,6 +18,7 @@ export const Table = ({
   pagination,
   onRowClick,
   className = '',
+  getRowClassName,
   renderMobileCard,
   sorting,
 }) => {
@@ -117,8 +118,8 @@ export const Table = ({
                   key={row[keyField] || rowIndex}
                   onClick={() => onRowClick && onRowClick(row)}
                   className={`h-14 transition-colors duration-120 hover:bg-slate-50 ${
-                    onRowClick ? 'cursor-pointer' : ''
-                  }`}
+                    getRowClassName ? getRowClassName(row, rowIndex) : ''
+                  } ${onRowClick ? 'cursor-pointer' : ''}`}
                 >
                   {columns.map((col) => {
                     const value = row[col.accessor || col.key];

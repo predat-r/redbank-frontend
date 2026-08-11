@@ -7,6 +7,9 @@ import {
   ShieldCheck,
   User,
   RotateCcw,
+  AlertTriangle,
+  Flame,
+  ShieldAlert,
 } from 'lucide-react';
 
 export const StatusBadge = ({
@@ -100,6 +103,38 @@ export const StatusBadge = ({
           bg: 'bg-info-50 text-info-600',
           icon: Info,
           defaultLabel: 'Info',
+        };
+
+      case 'RISK_HIGH':
+      case 'HIGH':
+        return {
+          bg: 'bg-amber-50 text-amber-700 border border-amber-200/60 font-semibold',
+          icon: AlertTriangle,
+          defaultLabel: 'High Risk',
+        };
+
+      case 'RISK_CRITICAL':
+      case 'CRITICAL':
+        return {
+          bg: 'bg-rose-50 text-rose-700 border border-rose-200/60 font-semibold',
+          icon: Flame,
+          defaultLabel: 'Critical Risk',
+        };
+
+      case 'RISK_MEDIUM':
+      case 'MEDIUM':
+        return {
+          bg: 'bg-blue-50 text-blue-700 border border-blue-200/60',
+          icon: ShieldAlert,
+          defaultLabel: 'Medium Risk',
+        };
+
+      case 'RISK_LOW':
+      case 'LOW':
+        return {
+          bg: 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
+          icon: ShieldCheck,
+          defaultLabel: 'Low Risk',
         };
 
       default:

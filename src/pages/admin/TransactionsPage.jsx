@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Search, ArrowLeftRight } from 'lucide-react';
+import {
+  Search,
+  ArrowLeftRight,
+  ShieldAlert,
+  CheckCircle2,
+  XCircle,
+  Sparkles,
+} from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '../../components/ui/Button.jsx';
 import { EmptyState } from '../../components/ui/EmptyState.jsx';
@@ -8,10 +15,14 @@ import { DateTimePicker } from '../../components/ui/DateTimePicker.jsx';
 import { Modal } from '../../components/ui/Modal.jsx';
 import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
 import { Table } from '../../components/ui/Table.jsx';
+import { useToast } from '../../hooks/useToast.js';
 import { useAdminListParams } from '../../features/admin/useAdminListParams.js';
 import {
   useAdminTransaction,
   useAdminTransactions,
+  useAdminAnomalyReport,
+  useApproveAdminTransaction,
+  useRejectAdminTransaction,
 } from '../../features/admin/admin.queries.js';
 
 const SORT_FIELDS = ['createdAt', 'completedAt', 'amount', 'type', 'status'];
@@ -30,12 +41,125 @@ const money = (v) =>
         maximumFractionDigits: 2,
       });
 
-function Detail({ transaction }) {
+function AnomalyReportCard({ transactionId }) {
+  const report = useAdminAnomalyReport(transactionId);
+  if (report.isLoading) {
+    return (
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-500 animate-pulse">
+        Evaluating AI risk analysis report…
+      </div>
+    );
+  }
+  if (report.isError) {
+    return (
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-400">
+        No additional AI anomaly report generated for this transaction.
+      </div>
+    );
+  }
+  const data = report.data;
+  if (!data) return null;
+
+  const score = data.riskScore ?? 0;
+  const isHighRisk = score >= 50;
+
+  return (
+    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary-600" />
+          <span className="text-xs font-bold uppercase tracking-wider text-neutral-700">
+            AI Anomaly Evaluation
+          </span>
+        </div>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-bold ${
+            isHighRisk ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+          }`}
+        >
+          Risk Score: {score}/100
+        </span>
+      </div>
+
+      <div className="grid gap-2 text-xs">
+        <div>
+          <span className="font-semibold text-neutral-500 uppercase">
+            Recommendation:
+          </span>{' '}
+          <span className="font-mono font-bold text-neutral-800">
+            {data.recommendation}
+          </span>
+        </div>
+        <div>
+          <span className="font-semibold text-neutral-500 uppercase">AI Reasoning:</span>
+          <p className="mt-1 text-neutral-700 leading-relaxed bg-neutral-0 p-2.5 rounded border border-neutral-200/80 font-sans">
+            {data.reasoning || 'Standard automated evaluation complete.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Detail({ transaction, onClose }) {
+  const [rejecting, setRejecting] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const { addToast } = useToast();
+  const approveMutation = useApproveAdminTransaction();
+  const rejectMutation = useRejectAdminTransaction();
+
+  const isPending = transaction.status === 'PENDING';
+
+  const handleApprove = () => {
+    approveMutation.mutate(transaction.id, {
+      onSuccess: () => {
+        addToast({
+          type: 'success',
+          title: 'Transaction Approved',
+          message: `Transaction ${transaction.transactionReference} has been approved and completed.`,
+        });
+        onClose();
+      },
+      onError: (err) => {
+        addToast({
+          type: 'error',
+          title: 'Approval Failed',
+          message: err.message || 'Failed to approve transaction.',
+        });
+      },
+    });
+  };
+
+  const handleReject = () => {
+    rejectMutation.mutate(
+      { transactionId: transaction.id, reason: rejectReason },
+      {
+        onSuccess: () => {
+          addToast({
+            type: 'info',
+            title: 'Transaction Rejected & Reversed',
+            message: `Transaction ${transaction.transactionReference} was rejected and credited back to user.`,
+          });
+          onClose();
+        },
+        onError: (err) => {
+          addToast({
+            type: 'error',
+            title: 'Rejection Failed',
+            message: err.message || 'Failed to reject transaction.',
+          });
+        },
+      }
+    );
+  };
+
   const fields = [
     ['Reference', transaction.transactionReference],
     ['Type', transaction.type],
+    ['Category', transaction.category],
     ['Amount', money(transaction.amount)],
-    ['Status', transaction.status],
+    ['Status', <StatusBadge key="status" status={transaction.status} />],
+    ['Risk Flag', <StatusBadge key="risk" status={transaction.anomalyFlag || 'NONE'} />],
     ['Created', date(transaction.createdAt)],
     ['Completed', date(transaction.completedAt)],
     ['Source account', transaction.sourceAccountNumber],
@@ -45,17 +169,89 @@ function Detail({ transaction }) {
       'Destination owner',
       transaction.destinationUserName || transaction.destinationUserEmail,
     ],
+    ['Reversed Txn Ref', transaction.reversedTransactionReference],
     ['Description', transaction.description],
   ];
+
   return (
-    <dl className="space-y-3">
-      {fields.map(([label, value]) => (
-        <div className="grid gap-1 sm:grid-cols-[9rem_1fr]" key={label}>
-          <dt className="text-xs font-semibold uppercase text-neutral-500">{label}</dt>
-          <dd className="break-words text-sm text-neutral-800">{value || '—'}</dd>
+    <div className="space-y-5">
+      <dl className="space-y-3">
+        {fields.map(([label, value]) => (
+          <div className="grid gap-1 sm:grid-cols-[9rem_1fr]" key={label}>
+            <dt className="text-xs font-semibold uppercase text-neutral-500">{label}</dt>
+            <dd className="break-words text-sm text-neutral-800">{value || '—'}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {/* AI Anomaly Evaluation Report */}
+      <AnomalyReportCard transactionId={transaction.id} />
+
+      {/* Admin Actions for Pending Review Transactions */}
+      {isPending && (
+        <div className="pt-4 border-t border-neutral-200 space-y-3">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-warning-600" />
+            <span className="text-xs font-bold text-neutral-800 uppercase tracking-wider">
+              Pending Admin Decision
+            </span>
+          </div>
+
+          {!rejecting ? (
+            <div className="flex items-center justify-end gap-3 pt-1">
+              <Button
+                variant="outline"
+                icon={XCircle}
+                onClick={() => setRejecting(true)}
+                className="text-xs border-error-200 text-error-700 hover:bg-error-50"
+              >
+                Reject Transaction
+              </Button>
+              <Button
+                variant="primary"
+                icon={CheckCircle2}
+                onClick={handleApprove}
+                disabled={approveMutation.isPending}
+                className="text-xs"
+              >
+                {approveMutation.isPending ? 'Approving…' : 'Approve Transaction'}
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-neutral-50 p-3.5 rounded-xl border border-neutral-200 space-y-3">
+              <label className="block text-xs font-semibold text-neutral-700">
+                Rejection Reason (Optional):
+              </label>
+              <input
+                type="text"
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="e.g. Suspicious velocity flagged during AI review"
+                className="w-full h-10 px-3 text-xs bg-neutral-0 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary-500"
+              />
+              <div className="flex items-center justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setRejecting(false)}
+                  className="text-xs h-9 px-3"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="danger"
+                  icon={XCircle}
+                  onClick={handleReject}
+                  disabled={rejectMutation.isPending}
+                  className="text-xs h-9 px-4"
+                >
+                  {rejectMutation.isPending ? 'Rejecting…' : 'Confirm Rejection'}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-      ))}
-    </dl>
+      )}
+    </div>
   );
 }
 
@@ -85,6 +281,7 @@ export function TransactionsPage() {
   const detail = useAdminTransaction(detailId);
   const data = transactions.data?.content ?? [];
   const metadata = transactions.data?.page;
+
   function updateFilters(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -105,6 +302,7 @@ export function TransactionsPage() {
       return next;
     });
   }
+
   function clearFilters() {
     setUrlParams((current) => {
       const next = new URLSearchParams(current);
@@ -115,10 +313,16 @@ export function TransactionsPage() {
       return next;
     });
   }
+
   const columns = [
     { key: 'transactionReference', header: 'Reference', numeric: true },
     { key: 'type', header: 'Type', sortable: true },
     { key: 'amount', header: 'Amount', numeric: true, sortable: true, render: money },
+    {
+      key: 'anomalyFlag',
+      header: 'Risk Flag',
+      render: (v) => <StatusBadge status={v || 'NONE'} />,
+    },
     {
       key: 'status',
       header: 'Status',
@@ -127,6 +331,13 @@ export function TransactionsPage() {
     },
     { key: 'createdAt', header: 'Date', sortable: true, render: date },
   ];
+
+  const getRowClassName = (row) => {
+    if (row.anomalyFlag === 'CRITICAL') return 'bg-rose-50/40 hover:bg-rose-50/80';
+    if (row.anomalyFlag === 'HIGH') return 'bg-amber-50/40 hover:bg-amber-50/80';
+    return '';
+  };
+
   return (
     <div className="space-y-6">
       <header>
@@ -135,7 +346,7 @@ export function TransactionsPage() {
           Transactions
         </h1>
         <p className="mt-2 text-sm text-neutral-500">
-          Inspect transaction activity across RedBank.
+          Inspect and manage transaction security and anomaly evaluation across RedBank.
         </p>
       </header>
       <form
@@ -164,6 +375,7 @@ export function TransactionsPage() {
               <option value="DEPOSIT">Deposit</option>
               <option value="WITHDRAWAL">Withdrawal</option>
               <option value="TRANSFER">Transfer</option>
+              <option value="REVERSAL">Reversal</option>
             </select>
           </label>
           <label className="text-xs font-medium text-neutral-700">
@@ -177,6 +389,7 @@ export function TransactionsPage() {
               <option value="PENDING">Pending</option>
               <option value="COMPLETED">Completed</option>
               <option value="CANCELLED">Cancelled</option>
+              <option value="REVERSED">Reversed</option>
             </select>
           </label>
           <DateTimePicker
@@ -216,6 +429,7 @@ export function TransactionsPage() {
           columns={columns}
           data={data}
           loading={transactions.isLoading}
+          getRowClassName={getRowClassName}
           onRowClick={(row) => setDetailId(row.id)}
           pagination={{
             page: metadata?.number ?? params.page,
@@ -232,11 +446,16 @@ export function TransactionsPage() {
           }}
           renderMobileCard={(row) => (
             <div>
-              <div className="flex justify-between">
-                <span className="font-mono font-semibold">
+              <div className="flex justify-between items-center gap-2">
+                <span className="font-mono font-semibold text-neutral-900">
                   {row.transactionReference}
                 </span>
-                <StatusBadge status={row.status} />
+                <div className="flex items-center gap-1.5">
+                  {row.anomalyFlag && row.anomalyFlag !== 'NONE' && (
+                    <StatusBadge status={row.anomalyFlag} />
+                  )}
+                  <StatusBadge status={row.status} />
+                </div>
               </div>
               <p className="mt-2 text-sm text-neutral-500">
                 {row.type} · {money(row.amount)} · {date(row.createdAt)}
@@ -248,12 +467,16 @@ export function TransactionsPage() {
       <Modal
         isOpen={detailId != null}
         onClose={() => setDetailId(null)}
-        title="Transaction details"
-        subtitle="Source, destination, and owner information"
+        title="Transaction details & Risk Review"
+        subtitle="AI risk evaluation report and admin approval actions"
       >
-        {detail.isLoading && <p>Loading transaction…</p>}
-        {detail.isError && <p className="text-error-600">{detail.error.message}</p>}
-        {detail.data && <Detail transaction={detail.data} />}
+        {detail.isLoading && (
+          <p className="text-sm text-neutral-500 py-4">Loading transaction details…</p>
+        )}
+        {detail.isError && <p className="text-error-600 py-4">{detail.error.message}</p>}
+        {detail.data && (
+          <Detail transaction={detail.data} onClose={() => setDetailId(null)} />
+        )}
       </Modal>
     </div>
   );
