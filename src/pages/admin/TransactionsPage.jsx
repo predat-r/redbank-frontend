@@ -41,8 +41,24 @@ const money = (v) =>
         maximumFractionDigits: 2,
       });
 
-function AnomalyReportCard({ transactionId }) {
-  const report = useAdminAnomalyReport(transactionId);
+function AnomalyReportCard({ transactionId, anomalyFlag }) {
+  const hasFlag = Boolean(anomalyFlag && anomalyFlag !== 'NONE');
+  const report = useAdminAnomalyReport(transactionId, hasFlag);
+
+  if (!hasFlag) {
+    return (
+      <div className="rounded-xl border border-neutral-200/80 bg-neutral-50/70 p-3.5 flex items-center justify-between text-xs text-neutral-500">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>Standard activity (No anomaly report generated)</span>
+        </div>
+        <span className="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">
+          Clean / Normal Risk
+        </span>
+      </div>
+    );
+  }
+
   if (report.isLoading) {
     return (
       <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-500 animate-pulse">
@@ -50,16 +66,16 @@ function AnomalyReportCard({ transactionId }) {
       </div>
     );
   }
-  if (report.isError) {
+
+  if (report.isError || !report.data) {
     return (
-      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-400">
+      <div className="rounded-xl border border-neutral-200/80 bg-neutral-50/70 p-3.5 text-xs text-neutral-400">
         No additional AI anomaly report generated for this transaction.
       </div>
     );
   }
-  const data = report.data;
-  if (!data) return null;
 
+  const data = report.data;
   const score = data.riskScore ?? 0;
   const isHighRisk = score >= 50;
 
@@ -185,7 +201,10 @@ function Detail({ transaction, onClose }) {
       </dl>
 
       {/* AI Anomaly Evaluation Report */}
-      <AnomalyReportCard transactionId={transaction.id} />
+      <AnomalyReportCard
+        transactionId={transaction.id}
+        anomalyFlag={transaction.anomalyFlag}
+      />
 
       {/* Admin Actions for Pending Review Transactions */}
       {isPending && (
