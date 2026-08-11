@@ -11,6 +11,8 @@ export const TransactionInitiateStep = ({
   setDestinationAccountNumber,
   amount,
   setAmount,
+  category = 'OTHER',
+  setCategory,
   description,
   setDescription,
   withdrawalMethod,
@@ -89,6 +91,25 @@ export const TransactionInitiateStep = ({
           error={errors.amount}
           helperText={`Current Balance: ${formattedBalance} · Min: $0.01 · Max: $500,000`}
           required
+        />
+
+        <Select
+          label="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          options={[
+            { value: 'OTHER', label: 'Other / General' },
+            { value: 'BILLS', label: 'Bills & Utilities' },
+            { value: 'FOOD', label: 'Food & Dining' },
+            { value: 'GROCERY', label: 'Groceries' },
+            { value: 'DONATION', label: 'Donations & Charity' },
+            { value: 'ENTERTAINMENT', label: 'Entertainment' },
+            { value: 'SHOPPING', label: 'Shopping' },
+            { value: 'HEALTH', label: 'Health & Medical' },
+            { value: 'TRANSPORT', label: 'Transport & Travel' },
+            { value: 'EDUCATION', label: 'Education' },
+            { value: 'INVESTMENT', label: 'Investments & Savings' },
+          ]}
         />
 
         <Input

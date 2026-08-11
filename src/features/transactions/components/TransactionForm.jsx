@@ -35,6 +35,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
     location?.state?.amount ? String(location.state.amount) : ''
   );
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('OTHER');
   const [withdrawalMethod, setWithdrawalMethod] = useState('ATM_CODE');
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState(null);
@@ -103,11 +104,13 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
         result = await transferMutation.mutateAsync({
           destinationAccountNumber: destinationAccountNumber.trim(),
           amount: numAmount,
+          category: category || 'OTHER',
           description: description.trim() || 'Fund Transfer',
         });
       } else {
         result = await withdrawalMutation.mutateAsync({
           amount: numAmount,
+          category: category || 'OTHER',
           description: description.trim() || `Cash Withdrawal via ${withdrawalMethod}`,
         });
       }
@@ -120,6 +123,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
       setReceiptData({
         reference: txRef,
         amount: result?.amount || numAmount,
+        category: result?.category || category || 'OTHER',
         type: result?.type || (mode === 'transfer' ? 'TRANSFER' : 'WITHDRAWAL'),
         destination:
           mode === 'transfer'
@@ -161,6 +165,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const handleReset = () => {
     setDestinationAccountNumber('');
     setAmount('');
+    setCategory('OTHER');
     setDescription('');
     setErrors({});
     setServerError(null);
@@ -212,6 +217,8 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
               setDestinationAccountNumber={setDestinationAccountNumber}
               amount={amount}
               setAmount={setAmount}
+              category={category}
+              setCategory={setCategory}
               description={description}
               setDescription={setDescription}
               withdrawalMethod={withdrawalMethod}
@@ -229,6 +236,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
               destinationAccountNumber={destinationAccountNumber}
               withdrawalMethod={withdrawalMethod}
               amount={amount}
+              category={category}
               description={description}
               loading={isSubmitting}
               error={serverError}

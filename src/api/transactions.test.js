@@ -9,11 +9,6 @@ function mockResponse(config, data, status = 200) {
   return { config, data, headers: {}, status, statusText: 'OK' };
 }
 
-afterEach(() => {
-  api.defaults.adapter = originalAdapter;
-  refreshClient.defaults.adapter = originalRefreshAdapter;
-});
-
 beforeEach(() => {
   refreshClient.defaults.adapter = async (config) => ({
     config,
@@ -22,6 +17,11 @@ beforeEach(() => {
     status: 204,
     statusText: 'No Content',
   });
+});
+
+afterEach(() => {
+  api.defaults.adapter = originalAdapter;
+  refreshClient.defaults.adapter = originalRefreshAdapter;
 });
 
 describe('transactions API', () => {
@@ -52,6 +52,7 @@ describe('transactions API', () => {
 
     expect(capturedRequest.url).toContain('/accounts/me/transfers');
     expect(capturedRequest.method).toBe('post');
+    expect(capturedRequest.headers['X-Idempotency-Key']).toBeDefined();
     expect(JSON.parse(capturedRequest.data)).toEqual(payload);
     expect(result.transactionReference).toBe('TXN-TRANSFER123');
   });
@@ -82,6 +83,7 @@ describe('transactions API', () => {
 
     expect(capturedRequest.url).toContain('/accounts/me/withdrawals');
     expect(capturedRequest.method).toBe('post');
+    expect(capturedRequest.headers['X-Idempotency-Key']).toBeDefined();
     expect(JSON.parse(capturedRequest.data)).toEqual(payload);
     expect(result.transactionReference).toBe('TXN-WITHDRAW456');
   });

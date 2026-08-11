@@ -7,6 +7,7 @@ export const TransactionVerifyStep = ({
   destinationAccountNumber,
   withdrawalMethod,
   amount,
+  category = 'OTHER',
   description,
   loading,
   error,
@@ -62,6 +63,15 @@ export const TransactionVerifyStep = ({
             ${parseFloat(amount || '0').toLocaleString()}
           </span>
         </div>
+
+        {category && (
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm py-1 border-b border-neutral-200/60">
+            <span className="text-neutral-500 font-medium">Category</span>
+            <span className="font-semibold text-neutral-800 bg-neutral-100 px-2.5 py-0.5 rounded text-xs">
+              {category}
+            </span>
+          </div>
+        )}
 
         {description && (
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2 text-xs sm:text-sm py-1">

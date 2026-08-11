@@ -119,6 +119,7 @@ describe('TransactionForm', () => {
       expect(createTransfer).toHaveBeenCalledWith({
         destinationAccountNumber: 'ACC-888999',
         amount: 1500,
+        category: 'OTHER',
         description: 'Gift',
       });
     });
@@ -146,6 +147,7 @@ describe('TransactionForm', () => {
     await waitFor(() => {
       expect(createWithdrawal).toHaveBeenCalledWith({
         amount: 5000,
+        category: 'OTHER',
         description: 'Cash Withdrawal via ATM_CODE',
       });
     });
