@@ -12,7 +12,10 @@ const publicAuthPaths = [
 
 const clientOptions = {
   baseURL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
+  },
   timeout: 10000,
   withCredentials: true,
   paramsSerializer: { indexes: null },
