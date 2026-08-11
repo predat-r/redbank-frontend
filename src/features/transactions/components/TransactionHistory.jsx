@@ -243,6 +243,7 @@ export const TransactionHistory = ({
       render: (type, row) => {
         const isCredit =
           type === 'DEPOSIT' ||
+          type === 'REVERSAL' ||
           (type === 'TRANSFER' &&
             Boolean(myAccountNumber) &&
             row.destinationAccountNumber === myAccountNumber);
@@ -251,6 +252,13 @@ export const TransactionHistory = ({
           return (
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-success-600">
               <ArrowDownLeft className="w-4 h-4" /> Credited
+            </span>
+          );
+        }
+        if (type === 'REVERSAL') {
+          return (
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600">
+              <RotateCcw className="w-4 h-4" /> Reversal
             </span>
           );
         }
@@ -281,10 +289,21 @@ export const TransactionHistory = ({
       render: (val, row) => (
         <div>
           <div className="font-medium text-neutral-800 text-sm">{val}</div>
-          <div className="text-[11px] font-mono text-neutral-400">
-            {row.destinationAccountNumber ||
-              row.sourceAccountNumber ||
-              row.transactionReference}
+          <div className="text-[11px] font-mono text-neutral-400 flex items-center gap-1.5 flex-wrap mt-0.5">
+            <span>
+              {row.destinationAccountNumber ||
+                row.sourceAccountNumber ||
+                row.transactionReference}
+            </span>
+            {row.reversedTransactionReference && (
+              <span
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px] font-semibold border border-purple-200/60"
+                title={`Reverses transaction ${row.reversedTransactionReference}`}
+              >
+                <RotateCcw className="w-3 h-3" /> Reverses{' '}
+                {row.reversedTransactionReference}
+              </span>
+            )}
           </div>
         </div>
       ),
@@ -297,6 +316,7 @@ export const TransactionHistory = ({
       render: (val, row) => {
         const isCredit =
           row.type === 'DEPOSIT' ||
+          row.type === 'REVERSAL' ||
           (row.type === 'TRANSFER' &&
             Boolean(myAccountNumber) &&
             row.destinationAccountNumber === myAccountNumber);
@@ -391,6 +411,7 @@ export const TransactionHistory = ({
                 <option value="DEPOSIT">Deposit</option>
                 <option value="WITHDRAWAL">Cash Withdrawal</option>
                 <option value="TRANSFER">Fund Transfer</option>
+                <option value="REVERSAL">Reversal Refund</option>
               </select>
             </div>
 
@@ -408,6 +429,7 @@ export const TransactionHistory = ({
                 <option value="COMPLETED">Completed</option>
                 <option value="PENDING">Pending</option>
                 <option value="CANCELLED">Cancelled</option>
+                <option value="REVERSED">Reversed</option>
               </select>
             </div>
 

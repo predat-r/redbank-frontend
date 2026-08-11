@@ -6,6 +6,7 @@ import {
   Info,
   ShieldCheck,
   User,
+  RotateCcw,
 } from 'lucide-react';
 
 export const StatusBadge = ({
@@ -13,6 +14,7 @@ export const StatusBadge = ({
   label,
   showIcon = true,
   className = '',
+  title,
   ...props
 }) => {
   const normalizedStatus = (status || '').toUpperCase();
@@ -37,16 +39,31 @@ export const StatusBadge = ({
           bg: 'bg-warning-50 text-warning-600',
           icon: Clock,
           defaultLabel: status === 'PENDING_APPROVAL' ? 'Pending Approval' : 'Pending',
+          tooltip: 'Your transaction is currently undergoing security review.',
         };
 
       case 'REJECTED':
       case 'FAILED':
-      case 'CANCELLED':
       case 'DECLINED':
         return {
           bg: 'bg-error-50 text-error-600',
           icon: XCircle,
           defaultLabel: status || 'Failed',
+        };
+
+      case 'CANCELLED':
+        return {
+          bg: 'bg-slate-100 text-slate-600 border border-slate-200/60',
+          icon: XCircle,
+          defaultLabel: 'Cancelled',
+        };
+
+      case 'REVERSED':
+        return {
+          bg: 'bg-purple-50 text-purple-600 border border-purple-200/60',
+          icon: RotateCcw,
+          defaultLabel: 'Reversed',
+          tooltip: 'Transaction was reversed and funds refunded.',
         };
 
       case 'FROZEN':
@@ -100,6 +117,7 @@ export const StatusBadge = ({
 
   return (
     <span
+      title={title || style.tooltip}
       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold select-none ${style.bg} ${className}`}
       {...props}
     >

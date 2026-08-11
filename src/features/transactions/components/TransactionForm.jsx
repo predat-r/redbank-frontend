@@ -139,11 +139,19 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
           (mode === 'transfer' ? 'Transfer to account' : 'Cash withdrawal'),
       });
 
+      const isPending = result?.status === 'PENDING';
+
       setCurrentStep(2);
       addToast({
-        type: 'success',
-        title: mode === 'transfer' ? 'Transfer Successful' : 'Withdrawal Processed',
-        message: `${mode === 'transfer' ? 'Transferred' : 'Withdrawn'} $${numAmount.toLocaleString()} successfully.`,
+        type: isPending ? 'info' : 'success',
+        title: isPending
+          ? 'Transaction Submitted for Review'
+          : mode === 'transfer'
+            ? 'Transfer Successful'
+            : 'Withdrawal Processed',
+        message: isPending
+          ? 'Your transaction is undergoing security review and will settle shortly.'
+          : `${mode === 'transfer' ? 'Transferred' : 'Withdrawn'} $${numAmount.toLocaleString()} successfully.`,
       });
     } catch (err) {
       const errorMessage =

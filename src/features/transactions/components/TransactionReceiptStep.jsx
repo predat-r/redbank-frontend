@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, RotateCcw, Receipt } from 'lucide-react';
+import { CheckCircle2, Clock, RotateCcw, Receipt } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
 import { StatusBadge } from '../../../components/ui/StatusBadge';
@@ -9,19 +9,37 @@ export const TransactionReceiptStep = ({ mode, receiptData, onReset }) => {
 
   if (!receiptData) return null;
 
+  const isPending = receiptData.status === 'PENDING';
+
   return (
     <Card className="p-4 sm:p-6 lg:p-8 space-y-6 text-center">
-      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-success-50 text-success-600 flex items-center justify-center mx-auto">
-        <CheckCircle2 className="w-8 h-8 sm:w-9 sm:h-9" />
+      <div
+        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto ${
+          isPending ? 'bg-warning-50 text-warning-600' : 'bg-success-50 text-success-600'
+        }`}
+      >
+        {isPending ? (
+          <Clock className="w-8 h-8 sm:w-9 sm:h-9" />
+        ) : (
+          <CheckCircle2 className="w-8 h-8 sm:w-9 sm:h-9" />
+        )}
       </div>
 
       <div>
-        <StatusBadge status="COMPLETED" />
+        <StatusBadge status={receiptData.status || 'COMPLETED'} />
         <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mt-2">
-          {mode === 'transfer' ? 'Transfer Successful' : 'Withdrawal Completed'}
+          {isPending
+            ? mode === 'transfer'
+              ? 'Transfer Submitted'
+              : 'Withdrawal Submitted'
+            : mode === 'transfer'
+              ? 'Transfer Successful'
+              : 'Withdrawal Completed'}
         </h2>
         <p className="text-xs sm:text-sm text-neutral-500 mt-1">
-          Your transaction has been processed securely.
+          {isPending
+            ? 'Your transaction is currently undergoing security review.'
+            : 'Your transaction has been processed securely.'}
         </p>
       </div>
 
