@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Filter,
   RotateCcw,
+  RefreshCw,
 } from 'lucide-react';
 import { Table, StatusBadge, Button } from '../../../components/ui';
 import { useMyTransactions } from '../transactions.queries';
@@ -83,7 +84,12 @@ export const TransactionHistory = ({
   }, [page, pageSize, limit, appliedFilters]);
 
   // Fetch transactions from API using active query parameters
-  const { data: apiResponse, isLoading: apiLoading } = useMyTransactions(queryParams);
+  const {
+    data: apiResponse,
+    isLoading: apiLoading,
+    isFetching,
+    refetch,
+  } = useMyTransactions(queryParams);
 
   const rawTransactions = useMemo(() => {
     if (transactions && Array.isArray(transactions) && transactions.length > 0) {
@@ -565,6 +571,17 @@ export const TransactionHistory = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              icon={RefreshCw}
+              loading={isFetching}
+              onClick={() => refetch()}
+              className="text-xs font-semibold"
+            >
+              Refresh
+            </Button>
             {showViewAll && (
               <Button
                 variant="primary"
