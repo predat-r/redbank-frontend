@@ -461,28 +461,28 @@ export const TransactionHistory = ({
                 className="w-full h-11 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs text-neutral-800 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 cursor-pointer transition-all font-sans"
               />
             </div>
+          </div>
 
-            {/* Filter Action Buttons grid cell aligned in row 2 column 3 */}
-            <div className="flex items-end justify-end gap-2 pt-1 sm:pt-0">
-              {isAnyFilterApplied && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleClearFilters}
-                  className="h-11 px-4 text-xs font-medium"
-                >
-                  Clear
-                </Button>
-              )}
+          {/* Form Action Footer Bar */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-100">
+            {isAnyFilterApplied && (
               <Button
-                type="submit"
-                variant="primary"
-                icon={Search}
-                className="h-11 px-6 text-xs font-semibold shadow-sm w-full sm:w-auto"
+                type="button"
+                variant="outline"
+                onClick={handleClearFilters}
+                className="h-10 px-4 text-xs font-medium"
               >
-                Apply Filters
+                Clear
               </Button>
-            </div>
+            )}
+            <Button
+              type="submit"
+              variant="primary"
+              icon={Search}
+              className="h-10 px-6 text-xs font-semibold shadow-sm w-full sm:w-auto"
+            >
+              Apply Filters
+            </Button>
           </div>
         </form>
       )}
