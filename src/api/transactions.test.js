@@ -10,15 +10,6 @@ function mockResponse(config, data, status = 200) {
 }
 
 beforeEach(() => {
-  refreshClient.defaults.adapter = async (config) => mockResponse(config, {});
-});
-
-afterEach(() => {
-  api.defaults.adapter = originalAdapter;
-  refreshClient.defaults.adapter = originalRefreshAdapter;
-});
-
-beforeEach(() => {
   refreshClient.defaults.adapter = async (config) => ({
     config,
     data: null,
@@ -26,6 +17,11 @@ beforeEach(() => {
     status: 204,
     statusText: 'No Content',
   });
+});
+
+afterEach(() => {
+  api.defaults.adapter = originalAdapter;
+  refreshClient.defaults.adapter = originalRefreshAdapter;
 });
 
 describe('transactions API', () => {

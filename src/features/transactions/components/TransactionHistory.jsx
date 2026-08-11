@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Filter,
   RotateCcw,
+  RefreshCw,
 } from 'lucide-react';
 import { Table, StatusBadge, Button } from '../../../components/ui';
 import { useMyTransactions } from '../transactions.queries';
@@ -83,7 +84,12 @@ export const TransactionHistory = ({
   }, [page, pageSize, limit, appliedFilters]);
 
   // Fetch transactions from API using active query parameters
-  const { data: apiResponse, isLoading: apiLoading } = useMyTransactions(queryParams);
+  const {
+    data: apiResponse,
+    isLoading: apiLoading,
+    isFetching,
+    refetch,
+  } = useMyTransactions(queryParams);
 
   const rawTransactions = useMemo(() => {
     if (transactions && Array.isArray(transactions) && transactions.length > 0) {
@@ -243,6 +249,7 @@ export const TransactionHistory = ({
       render: (type, row) => {
         const isCredit =
           type === 'DEPOSIT' ||
+          type === 'REVERSAL' ||
           (type === 'TRANSFER' &&
             Boolean(myAccountNumber) &&
             row.destinationAccountNumber === myAccountNumber);
@@ -251,6 +258,13 @@ export const TransactionHistory = ({
           return (
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-success-600">
               <ArrowDownLeft className="w-4 h-4" /> Credited
+            </span>
+          );
+        }
+        if (type === 'REVERSAL') {
+          return (
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600">
+              <RotateCcw className="w-4 h-4" /> Reversal
             </span>
           );
         }
@@ -281,10 +295,21 @@ export const TransactionHistory = ({
       render: (val, row) => (
         <div>
           <div className="font-medium text-neutral-800 text-sm">{val}</div>
-          <div className="text-[11px] font-mono text-neutral-400">
-            {row.destinationAccountNumber ||
-              row.sourceAccountNumber ||
-              row.transactionReference}
+          <div className="text-[11px] font-mono text-neutral-400 flex items-center gap-1.5 flex-wrap mt-0.5">
+            <span>
+              {row.destinationAccountNumber ||
+                row.sourceAccountNumber ||
+                row.transactionReference}
+            </span>
+            {row.reversedTransactionReference && (
+              <span
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px] font-semibold border border-purple-200/60"
+                title={`Reverses transaction ${row.reversedTransactionReference}`}
+              >
+                <RotateCcw className="w-3 h-3" /> Reverses{' '}
+                {row.reversedTransactionReference}
+              </span>
+            )}
           </div>
         </div>
       ),
@@ -297,6 +322,7 @@ export const TransactionHistory = ({
       render: (val, row) => {
         const isCredit =
           row.type === 'DEPOSIT' ||
+          row.type === 'REVERSAL' ||
           (row.type === 'TRANSFER' &&
             Boolean(myAccountNumber) &&
             row.destinationAccountNumber === myAccountNumber);
@@ -391,6 +417,7 @@ export const TransactionHistory = ({
                 <option value="DEPOSIT">Deposit</option>
                 <option value="WITHDRAWAL">Cash Withdrawal</option>
                 <option value="TRANSFER">Fund Transfer</option>
+                <option value="REVERSAL">Reversal Refund</option>
               </select>
             </div>
 
@@ -408,6 +435,32 @@ export const TransactionHistory = ({
                 <option value="COMPLETED">Completed</option>
                 <option value="PENDING">Pending</option>
                 <option value="CANCELLED">Cancelled</option>
+                <option value="REVERSED">Reversed</option>
+              </select>
+            </div>
+
+            {/* Category Select Filter */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-neutral-700">Category</label>
+              <select
+                value={draftFilters.category}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({ ...prev, category: e.target.value }))
+                }
+                className="w-full h-11 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-medium text-neutral-800 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 cursor-pointer transition-all"
+              >
+                <option value="ALL">All Categories</option>
+                <option value="FOOD">Food & Dining</option>
+                <option value="GROCERY">Groceries</option>
+                <option value="DONATION">Donations & Charity</option>
+                <option value="BILLS">Bills & Utilities</option>
+                <option value="ENTERTAINMENT">Entertainment</option>
+                <option value="SHOPPING">Shopping</option>
+                <option value="HEALTH">Health & Medical</option>
+                <option value="TRANSPORT">Transport & Travel</option>
+                <option value="EDUCATION">Education</option>
+                <option value="INVESTMENT">Investments</option>
+                <option value="OTHER">Other</option>
               </select>
             </div>
 
@@ -543,6 +596,17 @@ export const TransactionHistory = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              icon={RefreshCw}
+              loading={isFetching}
+              onClick={() => refetch()}
+              className="text-xs font-semibold"
+            >
+              Refresh
+            </Button>
             {showViewAll && (
               <Button
                 variant="primary"

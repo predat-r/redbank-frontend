@@ -12,6 +12,9 @@ import {
   getAdminTransaction,
   getAdminTransactionByReference,
   getAdminTransactionsByAccount,
+  getAdminAnomalyReport,
+  approveAdminTransaction,
+  rejectAdminTransaction,
   createAdminDeposit,
   getAdminLatestBalance,
   getAdminBalanceLedger,
@@ -145,6 +148,37 @@ export function useAdminTransactionByReference(reference) {
     enabled: Boolean(reference),
   });
 }
+export function useAdminAnomalyReport(transactionId, enabled = true) {
+  return useQuery({
+    queryKey: ['admin', 'transactions', 'anomaly-report', transactionId],
+    queryFn: () => getAdminAnomalyReport(transactionId),
+    enabled: enabled && Boolean(transactionId),
+  });
+}
+export function useApproveAdminTransaction() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (transactionId) => approveAdminTransaction(transactionId),
+    onSuccess: (_data, transactionId) => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.transactions });
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'transactions', 'detail', transactionId],
+      });
+    },
+  });
+}
+export function useRejectAdminTransaction() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => rejectAdminTransaction(payload),
+    onSuccess: (_data, { transactionId }) => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.transactions });
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'transactions', 'detail', transactionId],
+      });
+    },
+  });
+}
 export function useAdminLatestBalance(accountId) {
   return useQuery({
     queryKey: ['admin', 'balance', 'latest', accountId],
@@ -162,7 +196,12 @@ export function useAdminBalanceLedger(accountId, options) {
 export function useCreateAdminDeposit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createAdminDeposit,
+    mutationFn: (variables) => {
+      if (typeof variables === 'object' && variables?.payload) {
+        return createAdminDeposit(variables.payload, variables.idempotencyKey);
+      }
+      return createAdminDeposit(variables);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.transactions }),
   });
 }

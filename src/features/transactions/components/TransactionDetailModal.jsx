@@ -292,6 +292,22 @@ export const TransactionDetailModal = ({ transaction, isOpen, onClose }) => {
             </div>
           )}
 
+          {/* Reversed Transaction Linkage Row */}
+          {item?.reversedTransactionReference && (
+            <div className="flex items-center justify-between py-1 border-b border-neutral-200/60 text-xs sm:text-sm">
+              <span className="text-neutral-500 font-medium flex items-center gap-2">
+                <RotateCcw className="w-4 h-4 text-purple-500" />
+                <span>Reversed Txn Link</span>
+              </span>
+              <span
+                className="font-semibold text-purple-700 font-mono text-xs bg-purple-50 px-2 py-0.5 rounded border border-purple-200/60"
+                title={`Reverses transaction ${item.reversedTransactionReference}`}
+              >
+                {item.reversedTransactionReference}
+              </span>
+            </div>
+          )}
+
           {/* Description / Memo Row */}
           {item?.description && (
             <div className="flex items-start justify-between py-1 text-xs sm:text-sm">

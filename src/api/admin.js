@@ -119,8 +119,20 @@ export async function getAdminTransactionsByAccount(accountNumber, options = {})
   return response.data;
 }
 
-export async function createAdminDeposit(payload) {
-  const response = await api.post('/admin/deposits', payload);
+export async function createAdminDeposit(payload, idempotencyKey) {
+  const key =
+    (typeof idempotencyKey === 'string' && idempotencyKey) ||
+    (typeof payload?.idempotencyKey === 'string' && payload.idempotencyKey) ||
+    (typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `idemp-${Date.now()}`);
+  const cleanPayload = { ...payload };
+  delete cleanPayload.idempotencyKey;
+  const response = await api.post('/admin/deposits', cleanPayload, {
+    headers: {
+      'X-Idempotency-Key': key,
+    },
+  });
   return response.data;
 }
 
@@ -145,5 +157,23 @@ export async function getAdminAuditLogs(options = {}) {
 
 export async function getAdminAuditLog(auditLogId) {
   const response = await api.get(`/admin/audit-logs/${auditLogId}`);
+  return response.data;
+}
+
+export async function getAdminAnomalyReport(transactionId) {
+  const response = await api.get(`/admin/transactions/${transactionId}/anomaly-report`);
+  return response.data;
+}
+
+export async function approveAdminTransaction(transactionId) {
+  const response = await api.post(`/admin/transactions/${transactionId}/approve`);
+  return response.data;
+}
+
+export async function rejectAdminTransaction({ transactionId, reason }) {
+  const response = await api.post(
+    `/admin/transactions/${transactionId}/reject`,
+    reason ? { reason } : {}
+  );
   return response.data;
 }

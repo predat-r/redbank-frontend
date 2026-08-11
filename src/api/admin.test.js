@@ -14,6 +14,7 @@ import {
   getPendingRegistration,
   getPendingRegistrations,
   rejectRegistration,
+  createAdminDeposit,
   reactivateAdminUser,
   updateAdminUser,
 } from './admin.js';
@@ -172,5 +173,26 @@ describe('admin user and account-holder API', () => {
       ['patch', '/admin/accounts/freeze/15'],
       ['patch', '/admin/accounts/deactivate/15'],
     ]);
+  });
+
+  test('sends X-Idempotency-Key header for admin deposits', async () => {
+    let requestConfig;
+    api.defaults.adapter = async (config) => {
+      requestConfig = config;
+      return response(config, { id: 101, status: 'COMPLETED' }, 201);
+    };
+
+    await createAdminDeposit(
+      { destinationAccountId: 5, amount: 1000, description: 'Test deposit' },
+      'custom-admin-idemp-123'
+    );
+
+    expect(requestConfig.url).toBe('/admin/deposits');
+    expect(requestConfig.headers['X-Idempotency-Key']).toBe('custom-admin-idemp-123');
+    expect(JSON.parse(requestConfig.data)).toEqual({
+      destinationAccountId: 5,
+      amount: 1000,
+      description: 'Test deposit',
+    });
   });
 });
