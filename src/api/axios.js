@@ -25,7 +25,6 @@ export const refreshClient = axios.create(clientOptions);
 
 let csrfToken = null;
 let csrfTokenPromise = null;
-let csrfTokenLoaded = false;
 
 function readCookie(name) {
   const cookie = document.cookie
@@ -48,13 +47,22 @@ function isCsrfExemptRequest(url = '') {
 }
 
 async function getCsrfToken() {
-  if (csrfTokenLoaded) return csrfToken;
+  const cookieToken = readCookie('XSRF-TOKEN');
+
+  // The backend can rotate or clear the CSRF cookie. Never send a cached
+  // token when the browser no longer has the corresponding cookie.
+  if (cookieToken) {
+    csrfToken = cookieToken;
+    return csrfToken;
+  }
+
+  csrfToken = null;
+
   if (!csrfTokenPromise) {
     csrfTokenPromise = refreshClient
       .get('/auth/csrf', { withCredentials: true })
       .then(() => {
         csrfToken = readCookie('XSRF-TOKEN');
-        csrfTokenLoaded = true;
         return csrfToken;
       })
       .finally(() => {
