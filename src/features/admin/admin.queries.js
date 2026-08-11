@@ -196,7 +196,12 @@ export function useAdminBalanceLedger(accountId, options) {
 export function useCreateAdminDeposit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createAdminDeposit,
+    mutationFn: (variables) => {
+      if (typeof variables === 'object' && variables?.payload) {
+        return createAdminDeposit(variables.payload, variables.idempotencyKey);
+      }
+      return createAdminDeposit(variables);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: adminKeys.transactions }),
   });
 }
