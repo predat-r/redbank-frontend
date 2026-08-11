@@ -16,6 +16,7 @@ import { DashboardPage } from '../pages/account/DashboardPage.jsx';
 import { TransferPage } from '../pages/account/TransferPage.jsx';
 import { WithdrawPage } from '../pages/account/WithdrawPage.jsx';
 import { HistoryPage } from '../pages/account/HistoryPage.jsx';
+import { ChatPage } from '../pages/account/ChatPage.jsx';
 import { LoginPage } from '../pages/auth/LoginPage.jsx';
 import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
           { path: '/transfer', element: <TransferPage /> },
           { path: '/withdraw', element: <WithdrawPage /> },
           { path: '/history', element: <HistoryPage /> },
+          { path: '/chat', element: <ChatPage /> },
         ],
       },
       {

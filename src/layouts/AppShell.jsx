@@ -15,6 +15,7 @@ import {
   User,
   ShieldCheck,
   Snowflake,
+  Bot,
 } from 'lucide-react';
 
 export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user }) => {
@@ -79,6 +80,8 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
       ...(isFrozen ? { badge: 'Locked' } : {}),
     },
     { label: 'Transaction History', href: '/history', icon: History },
+    { label: 'Chat with RedAssist', href: '/chat', icon: Bot },
+
     ...(currentUser.role === 'ROLE_ADMIN'
       ? [
           {

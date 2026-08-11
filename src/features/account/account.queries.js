@@ -4,6 +4,7 @@ import {
   freezeMyAccount,
   unfreezeMyAccount,
   deactivateMyAccount,
+  chatWithRedAssist,
 } from '../../api/accounts.js';
 import { getLatestBalance } from '../../api/balance.js';
 
@@ -74,5 +75,14 @@ export function useDeactivateAccount() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountKeys.me });
     },
+  });
+}
+
+/**
+ * Hook to execute POST /api/accounts/me/chat
+ */
+export function useChatWithRedAssist() {
+  return useMutation({
+    mutationFn: chatWithRedAssist,
   });
 }

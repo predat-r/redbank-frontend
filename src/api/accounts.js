@@ -35,3 +35,12 @@ export async function deactivateMyAccount() {
   const response = await api.patch('/accounts/deactivate/me');
   return response.data;
 }
+
+/**
+ * Send a message to RedAssist
+ * POST /api/accounts/me/chat
+ */
+export async function chatWithRedAssist(request) {
+  const response = await api.post('/accounts/me/chat', request);
+  return response.data;
+}

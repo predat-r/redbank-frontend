@@ -53,6 +53,7 @@ export function useLogout() {
     onSettled: () => {
       endSession();
       queryClient.clear();
+      localStorage.removeItem('redbank_chat_history');
     },
   });
 }
