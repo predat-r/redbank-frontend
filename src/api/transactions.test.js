@@ -16,8 +16,6 @@ beforeEach(() => {
 afterEach(() => {
   api.defaults.adapter = originalAdapter;
   refreshClient.defaults.adapter = originalRefreshAdapter;
-<<<<<<< HEAD
-=======
 });
 
 beforeEach(() => {
@@ -28,7 +26,6 @@ beforeEach(() => {
     status: 204,
     statusText: 'No Content',
   });
->>>>>>> 2fadf7c (CI : add workflow to run tests and quality checks)
 });
 
 describe('transactions API', () => {
