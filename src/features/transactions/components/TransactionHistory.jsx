@@ -464,6 +464,31 @@ export const TransactionHistory = ({
               </select>
             </div>
 
+            {/* Category Select Filter */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-neutral-700">Category</label>
+              <select
+                value={draftFilters.category}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({ ...prev, category: e.target.value }))
+                }
+                className="w-full h-11 px-3 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-medium text-neutral-800 focus:outline-none focus:bg-neutral-0 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 cursor-pointer transition-all"
+              >
+                <option value="ALL">All Categories</option>
+                <option value="FOOD">Food & Dining</option>
+                <option value="GROCERY">Groceries</option>
+                <option value="DONATION">Donations & Charity</option>
+                <option value="BILLS">Bills & Utilities</option>
+                <option value="ENTERTAINMENT">Entertainment</option>
+                <option value="SHOPPING">Shopping</option>
+                <option value="HEALTH">Health & Medical</option>
+                <option value="TRANSPORT">Transport & Travel</option>
+                <option value="EDUCATION">Education</option>
+                <option value="INVESTMENT">Investments</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
             {/* From Date Filter */}
             <div className="space-y-1">
               <label className="text-xs font-semibold text-neutral-700">From Date</label>
