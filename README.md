@@ -1,18 +1,73 @@
-# React + Vite
+# RedBank Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for the RedBank banking application, built with Vite, Tailwind CSS, React Query, and React Router.
 
-Currently, two official plugins are available:
+## Features and views
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Account holder
 
-## React Compiler
+- Dashboard with current balance and recent activity
+- Transfers and withdrawals
+- Transaction history and transaction details
+- Profile and security settings
+- Registration status tracking
+- Support chat
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Administrator
 
-## Expanding the ESLint configuration
+- Admin overview dashboard
+- Registration approvals and rejections
+- User and account-holder management
+- Account balance and ledger views
+- Deposit creation
+- Transaction search, review, and approval actions
+- Audit log viewer
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Authentication is protected by role-based routing. Refresh-token and CSRF-cookie handling keep authenticated sessions working across page refreshes.
 
-# redbank-frontend
+## Requirements
+
+- Node.js 22 or newer
+- npm
+- RedBank backend running locally or at a configured API URL
+
+## Setup
+
+```bash
+npm install
+cp .env.example .env.local
+```
+
+Update `.env.local` when needed:
+
+```env
+VITE_PORT=3001
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The app is available at [http://localhost:3001](http://localhost:3001).
+
+## Common commands
+
+```bash
+npm run build          # Create a production build
+npm run preview        # Preview the production build
+npm run test:run       # Run tests once
+npm run test           # Run tests in watch mode
+npm run lint           # Check ESLint rules
+npm run format:check   # Check Prettier formatting
+```
+
+## Backend requirements
+
+The backend must allow requests from `http://localhost:3001`, allow credentials, and provide the authentication and account APIs under `/api`. Authentication uses HTTP cookies for refresh and CSRF tokens, so cookies and CSRF headers must be configured correctly on the backend.
+
+## CI
+
+GitHub Actions runs formatting, linting, tests, and the production build on pushes and pull requests. It can also be started manually from the **Actions** tab using the **Frontend CI** workflow.
