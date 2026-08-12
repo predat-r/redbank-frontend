@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "prepare": "husky",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:e2e": "node --env-file-if-exists=.env.e2e node_modules/@cucumber/cucumber/bin/cucumber-js --config e2e/cucumber.js"
   },
   "lint-staged": {
     "*.{js,jsx,css,json,md}": [
