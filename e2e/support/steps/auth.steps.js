@@ -39,6 +39,16 @@ Given('the admin user is on the login page', async function () {
   await this.pages.login.open();
 });
 
+Given('the admin user is logged in with valid credentials', async function () {
+  await this.pages.login.open();
+  const { E2E_ADMIN_EMAIL: email, E2E_ADMIN_PASSWORD: password } = process.env;
+  if (!email || !password) {
+    throw new Error('Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD in .env.e2e.');
+  }
+  await this.pages.login.login(email, password);
+  await this.pages.admin.waitForHeading();
+});
+
 When('the admin user logs in with valid credentials', async function () {
   const { E2E_ADMIN_EMAIL: email, E2E_ADMIN_PASSWORD: password } = process.env;
   if (!email || !password) {
