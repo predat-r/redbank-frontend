@@ -79,3 +79,7 @@ HEADLESS=true # optional
 ```
 
 `.env.e2e` is ignored by Git and should never contain production credentials.
+
+Successful-registration scenarios create real pending test accounts. The suite generates unique
+email addresses, phone numbers, names, and addresses on every run; reset the E2E database
+periodically if needed.
