@@ -107,14 +107,13 @@ export function ProfilePage() {
         message:
           'Your account has been temporarily frozen. Outgoing transfers are locked.',
       });
-    } catch {
-      // Fallback UI handling
-      setCustomStatus('FROZEN');
+    } catch (error) {
       setIsFreezeModalOpen(false);
       addToast({
-        type: 'warning',
-        title: 'Account Frozen',
-        message: 'Your account freeze request has been executed.',
+        type: 'error',
+        title: 'Freeze Failed',
+        message:
+          error?.response?.data?.message || 'Failed to freeze account. Please try again.',
       });
     }
   };
@@ -130,14 +129,14 @@ export function ProfilePage() {
         message:
           'Your account has been restored to Active status. Transfers and withdrawals are unlocked.',
       });
-    } catch {
-      // Fallback UI handling
-      setCustomStatus('ACTIVE');
+    } catch (error) {
       setIsUnfreezeModalOpen(false);
       addToast({
-        type: 'success',
-        title: 'Account Unfrozen',
-        message: 'Your account unfreeze request has been executed.',
+        type: 'error',
+        title: 'Unfreeze Failed',
+        message:
+          error?.response?.data?.message ||
+          'You cannot unfreeze this account. Please contact support.',
       });
     }
   };
