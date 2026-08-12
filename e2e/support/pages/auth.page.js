@@ -9,7 +9,7 @@ export class AuthPageObject {
   locators = {
     emailInput: By.xpath("//input[@name='email' or @type='email']"),
     passwordInput: By.xpath("//input[@name='password' or @type='password']"),
-    submitButton: By.xpath("//button[@type='submit' and contains(., 'Sign In')]"),
+    submitButton: By.xpath("//button[@type='submit']"),
     dashboardHeader: By.xpath(
       "//*[contains(text(), 'Dashboard') or contains(text(), 'Welcome')]"
     ),
