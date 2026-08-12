@@ -1,6 +1,6 @@
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { EmptyState } from '../../components/ui/EmptyState.jsx';
-import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
 import { Table } from '../../components/ui/Table.jsx';
 import {
   useAdminBalanceLedger,
@@ -23,7 +23,22 @@ export function BalancePage() {
     {
       key: 'indicator',
       header: 'Direction',
-      render: (v) => <StatusBadge status={v === 'CREDIT' ? 'COMPLETED' : 'CANCELLED'} />,
+      render: (v) => {
+        const isCredit = String(v || '').toUpperCase() === 'CREDIT';
+        const label = isCredit ? 'Credit' : 'Debit';
+        const Icon = isCredit ? ArrowDownLeft : ArrowUpRight;
+
+        return (
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+              isCredit ? 'bg-success-50 text-success-600' : 'bg-error-50 text-error-600'
+            }`}
+          >
+            <Icon aria-hidden="true" className="size-3.5" />
+            {label}
+          </span>
+        );
+      },
     },
     { key: 'amount', header: 'Amount', sortable: true, numeric: true },
     { key: 'runningBalance', header: 'Running balance', sortable: true, numeric: true },
