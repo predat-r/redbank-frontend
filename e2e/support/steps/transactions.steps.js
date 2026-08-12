@@ -14,6 +14,8 @@ Given('I navigate to the {string} page', async function (pageName) {
     await transactionsPage.gotoTransfer(this.baseUrl || 'http://localhost:3001');
   } else if (pageName === 'Transaction History' || pageName === 'History') {
     await transactionsPage.gotoHistory(this.baseUrl || 'http://localhost:3001');
+  } else if (pageName === 'Dashboard') {
+    await transactionsPage.gotoDashboard(this.baseUrl || 'http://localhost:3001');
   }
 });
 
@@ -42,7 +44,26 @@ When('I click {string}', async function (buttonText) {
     await transactionsPage.confirmTransaction();
   } else if (buttonText === 'Apply Filters') {
     await transactionsPage.applyFilters();
+  } else if (buttonText === 'View All') {
+    await transactionsPage.clickDashboardViewAll();
+  } else if (buttonText === 'Refresh') {
+    await transactionsPage.clickRefresh();
   }
+});
+
+When('I click the {string} quick action card', async function (cardName) {
+  const transactionsPage = new TransactionsPageObject(this.driver);
+  if (cardName.includes('Transfer')) {
+    await transactionsPage.clickDashboardTransferCard();
+  } else if (cardName.includes('Withdraw')) {
+    await transactionsPage.clickDashboardWithdrawCard();
+  }
+});
+
+Then('I should be navigated to the {string} page', async function (expectedPath) {
+  const transactionsPage = new TransactionsPageObject(this.driver);
+  const currentPath = await transactionsPage.getCurrentPath();
+  expect(currentPath).toBe(expectedPath);
 });
 
 Then('I should see the transfer verification summary', async function () {

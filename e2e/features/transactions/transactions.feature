@@ -57,3 +57,27 @@ Feature: Transaction Management
     When I click on the first transaction in the ledger table
     Then the "Transaction Receipt" modal should be displayed
     And I should see the transaction reference code and status badge
+
+  @transactions @dashboard @navigation
+  Scenario: Navigate to transaction history from Dashboard View All button
+    Given I navigate to the "Dashboard" page
+    When I click "View All"
+    Then I should be navigated to the "/history" page
+
+  @transactions @dashboard @navigation
+  Scenario: Navigate to fund transfer from Dashboard quick action card
+    Given I navigate to the "Dashboard" page
+    When I click the "Transfer Funds" quick action card
+    Then I should be navigated to the "/transfer" page
+
+  @transactions @dashboard @navigation
+  Scenario: Navigate to cash withdrawal from Dashboard quick action card
+    Given I navigate to the "Dashboard" page
+    When I click the "Withdraw Cash" quick action card
+    Then I should be navigated to the "/withdraw" page
+
+  @transactions @history @refresh
+  Scenario: Refresh transaction history table ledger
+    Given I navigate to the "Transaction History" page
+    When I click "Refresh"
+    Then I should be navigated to the "/history" page

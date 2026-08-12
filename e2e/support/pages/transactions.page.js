@@ -68,6 +68,12 @@ export class TransactionsPageObject {
     modalTitle: By.xpath(
       "//div[@role='dialog']//*[contains(text(), 'Transaction Receipt') or contains(text(), 'Digital ledger')] | //div[@role='dialog']"
     ),
+
+    // Dashboard & Navigation
+    dashboardViewAllButton: By.xpath("//button[contains(., 'View All')]"),
+    dashboardTransferCard: By.xpath("//*[contains(text(), 'Transfer Funds')]"),
+    dashboardWithdrawCard: By.xpath("//*[contains(text(), 'Withdraw Cash')]"),
+    refreshButton: By.xpath("//button[contains(., 'Refresh')]"),
   };
 
   async gotoTransfer(baseUrl = 'http://localhost:3001') {
@@ -78,6 +84,51 @@ export class TransactionsPageObject {
   async gotoHistory(baseUrl = 'http://localhost:3001') {
     await this.driver.get(`${baseUrl}/history`);
     await this.driver.wait(until.elementLocated(this.locators.historyTable), 5000);
+  }
+
+  async gotoDashboard(baseUrl = 'http://localhost:3001') {
+    await this.driver.get(`${baseUrl}/dashboard`);
+    await this.driver.wait(
+      until.elementLocated(this.locators.dashboardViewAllButton),
+      5000
+    );
+  }
+
+  async clickDashboardViewAll() {
+    const btn = await this.driver.wait(
+      until.elementLocated(this.locators.dashboardViewAllButton),
+      5000
+    );
+    await btn.click();
+  }
+
+  async clickDashboardTransferCard() {
+    const card = await this.driver.wait(
+      until.elementLocated(this.locators.dashboardTransferCard),
+      5000
+    );
+    await card.click();
+  }
+
+  async clickDashboardWithdrawCard() {
+    const card = await this.driver.wait(
+      until.elementLocated(this.locators.dashboardWithdrawCard),
+      5000
+    );
+    await card.click();
+  }
+
+  async clickRefresh() {
+    const btn = await this.driver.wait(
+      until.elementLocated(this.locators.refreshButton),
+      5000
+    );
+    await btn.click();
+  }
+
+  async getCurrentPath() {
+    const url = await this.driver.getCurrentUrl();
+    return new URL(url).pathname;
   }
 
   async selectTab(tabName) {
