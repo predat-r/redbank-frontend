@@ -17,7 +17,7 @@ export const Topbar = ({
         : 'User';
 
   return (
-    <header className="sticky top-0 z-30 h-[72px] bg-neutral-0 border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-30 h-[72px] glass-panel px-4 sm:px-6 flex items-center justify-between gap-4 shadow-sm">
       {/* Left: Mobile Toggle & Page Search */}
       <div className="flex items-center gap-3 flex-1 max-w-md">
         <button
