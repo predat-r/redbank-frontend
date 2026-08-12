@@ -1,12 +1,9 @@
 import api from './axios.js';
-
-function pageableParams({ page = 0, size = 10, sort } = {}) {
-  return {
-    page,
-    size,
-    ...(sort?.length ? { sort } : {}),
-  };
-}
+import {
+  createIdempotencyKey,
+  pageableParams,
+  withoutIdempotencyKey,
+} from './requestParams.js';
 
 export async function getPendingRegistrations(options = {}) {
   const response = await api.get('/admin/registrations', {
@@ -120,14 +117,8 @@ export async function getAdminTransactionsByAccount(accountNumber, options = {})
 }
 
 export async function createAdminDeposit(payload, idempotencyKey) {
-  const key =
-    (typeof idempotencyKey === 'string' && idempotencyKey) ||
-    (typeof payload?.idempotencyKey === 'string' && payload.idempotencyKey) ||
-    (typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `idemp-${Date.now()}`);
-  const cleanPayload = { ...payload };
-  delete cleanPayload.idempotencyKey;
+  const key = createIdempotencyKey(payload, idempotencyKey);
+  const cleanPayload = withoutIdempotencyKey(payload);
   const response = await api.post('/admin/deposits', cleanPayload, {
     headers: {
       'X-Idempotency-Key': key,
