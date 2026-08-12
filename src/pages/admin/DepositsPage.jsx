@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Landmark } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronDown, Landmark } from 'lucide-react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Input } from '../../components/ui/Input.jsx';
@@ -15,6 +15,8 @@ export function DepositsPage() {
     description: '',
   });
   const mutation = useCreateAdminDeposit();
+  const accountPickerRef = useRef(null);
+  const [accountPickerOpen, setAccountPickerOpen] = useState(false);
   const accounts = useAdminAccounts({ page: 0, size: 100 });
   const accountOptions = (accounts.data?.content ?? [])
     .filter((account) => account.accountStatus !== 'CLOSED')
@@ -22,6 +24,25 @@ export function DepositsPage() {
       accountNumber: account.accountNumber,
       holderName: account.user?.name || account.ownerName || `User ${account.userId}`,
     }));
+  const matchingAccounts = accountOptions.filter(({ accountNumber, holderName }) => {
+    const search = values.accountNumber.trim().toLowerCase();
+    return (
+      !search ||
+      accountNumber.toLowerCase().includes(search) ||
+      holderName.toLowerCase().includes(search)
+    );
+  });
+
+  useEffect(() => {
+    function closePicker(event) {
+      if (!accountPickerRef.current?.contains(event.target)) {
+        setAccountPickerOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', closePicker);
+    return () => document.removeEventListener('mousedown', closePicker);
+  }, []);
   function submit(e) {
     e.preventDefault();
     mutation.mutate({
@@ -41,25 +62,56 @@ export function DepositsPage() {
       </header>
       <div className="max-w-2xl rounded-xl border border-neutral-200 bg-neutral-0 p-6 shadow-sm">
         <form onSubmit={submit} className="space-y-4">
-          <Input
-            list="deposit-account-options"
-            label="Account number"
-            placeholder={
-              accounts.isLoading
-                ? 'Loading accounts…'
-                : 'Type or select an account number'
-            }
-            value={values.accountNumber}
-            onChange={(e) => setValues({ ...values, accountNumber: e.target.value })}
-            required
-          />
-          <datalist id="deposit-account-options">
-            {accountOptions.map(({ accountNumber, holderName }) => (
-              <option key={accountNumber} value={accountNumber}>
-                {holderName} — {accountNumber}
-              </option>
-            ))}
-          </datalist>
+          <div className="relative" ref={accountPickerRef}>
+            <Input
+              label="Account number"
+              placeholder={
+                accounts.isLoading
+                  ? 'Loading accounts…'
+                  : 'Type or select an account number'
+              }
+              value={values.accountNumber}
+              onFocus={() => setAccountPickerOpen(true)}
+              onChange={(e) => {
+                setValues({ ...values, accountNumber: e.target.value });
+                setAccountPickerOpen(true);
+              }}
+              required
+            />
+            <ChevronDown
+              aria-hidden="true"
+              className="pointer-events-none absolute right-3.5 top-9 size-4 text-neutral-500"
+            />
+            {accountPickerOpen && (
+              <div className="absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-neutral-200 bg-neutral-0 py-1 shadow-lg">
+                {matchingAccounts.length ? (
+                  matchingAccounts.map(({ accountNumber, holderName }) => (
+                    <button
+                      className="flex w-full flex-col items-start px-3.5 py-2.5 text-left hover:bg-neutral-50"
+                      key={accountNumber}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => {
+                        setValues({ ...values, accountNumber });
+                        setAccountPickerOpen(false);
+                      }}
+                      type="button"
+                    >
+                      <span className="text-sm font-medium text-neutral-800">
+                        {holderName}
+                      </span>
+                      <span className="font-mono text-xs text-neutral-500">
+                        {accountNumber}
+                      </span>
+                    </button>
+                  ))
+                ) : (
+                  <p className="px-3.5 py-3 text-sm text-neutral-500">
+                    No matching accounts found.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
           <Input
             label="Amount"
             type="number"
