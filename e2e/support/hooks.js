@@ -34,8 +34,6 @@ Before(async function () {
     registration: new RegistrationPage(this.driver, this.baseUrl),
     adminRegistrations: new AdminRegistrationsPage(this.driver, this.baseUrl),
     profile: new ProfilePage(this.driver, this.baseUrl),
-    adminRegistrations: new AdminRegistrationsPage(this.driver, this.baseUrl),
-    profile: new ProfilePage(this.driver, this.baseUrl),
   };
 });
 
