@@ -14,8 +14,8 @@
     "prepare": "husky",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:e2e": "HEADLESS=true cucumber-js 'e2e/features/**/*.feature' --import 'e2e/support/**/*.js'",
-    "test:e2e:headed": "HEADLESS=false cucumber-js 'e2e/features/**/*.feature' --import 'e2e/support/**/*.js'"
+    "test:e2e": "HEADLESS=true node --env-file=.env ./node_modules/@cucumber/cucumber/bin/cucumber-js 'e2e/features/**/*.feature' --import 'e2e/support/**/*.js'",
+    "test:e2e:headed": "HEADLESS=false node --env-file=.env ./node_modules/@cucumber/cucumber/bin/cucumber-js 'e2e/features/**/*.feature' --import 'e2e/support/**/*.js'"
   },
   "lint-staged": {
     "*.{js,jsx,css,json,md}": [
