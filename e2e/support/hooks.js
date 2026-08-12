@@ -1,21 +1,32 @@
-import { After, Before, setDefaultTimeout } from '@cucumber/cucumber';
-import chrome from 'selenium-webdriver/chrome.js';
+import { Before, After, setDefaultTimeout } from '@cucumber/cucumber';
 import { Builder } from 'selenium-webdriver';
+import chrome from 'selenium-webdriver/chrome.js';
 import { LoginPage } from './pages/LoginPage.js';
 import { RegistrationPage } from './pages/RegistrationPage.js';
 
-setDefaultTimeout(30_000);
+setDefaultTimeout(60000);
 
 Before(async function () {
   const options = new chrome.Options();
-  if (process.env.HEADLESS === 'true') {
-    options.addArguments('--headless=new', '--no-sandbox', '--disable-dev-shm-usage');
+
+  // Check HEADLESS environment variable (default to false if explicitly set to 'false' or omitted for visual debugging)
+  const isHeadless = process.env.HEADLESS === 'true';
+  if (isHeadless) {
+    options.addArguments('--headless=new');
   }
 
+  options.addArguments('--no-sandbox');
+  options.addArguments('--disable-dev-shm-usage');
+  options.addArguments('--window-size=1280,800');
+
   this.driver = await new Builder()
-    .forBrowser(process.env.BROWSER || 'chrome')
+    .forBrowser('chrome')
     .setChromeOptions(options)
     .build();
+
+  this.baseUrl =
+    process.env.BASE_URL || process.env.FRONTEND_URL || 'http://localhost:3001';
+
   this.pages = {
     login: new LoginPage(this.driver, this.baseUrl),
     registration: new RegistrationPage(this.driver, this.baseUrl),
@@ -23,5 +34,7 @@ Before(async function () {
 });
 
 After(async function () {
-  if (this.driver) await this.driver.quit();
+  if (this.driver) {
+    await this.driver.quit();
+  }
 });

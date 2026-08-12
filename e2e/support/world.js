@@ -1,12 +1,11 @@
-import { setWorldConstructor, World } from '@cucumber/cucumber';
+import { setWorldConstructor } from '@cucumber/cucumber';
 
-class RedBankWorld extends World {
-  constructor(options) {
-    super(options);
-    this.baseUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+export class CustomWorld {
+  constructor({ parameters }) {
+    this.parameters = parameters;
     this.driver = null;
-    this.pages = {};
+    this.baseUrl = process.env.BASE_URL || 'http://localhost:3001';
   }
 }
 
-setWorldConstructor(RedBankWorld);
+setWorldConstructor(CustomWorld);
