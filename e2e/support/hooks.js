@@ -23,7 +23,7 @@ Before(async function () {
     .setChromeOptions(options)
     .build();
 
-  this.baseUrl = process.env.BASE_URL || 'http://localhost:5173';
+  this.baseUrl = process.env.BASE_URL || 'http://localhost:3001';
 });
 
 After(async function () {

@@ -10,9 +10,9 @@ Given('I am logged in as an active account holder', async function () {
 Given('I navigate to the {string} page', async function (pageName) {
   const transactionsPage = new TransactionsPageObject(this.driver);
   if (pageName === 'Transfers & Payments' || pageName === 'Transfer') {
-    await transactionsPage.gotoTransfer(this.baseUrl || 'http://localhost:5173');
+    await transactionsPage.gotoTransfer(this.baseUrl || 'http://localhost:3001');
   } else if (pageName === 'Transaction History' || pageName === 'History') {
-    await transactionsPage.gotoHistory(this.baseUrl || 'http://localhost:5173');
+    await transactionsPage.gotoHistory(this.baseUrl || 'http://localhost:3001');
   }
 });
 

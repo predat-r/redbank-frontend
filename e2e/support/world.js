@@ -5,7 +5,7 @@ export class CustomWorld {
   constructor({ parameters }) {
     this.parameters = parameters;
     this.driver = null;
-    this.baseUrl = process.env.BASE_URL || 'http://localhost:5173';
+    this.baseUrl = process.env.BASE_URL || 'http://localhost:3001';
   }
 }
 

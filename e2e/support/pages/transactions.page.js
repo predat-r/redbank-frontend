@@ -64,12 +64,12 @@ export class TransactionsPageObject {
     modalTitle: By.xpath("//*[contains(text(), 'Transaction Receipt')]"),
   };
 
-  async gotoTransfer(baseUrl = 'http://localhost:5173') {
+  async gotoTransfer(baseUrl = 'http://localhost:3001') {
     await this.driver.get(`${baseUrl}/transfer`);
     await this.driver.wait(until.elementLocated(this.locators.continueButton), 5000);
   }
 
-  async gotoHistory(baseUrl = 'http://localhost:5173') {
+  async gotoHistory(baseUrl = 'http://localhost:3001') {
     await this.driver.get(`${baseUrl}/history`);
     await this.driver.wait(until.elementLocated(this.locators.historyTable), 5000);
   }
