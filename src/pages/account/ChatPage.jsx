@@ -5,9 +5,42 @@ import {
   useMyAccount,
 } from '../../features/account/account.queries';
 import { AppShell } from '../../layouts/AppShell';
-import { Send, Bot, XCircle, RefreshCw, ArrowDown } from 'lucide-react';
+import { Send, Bot, XCircle, RefreshCw, ArrowDown, RotateCcw } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'redbank_chat_history';
+
+const formatMessageText = (text, isUser) => {
+  if (isUser) return text;
+
+  // Regex for amounts: optional + or -, followed by $, digits, commas, optional decimals.
+  const amountRegex = /([+-]?\$\d+(?:,\d{3})*(?:\.\d+)?)/g;
+  const parts = text.split(amountRegex);
+
+  return parts.map((part, i) => {
+    if (part.match(amountRegex)) {
+      const isNegative = part.startsWith('-');
+      return (
+        <span
+          key={i}
+          style={{
+            backgroundColor: isNegative
+              ? 'var(--color-error-50)'
+              : 'var(--color-neutral-100)',
+            color: isNegative ? 'var(--color-error-600)' : 'var(--color-primary-700)',
+            padding: '2px 8px',
+            borderRadius: '6px',
+            fontWeight: 700,
+            fontVariantNumeric: 'tabular-nums',
+            display: 'inline-block',
+          }}
+        >
+          {part.trim()}
+        </span>
+      );
+    }
+    return part;
+  });
+};
 
 export const ChatPage = () => {
   const navigate = useNavigate();
@@ -101,15 +134,34 @@ export const ChatPage = () => {
     setInputValue(msgText);
   };
 
+  const handleClearChat = () => {
+    if (messages.length === 0) return;
+    setMessages([]);
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    } catch (e) {
+      console.error('Failed to clear chat history', e);
+    }
+  };
+
   return (
     <AppShell activePath="/chat" onNavigate={navigate} user={userProfile}>
       <div className="flex flex-col h-[calc(100vh-12rem)] min-h-[400px] w-full bg-neutral-0 rounded-md border border-neutral-200 shadow-md overflow-hidden relative">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-neutral-200 bg-neutral-0 shrink-0">
+        <div className="px-6 py-4 border-b border-neutral-200 bg-neutral-0 shrink-0 flex items-center justify-between">
           <h3 className="text-[18px] leading-[26px] font-semibold text-neutral-800 flex items-center gap-2">
             <Bot size={24} strokeWidth={1.75} className="text-slate-600" />
             RedAssist
           </h3>
+          <button
+            onClick={handleClearChat}
+            disabled={messages.length === 0}
+            className="p-2 -mr-2 text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Clear chat"
+            aria-label="Clear chat"
+          >
+            <RotateCcw size={20} strokeWidth={1.75} />
+          </button>
         </div>
 
         {/* Chat Area */}
@@ -184,7 +236,7 @@ export const ChatPage = () => {
                           className="mt-0.5 shrink-0"
                         />
                       )}
-                      <span>{msg.text}</span>
+                      <span>{formatMessageText(msg.text, isUser)}</span>
                     </div>
 
                     {msg.needsClarification && !isUser && (
