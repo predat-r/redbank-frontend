@@ -1,4 +1,4 @@
-import api, { refreshClient } from './axios.js';
+import api, { refreshClient, refreshCsrfToken } from './axios.js';
 
 export async function registerAccount(payload) {
   const response = await refreshClient.post('/auth/register', payload);
@@ -11,6 +11,7 @@ export async function login(payload) {
 }
 
 export async function logout() {
+  await refreshCsrfToken();
   await refreshClient.post('/auth/logout');
 }
 

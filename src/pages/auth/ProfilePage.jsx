@@ -54,8 +54,16 @@ export function ProfilePage() {
   const auth = useAuth();
 
   // Real Backend Queries
-  const { data: realAccount } = useMyAccount();
-  const { data: realRegStatus } = useRegistrationStatus();
+  const {
+    data: realAccount,
+    isLoading: isAccountLoading,
+    isError: isAccountError,
+  } = useMyAccount();
+  const {
+    data: realRegStatus,
+    isLoading: isRegistrationLoading,
+    isError: isRegistrationError,
+  } = useRegistrationStatus();
   const freezeMutation = useFreezeAccount();
   const unfreezeMutation = useUnfreezeAccount();
   const deactivateMutation = useDeactivateAccount();
@@ -69,19 +77,21 @@ export function ProfilePage() {
 
   // Derived Profile Data from real backend response (or overrides)
   const profile = {
-    name: formOverrides.name ?? realUser?.name ?? auth?.claims?.sub ?? 'Ahmad Tariq',
-    email: realUser?.email ?? auth?.claims?.email ?? 'test@gmail.com',
-    phoneNumber: formOverrides.phoneNumber ?? realUser?.phoneNumber ?? '1234567890',
-    address: formOverrides.address ?? realUser?.address ?? 'DHA EME',
+    name: formOverrides.name ?? realUser?.name ?? auth?.claims?.sub ?? 'Not available',
+    email: realUser?.email ?? auth?.claims?.email ?? 'Not available',
+    phoneNumber: formOverrides.phoneNumber ?? realUser?.phoneNumber ?? 'Not available',
+    address: formOverrides.address ?? realUser?.address ?? 'Not available',
     status:
       customStatus ??
       realAccount?.accountStatus ??
       realUser?.status ??
       realRegStatus?.status ??
-      'ACTIVE',
+      'UNKNOWN',
     role: auth?.roles?.[0] ?? 'ROLE_ACCOUNT_HOLDER',
-    createdAt: realUser?.createdAt ?? realAccount?.createdAt ?? '2026-08-06T12:20:11Z',
+    createdAt: realUser?.createdAt ?? realAccount?.createdAt ?? null,
   };
+  const isProfileLoading = isAccountLoading || isRegistrationLoading;
+  const isProfileError = isAccountError && isRegistrationError;
   const profileForm = {
     name: profile.name,
     phoneNumber: profile.phoneNumber,
@@ -276,6 +286,14 @@ export function ProfilePage() {
           </Button>
         </div>
 
+        {(isProfileLoading || isProfileError) && (
+          <Alert tone={isProfileError ? 'error' : 'info'}>
+            {isProfileError
+              ? 'Profile data is currently unavailable. Please try again later.'
+              : 'Loading profile data…'}
+          </Alert>
+        )}
+
         {/* User Profile Banner Hero Card */}
         <Card className="p-6 bg-gradient-to-r from-neutral-0 via-slate-50 to-neutral-0 border border-neutral-200 rounded-xl shadow-md">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -303,10 +321,12 @@ export function ProfilePage() {
                   </span>
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" /> Member since{' '}
-                    {new Date(profile.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      year: 'numeric',
-                    })}
+                    {profile.createdAt
+                      ? new Date(profile.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                      : 'Not available'}
                   </span>
                 </div>
               </div>
@@ -431,7 +451,9 @@ export function ProfilePage() {
                   <div className="flex justify-between py-1">
                     <span className="text-neutral-500">Registration Date</span>
                     <span className="font-mono text-neutral-700">
-                      {new Date(profile.createdAt).toLocaleDateString()}
+                      {profile.createdAt
+                        ? new Date(profile.createdAt).toLocaleDateString()
+                        : 'Not available'}
                     </span>
                   </div>
                 </div>

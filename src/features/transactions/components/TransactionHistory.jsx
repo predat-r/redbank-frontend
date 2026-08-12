@@ -18,7 +18,6 @@ import { useMyTransactions } from '../transactions.queries';
 import { useMyAccount } from '../../account/account.queries';
 
 export const TransactionHistory = ({
-  transactions,
   onRowClick,
   limit,
   showViewAll = false,
@@ -92,62 +91,13 @@ export const TransactionHistory = ({
   } = useMyTransactions(queryParams);
 
   const rawTransactions = useMemo(() => {
-    if (transactions && Array.isArray(transactions) && transactions.length > 0) {
-      return transactions;
-    }
     if (apiResponse?.content) {
       return apiResponse.content;
     }
     return [];
-  }, [transactions, apiResponse]);
+  }, [apiResponse]);
 
-  // Filter transactions locally if using passed custom mock array
-  const filteredData = useMemo(() => {
-    if (!transactions || transactions.length === 0) {
-      return rawTransactions;
-    }
-
-    return rawTransactions.filter((item) => {
-      // Type filter
-      if (appliedFilters.type === 'DEPOSIT' && item.type !== 'DEPOSIT') return false;
-      if (
-        appliedFilters.type === 'WITHDRAWAL' &&
-        item.type !== 'WITHDRAWAL' &&
-        item.type !== 'TRANSFER'
-      )
-        return false;
-
-      // Status filter
-      if (appliedFilters.status !== 'ALL' && item.status !== appliedFilters.status)
-        return false;
-
-      // Account number filter
-      if (appliedFilters.accountNumber.trim()) {
-        const query = appliedFilters.accountNumber.trim().toLowerCase();
-        const srcAcc = item.sourceAccountNumber?.toLowerCase() || '';
-        const destAcc = item.destinationAccountNumber?.toLowerCase() || '';
-        if (!srcAcc.includes(query) && !destAcc.includes(query)) return false;
-      }
-
-      // Start Date filter
-      if (appliedFilters.startDate) {
-        const itemDate = new Date(item.createdAt);
-        const start = new Date(appliedFilters.startDate);
-        start.setHours(0, 0, 0, 0);
-        if (itemDate < start) return false;
-      }
-
-      // End Date filter
-      if (appliedFilters.endDate) {
-        const itemDate = new Date(item.createdAt);
-        const end = new Date(appliedFilters.endDate);
-        end.setHours(23, 59, 59, 999);
-        if (itemDate > end) return false;
-      }
-
-      return true;
-    });
-  }, [transactions, rawTransactions, appliedFilters]);
+  const filteredData = rawTransactions;
 
   // KPI Metrics Calculation based on filtered dataset
   const metrics = useMemo(() => {
@@ -183,12 +133,8 @@ export const TransactionHistory = ({
     if (limit) {
       return filteredData.slice(0, limit);
     }
-    if (!transactions || transactions.length === 0) {
-      return filteredData; // API handles pagination
-    }
-    const start = page * pageSize;
-    return filteredData.slice(start, start + pageSize);
-  }, [filteredData, limit, transactions, page, pageSize]);
+    return filteredData; // API handles pagination
+  }, [filteredData, limit]);
 
   const totalPages = limit
     ? 1
@@ -631,7 +577,7 @@ export const TransactionHistory = ({
         <Table
           columns={columns}
           data={displayData}
-          loading={apiLoading && (!transactions || transactions.length === 0)}
+          loading={apiLoading}
           keyField="id"
           onRowClick={onRowClick}
           emptyMessage="No transactions matching your specific filter criteria."

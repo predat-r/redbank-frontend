@@ -34,14 +34,14 @@ export const AppShell = ({ children, activePath = '/dashboard', onNavigate, user
       realAccount?.user?.name ||
       (user?.name && user?.name !== 'Alexander Wright' ? user?.name : null) ||
       auth?.claims?.sub ||
-      'Ahmad Tariq',
+      'Not available',
     email:
       realAccount?.user?.email ||
       (user?.email && user?.email !== 'alexander.wright@example.com'
         ? user?.email
         : null) ||
       auth?.claims?.email ||
-      'test@gmail.com',
+      'Not available',
     role: user?.role || auth?.roles?.[0] || 'ROLE_ACCOUNT_HOLDER',
   };
 

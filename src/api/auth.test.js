@@ -37,6 +37,10 @@ describe('public auth API', () => {
     refreshClient.defaults.adapter = async (config) => {
       expect(config.withCredentials).toBe(true);
       expect(config.data).toBeUndefined();
+      if (config.url.endsWith('/auth/csrf')) {
+        return response(config, { token: 'test-csrf-token' });
+      }
+      expect(config.headers['X-XSRF-TOKEN']).toBe('test-csrf-token');
       return response(config, null, 204);
     };
 
