@@ -45,3 +45,25 @@ The transaction test suite covers end-to-end customer financial operations acros
 
 5. **Receipt Modal Inspection (`@transactions @history @receipt`)**:
    - Clicks transaction ledger row and verifies details inside the `Transaction Receipt` modal.
+
+## Running E2E Tests
+
+### Headed Mode (`headless: false` - Visible Browser UI)
+
+To launch tests with an interactive, visible Chrome browser window:
+
+```bash
+npm run test:e2e:headed
+```
+
+Or directly using the environment variable:
+
+```bash
+HEADLESS=false npx cucumber-js e2e/features/transactions/transactions.feature --import e2e/support/**/*.js
+```
+
+### Headless Mode (`headless: true` - CI / Background)
+
+```bash
+npm run test:e2e
+```
