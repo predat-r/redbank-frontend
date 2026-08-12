@@ -26,23 +26,31 @@ export class LoginPage {
   }
 
   async signOut() {
-    const signOutButton = By.xpath("//button[normalize-space()='Sign Out']");
-    const visibleSignOutButtons = await this.driver.findElements(signOutButton);
+    const signOutButton = By.xpath(
+      "//button[@title='Sign Out' or normalize-space()='Sign Out']"
+    );
+    const directButtons = await this.driver.findElements(signOutButton);
 
-    if (visibleSignOutButtons.length) {
-      await visibleSignOutButtons[0].click();
-      await this.driver.wait(
-        until.elementLocated(By.xpath("//*[normalize-space()='Confirm Sign Out']"))
-      );
-      await this.driver
-        .findElement(By.xpath("(//button[normalize-space()='Sign Out'])[last()]"))
-        .click();
-      return;
+    if (directButtons.length) {
+      await directButtons[0].click();
+    } else {
+      await this.driver.findElement(By.css('header button:not([aria-label])')).click();
+      await this.driver.wait(until.elementLocated(signOutButton));
+      await this.driver.findElement(signOutButton).click();
     }
 
-    await this.driver.findElement(By.css('header div.relative > button')).click();
-    await this.driver.wait(until.elementLocated(signOutButton));
-    await this.driver.findElement(signOutButton).click();
+    const confirmation = await this.driver.findElements(
+      By.xpath("//*[normalize-space()='Confirm Sign Out']")
+    );
+    if (confirmation.length) {
+      await this.driver
+        .findElement(
+          By.xpath("//*[@role='dialog']//button[normalize-space()='Sign Out']")
+        )
+        .click();
+    }
+
+    await this.waitForLoginPage();
   }
 
   async waitForLoginPage() {
