@@ -1,7 +1,8 @@
-/* global process */
 import { Before, After, setDefaultTimeout } from '@cucumber/cucumber';
 import { Builder } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome.js';
+import { LoginPage } from './pages/LoginPage.js';
+import { RegistrationPage } from './pages/RegistrationPage.js';
 
 setDefaultTimeout(60000);
 
@@ -23,7 +24,13 @@ Before(async function () {
     .setChromeOptions(options)
     .build();
 
-  this.baseUrl = process.env.BASE_URL || 'http://localhost:3001';
+  this.baseUrl =
+    process.env.BASE_URL || process.env.FRONTEND_URL || 'http://localhost:3001';
+
+  this.pages = {
+    login: new LoginPage(this.driver, this.baseUrl),
+    registration: new RegistrationPage(this.driver, this.baseUrl),
+  };
 });
 
 After(async function () {

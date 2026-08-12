@@ -40,7 +40,7 @@ export const Modal = ({
       <div
         className={`
           relative w-full ${maxWidth} bg-neutral-0 rounded-xl shadow-lg border border-neutral-200 p-6 z-10
-          animate-in fade-in slide-in-from-bottom-2 duration-200 ${className}
+          apple-modal-enter ${className}
         `}
         role="dialog"
         aria-modal="true"

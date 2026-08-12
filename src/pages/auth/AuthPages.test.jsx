@@ -33,7 +33,7 @@ describe('auth pages', () => {
       <MemoryRouter initialEntries={['/login']}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin/registrations" element={<p>Admin approvals</p>} />
+          <Route path="/admin" element={<p>Admin dashboard</p>} />
         </Routes>
       </MemoryRouter>
     );
@@ -46,7 +46,7 @@ describe('auth pages', () => {
       email: 'admin@example.com',
       password: 'password',
     });
-    expect(await screen.findByText('Admin approvals')).toBeInTheDocument();
+    expect(await screen.findByText('Admin dashboard')).toBeInTheDocument();
     expect(window.localStorage).toHaveLength(0);
     expect(window.sessionStorage).toHaveLength(0);
   });

@@ -45,7 +45,7 @@ export function LoginPage() {
       if (intendedPath && intendedPath !== '/login') {
         navigate(intendedPath, { replace: true });
       } else if (roles.includes('ROLE_ADMIN')) {
-        navigate('/admin/registrations', { replace: true });
+        navigate('/admin', { replace: true });
       } else if (roles.includes('ROLE_ACCOUNT_HOLDER')) {
         navigate('/dashboard', { replace: true });
       } else {

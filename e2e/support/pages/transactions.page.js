@@ -304,6 +304,7 @@ export class TransactionsPageObject {
       until.elementLocated(this.locators.modalTitle),
       5000
     );
+    await this.driver.wait(until.elementIsVisible(modal), 5000);
     return await modal.isDisplayed();
   }
 }
