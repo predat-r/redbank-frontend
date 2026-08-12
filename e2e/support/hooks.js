@@ -5,6 +5,7 @@ import { LoginPage } from './pages/LoginPage.js';
 import { AdminRegistrationsPage } from './pages/AdminRegistrationsPage.js';
 import { RegistrationPage } from './pages/RegistrationPage.js';
 import { ProfilePage } from './pages/ProfilePage.js';
+import { ChatPage } from './pages/ChatPage.js';
 import { AdminPage } from './pages/AdminPage.js';
 
 setDefaultTimeout(60000);
@@ -35,6 +36,7 @@ Before(async function () {
     registration: new RegistrationPage(this.driver, this.baseUrl),
     adminRegistrations: new AdminRegistrationsPage(this.driver, this.baseUrl),
     profile: new ProfilePage(this.driver, this.baseUrl),
+    chat: new ChatPage(this.driver, this.baseUrl),
     admin: new AdminPage(this.driver, this.baseUrl),
   };
 });
