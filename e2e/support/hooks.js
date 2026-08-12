@@ -2,6 +2,7 @@ import { After, Before, setDefaultTimeout } from '@cucumber/cucumber';
 import chrome from 'selenium-webdriver/chrome.js';
 import { Builder } from 'selenium-webdriver';
 import { LoginPage } from './pages/LoginPage.js';
+import { AdminRegistrationsPage } from './pages/AdminRegistrationsPage.js';
 import { RegistrationPage } from './pages/RegistrationPage.js';
 
 setDefaultTimeout(30_000);
@@ -19,6 +20,7 @@ Before(async function () {
   this.pages = {
     login: new LoginPage(this.driver, this.baseUrl),
     registration: new RegistrationPage(this.driver, this.baseUrl),
+    adminRegistrations: new AdminRegistrationsPage(this.driver, this.baseUrl),
   };
 });
 
