@@ -760,6 +760,30 @@ const {
   refresh for concurrent `401` responses, and retries each failed request at most once.
 - Do not read auth context directly, duplicate token state, or persist tokens in browser storage.
 
+## C.6 End-to-End Test Structure
+
+Browser-level end-to-end tests use Selenium WebDriver with Cucumber.js and live under `e2e/`:
+
+```text
+e2e/
+├── features/
+│   ├── auth/
+│   ├── transactions/
+│   ├── admin/
+│   ├── profile/
+│   └── chatbot/
+└── support/
+    ├── pages/
+    ├── steps/
+    ├── hooks.js
+    └── world.js
+```
+
+Features should be grouped by user journey. Keep browser setup and teardown in `support`, page
+objects responsible for selectors and UI actions, and `.feature` files focused on business
+behavior. API, component, and unit tests remain alongside the application code; E2E tests cover
+only the most important cross-screen flows.
+
 ---
 
 ## Changelog
