@@ -1,4 +1,3 @@
-/* global process */
 import { By, until } from 'selenium-webdriver';
 
 export class AuthPageObject {
@@ -22,9 +21,15 @@ export class AuthPageObject {
 
   async login(
     baseUrl = 'http://localhost:3001',
-    email = process.env.E2E_USER_EMAIL || 'user@example.com',
-    password = process.env.E2E_USER_PASSWORD || 'Password123!'
+    email = process.env.E2E_EMAIL,
+    password = process.env.E2E_PASSWORD
   ) {
+    if (!email || !password) {
+      throw new Error(
+        'Create .env.e2e from .env.e2e.example and set E2E_EMAIL and E2E_PASSWORD.'
+      );
+    }
+
     await this.gotoLogin(baseUrl);
 
     const emailEl = await this.driver.findElement(this.locators.emailInput);

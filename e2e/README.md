@@ -27,6 +27,9 @@ The transaction test suite covers end-to-end customer financial operations acros
 - **Page Object**: `e2e/support/pages/transactions.page.js`
 - **Step Definitions**: `e2e/support/steps/transactions.steps.js`
 
+Transactions use the same active account-holder credentials as the auth scenarios:
+`E2E_EMAIL` and `E2E_PASSWORD` from `.env.e2e`.
+
 ### Scenarios Covered
 
 1. **Fund Transfer Execution (`@transactions @transfer`)**:
