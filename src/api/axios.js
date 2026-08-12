@@ -58,6 +58,11 @@ async function getCsrfToken() {
   return csrfTokenPromise;
 }
 
+export async function refreshCsrfToken() {
+  csrfToken = null;
+  return getCsrfToken();
+}
+
 async function addCsrfHeader(config) {
   if (!isStateChangingRequest(config) || isCsrfExemptRequest(config.url)) return config;
   const token = await getCsrfToken();
