@@ -1,10 +1,11 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { expect } from 'vitest'; // or standard assertion framework
+import { expect } from 'vitest';
 import { TransactionsPageObject } from '../pages/transactions.page.js';
+import { AuthPageObject } from '../pages/auth.page.js';
 
 Given('I am logged in as an active account holder', async function () {
-  // World context setup / mock authentication session
-  this.user = { role: 'CUSTOMER', accountNumber: 'RB1000000001' };
+  const authPage = new AuthPageObject(this.driver);
+  await authPage.login(this.baseUrl || 'http://localhost:3001');
 });
 
 Given('I navigate to the {string} page', async function (pageName) {
