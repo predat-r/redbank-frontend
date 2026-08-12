@@ -4,7 +4,10 @@ import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 import { StatusBadge } from '../../components/ui/StatusBadge.jsx';
-import { useCreateAdminDeposit } from '../../features/admin/admin.queries.js';
+import {
+  useAdminAccounts,
+  useCreateAdminDeposit,
+} from '../../features/admin/admin.queries.js';
 export function DepositsPage() {
   const [values, setValues] = useState({
     accountNumber: '',
@@ -12,6 +15,13 @@ export function DepositsPage() {
     description: '',
   });
   const mutation = useCreateAdminDeposit();
+  const accounts = useAdminAccounts({ page: 0, size: 100 });
+  const accountOptions = (accounts.data?.content ?? [])
+    .filter((account) => account.accountStatus !== 'CLOSED')
+    .map((account) => ({
+      accountNumber: account.accountNumber,
+      holderName: account.user?.name || account.ownerName || `User ${account.userId}`,
+    }));
   function submit(e) {
     e.preventDefault();
     mutation.mutate({
@@ -32,11 +42,24 @@ export function DepositsPage() {
       <div className="max-w-2xl rounded-xl border border-neutral-200 bg-neutral-0 p-6 shadow-sm">
         <form onSubmit={submit} className="space-y-4">
           <Input
+            list="deposit-account-options"
             label="Account number"
+            placeholder={
+              accounts.isLoading
+                ? 'Loading accounts…'
+                : 'Type or select an account number'
+            }
             value={values.accountNumber}
             onChange={(e) => setValues({ ...values, accountNumber: e.target.value })}
             required
           />
+          <datalist id="deposit-account-options">
+            {accountOptions.map(({ accountNumber, holderName }) => (
+              <option key={accountNumber} value={accountNumber}>
+                {holderName} — {accountNumber}
+              </option>
+            ))}
+          </datalist>
           <Input
             label="Amount"
             type="number"

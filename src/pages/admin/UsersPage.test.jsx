@@ -130,7 +130,7 @@ describe('UsersPage', () => {
     await user.type(screen.getByLabelText('Email'), '  amina@example.com  ');
     await user.type(screen.getByLabelText('Phone number'), '  +923001234567  ');
     await user.type(screen.getByLabelText('Address'), '  12 Bank Street  ');
-    await user.type(screen.getByLabelText('Temporary password'), 'secure-password');
+    await user.type(screen.getByLabelText('Password'), 'secure-password');
     await user.type(screen.getByLabelText('Confirm password'), 'secure-password');
     await user.click(screen.getByRole('button', { name: 'Create Account Holder' }));
 
