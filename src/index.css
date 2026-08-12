@@ -68,14 +68,80 @@
 }
 
 @layer base {
+  :root {
+    font-optical-sizing: auto;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: var(--color-neutral-50);
     color: var(--color-neutral-800);
     -webkit-font-smoothing: antialiased;
+    letter-spacing: 0em;
+  }
+
+  h1,
+  h2,
+  h3,
+  .display {
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  /* Apple-style interactive feedback: response on pointer-down */
+  button:not(:disabled):active,
+  a:active,
+  [role='button']:not(:disabled):active {
+    transform: scale(0.97);
+    transition: transform 100ms ease-out;
+  }
+
+  button,
+  a,
+  [role='button'] {
+    transition:
+      transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 120ms ease-out,
+      color 120ms ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
   }
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  @keyframes appleModalEnter {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .apple-modal-enter {
+    animation: appleModalEnter 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }

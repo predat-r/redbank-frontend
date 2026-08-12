@@ -26,7 +26,7 @@ export const Sidebar = ({
       {/* Sidebar Shell */}
       <aside
         className={`
-          fixed md:sticky top-0 left-0 z-40 h-screen bg-neutral-0 border-r border-neutral-200 flex flex-col justify-between transition-all duration-200 ease-in-out shrink-0
+          fixed md:sticky top-0 left-0 z-40 h-screen glass-panel flex flex-col justify-between transition-all duration-200 ease-in-out shrink-0
           ${isCollapsed ? 'w-18' : collapseOnTablet ? 'w-65 md:w-18 lg:w-65' : 'w-65'}
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
