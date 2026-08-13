@@ -29,6 +29,15 @@ vi.mock('../transactions.queries.js', () => ({
     data: { content: [], totalElements: 0 },
     isLoading: false,
   }),
+  useMyTransactionById: () => ({
+    data: null,
+    isLoading: false,
+  }),
+  transactionKeys: {
+    all: ['transactions'],
+    myTransactions: (filters) => ['transactions', 'me', filters],
+    detail: (id) => ['transactions', 'detail', id],
+  },
 }));
 
 vi.mock('../../account/account.queries.js', () => ({
