@@ -12,21 +12,23 @@ export const transactionKeys = {
   detail: (id) => ['transactions', 'detail', id],
 };
 
-export function useMyTransactions(filters = {}) {
+export function useMyTransactions(filters = {}, options = {}) {
   return useQuery({
     queryKey: transactionKeys.myTransactions(filters),
     queryFn: () => getMyTransactions(filters),
     staleTime: 30000,
     keepPreviousData: true,
+    ...options,
   });
 }
 
-export function useMyTransactionById(id) {
+export function useMyTransactionById(id, options = {}) {
   return useQuery({
     queryKey: transactionKeys.detail(id),
     queryFn: () => getMyTransactionById(id),
     enabled: Boolean(id),
-    staleTime: 30000,
+    staleTime: 5000,
+    ...options,
   });
 }
 

@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeftRight, Banknote } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Stepper } from '../../../components/ui/Stepper';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { useToast } from '../../../hooks/useToast';
-import { useCreateTransfer, useCreateWithdrawal } from '../transactions.queries';
+import {
+  useCreateTransfer,
+  useCreateWithdrawal,
+  useMyTransactionById,
+  useMyTransactions,
+  transactionKeys,
+} from '../transactions.queries';
 import { useMyAccount, useLatestBalance } from '../../account/account.queries';
 import { TransactionInitiateStep } from './TransactionInitiateStep';
 import { TransactionVerifyStep } from './TransactionVerifyStep';
@@ -15,6 +22,7 @@ import { TransactionLimitsCard } from './TransactionLimitsCard';
 export const TransactionForm = ({ initialMode = 'transfer' }) => {
   const location = useLocation();
   const { addToast } = useToast();
+  const queryClient = useQueryClient();
 
   const transferMutation = useCreateTransfer();
   const withdrawalMutation = useCreateWithdrawal();
@@ -48,6 +56,127 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
     { title: '2. Verify' },
     { title: '3. Status & Receipt' },
   ];
+
+  // Polling for status updates when transaction is PENDING (Max 3 attempts)
+  const [pollCount, setPollCount] = useState(0);
+
+  const isReceiptPending =
+    currentStep === 2 &&
+    (receiptData?.status === 'PENDING' ||
+      receiptData?.status === 'IN_REVIEW' ||
+      receiptData?.status === 'PROCESSING');
+
+  const pendingTxId = isReceiptPending ? receiptData?.id : null;
+
+  const { data: polledTx, refetch: refetchPolledTx } = useMyTransactionById(pendingTxId, {
+    refetchInterval: (query) => {
+      const st = query.state.data?.status;
+      const isPendingState =
+        st === 'PENDING' || st === 'IN_REVIEW' || st === 'PROCESSING' || !st;
+
+      if (isPendingState && pollCount < 3) {
+        setPollCount((prev) => prev + 1);
+        return 2000;
+      }
+      return false;
+    },
+    enabled: Boolean(pendingTxId),
+  });
+
+  const pendingTxRef =
+    isReceiptPending && !receiptData?.id ? receiptData?.reference : null;
+
+  const { data: recentTxs, refetch: refetchRecentTxs } = useMyTransactions(
+    { page: 0, size: 5 },
+    {
+      refetchInterval: (query) => {
+        const matchingTx = query.state.data?.content?.find(
+          (t) =>
+            t.transactionReference === pendingTxRef ||
+            t.reference === pendingTxRef ||
+            t.id === pendingTxRef
+        );
+        const st = matchingTx?.status;
+        const isPendingState =
+          st === 'PENDING' || st === 'IN_REVIEW' || st === 'PROCESSING' || !st;
+
+        if (isPendingState && pollCount < 3) {
+          setPollCount((prev) => prev + 1);
+          return 2000;
+        }
+        return false;
+      },
+      enabled: Boolean(pendingTxRef),
+    }
+  );
+
+  useEffect(() => {
+    if (currentStep !== 2 || !receiptData) return;
+
+    let updatedTx = null;
+
+    if (polledTx) {
+      updatedTx = polledTx;
+    } else if (recentTxs?.content && receiptData?.reference) {
+      updatedTx = recentTxs.content.find(
+        (t) =>
+          t.transactionReference === receiptData.reference ||
+          t.reference === receiptData.reference ||
+          t.id === receiptData.id
+      );
+    }
+
+    if (updatedTx && updatedTx.status && updatedTx.status !== receiptData.status) {
+      const newStatus = updatedTx.status;
+      const txId = updatedTx.id;
+      const txDesc = updatedTx.description;
+
+      queueMicrotask(() => {
+        setReceiptData((prev) =>
+          prev
+            ? {
+                ...prev,
+                id: txId || prev.id,
+                status: newStatus,
+                description: txDesc || prev.description,
+              }
+            : prev
+        );
+
+        queryClient.invalidateQueries({ queryKey: transactionKeys.all });
+        queryClient.invalidateQueries({ queryKey: ['account'] });
+
+        if (newStatus === 'COMPLETED' || newStatus === 'APPROVED') {
+          addToast({
+            type: 'success',
+            title: 'Transaction Settled',
+            message:
+              'Security anomaly review complete. Your transaction is now COMPLETED.',
+          });
+        } else if (
+          newStatus === 'REJECTED' ||
+          newStatus === 'FAILED' ||
+          newStatus === 'DECLINED'
+        ) {
+          addToast({
+            type: 'error',
+            title: 'Transaction Flagged',
+            message: 'Security review flagged this transaction as REJECTED.',
+          });
+        }
+      });
+    }
+  }, [polledTx, recentTxs, currentStep, receiptData, queryClient, addToast]);
+
+  const handleManualRefreshStatus = () => {
+    setPollCount(0);
+    if (pendingTxId) {
+      refetchPolledTx();
+    }
+    if (pendingTxRef) {
+      refetchRecentTxs();
+    }
+  };
 
   const handleModeChange = (newMode) => {
     setMode(newMode);
@@ -96,6 +225,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
 
   const handleConfirmSubmit = async () => {
     setServerError(null);
+    setPollCount(0);
     try {
       let result;
       const numAmount = parseFloat(amount);
@@ -121,6 +251,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
         `TXN-${Date.now().toString(36).toUpperCase()}`;
 
       setReceiptData({
+        id: result?.id,
         reference: txRef,
         amount: result?.amount || numAmount,
         category: result?.category || category || 'OTHER',
@@ -132,7 +263,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
         date: result?.createdAt
           ? new Date(result.createdAt).toLocaleString()
           : new Date().toLocaleString(),
-        status: result?.status || 'COMPLETED',
+        status: result?.status || 'PENDING',
         description:
           result?.description ||
           description ||
@@ -178,6 +309,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
     setErrors({});
     setServerError(null);
     setReceiptData(null);
+    setPollCount(0);
     setCurrentStep(0);
   };
 
@@ -261,6 +393,9 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
               mode={mode}
               receiptData={receiptData}
               onReset={handleReset}
+              onRefreshStatus={handleManualRefreshStatus}
+              isMaxPollReached={pollCount >= 3}
+              pollAttempt={Math.min(pollCount + 1, 3)}
             />
           )}
         </div>

@@ -1,25 +1,53 @@
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Clock, RotateCcw, Receipt } from 'lucide-react';
+import {
+  CheckCircle2,
+  Clock,
+  RotateCcw,
+  Receipt,
+  XCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
 import { StatusBadge } from '../../../components/ui/StatusBadge';
 
-export const TransactionReceiptStep = ({ mode, receiptData, onReset }) => {
+export const TransactionReceiptStep = ({
+  mode,
+  receiptData,
+  onReset,
+  onRefreshStatus,
+  isMaxPollReached = false,
+  pollAttempt = 1,
+}) => {
   const navigate = useNavigate();
 
   if (!receiptData) return null;
 
-  const isPending = receiptData.status === 'PENDING';
+  const isPending =
+    receiptData.status === 'PENDING' ||
+    receiptData.status === 'IN_REVIEW' ||
+    receiptData.status === 'PROCESSING';
+
+  const isRejected =
+    receiptData.status === 'REJECTED' ||
+    receiptData.status === 'FAILED' ||
+    receiptData.status === 'DECLINED';
 
   return (
     <Card className="p-4 sm:p-6 lg:p-8 space-y-6 text-center">
       <div
-        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto ${
-          isPending ? 'bg-warning-50 text-warning-600' : 'bg-success-50 text-success-600'
+        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto transition-colors duration-300 ${
+          isPending
+            ? 'bg-warning-50 text-warning-600'
+            : isRejected
+              ? 'bg-error-50 text-error-600'
+              : 'bg-success-50 text-success-600'
         }`}
       >
         {isPending ? (
           <Clock className="w-8 h-8 sm:w-9 sm:h-9" />
+        ) : isRejected ? (
+          <XCircle className="w-8 h-8 sm:w-9 sm:h-9" />
         ) : (
           <CheckCircle2 className="w-8 h-8 sm:w-9 sm:h-9" />
         )}
@@ -32,16 +60,57 @@ export const TransactionReceiptStep = ({ mode, receiptData, onReset }) => {
             ? mode === 'transfer'
               ? 'Transfer Submitted'
               : 'Withdrawal Submitted'
-            : mode === 'transfer'
-              ? 'Transfer Successful'
-              : 'Withdrawal Completed'}
+            : isRejected
+              ? mode === 'transfer'
+                ? 'Transfer Rejected'
+                : 'Withdrawal Rejected'
+              : mode === 'transfer'
+                ? 'Transfer Successful'
+                : 'Withdrawal Completed'}
         </h2>
         <p className="text-xs sm:text-sm text-neutral-500 mt-1">
           {isPending
             ? 'Your transaction is currently undergoing security review.'
-            : 'Your transaction has been processed securely.'}
+            : isRejected
+              ? 'Your transaction was flagged by security review and was not completed.'
+              : 'Your transaction has been processed securely.'}
         </p>
       </div>
+
+      {isPending && (
+        <div className="flex items-center justify-between gap-2 text-xs font-medium text-warning-800 bg-warning-50/90 border border-warning-200 rounded-xl p-3.5 shadow-xs text-left">
+          <div className="flex items-center gap-2.5">
+            <RefreshCw
+              className={`w-4 h-4 text-warning-600 shrink-0 ${
+                !isMaxPollReached ? 'animate-spin' : ''
+              }`}
+            />
+            <div>
+              <p className="font-semibold text-warning-900">
+                {!isMaxPollReached
+                  ? 'Monitoring status in real-time'
+                  : 'Review taking longer than expected'}
+              </p>
+              <p className="text-[11px] text-warning-700 mt-0.5">
+                {!isMaxPollReached
+                  ? `Checking anomaly review status... (Attempt ${pollAttempt}/3)`
+                  : 'Automatic polling paused after 3 checks. Click Refresh to check status.'}
+              </p>
+            </div>
+          </div>
+          {onRefreshStatus && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onRefreshStatus}
+              className="text-xs px-2.5 py-1 border-warning-300 text-warning-800 hover:bg-warning-100"
+            >
+              Refresh
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 sm:p-5 text-left space-y-3 font-sans">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-xs text-neutral-500 pb-2 border-b border-neutral-200">
@@ -54,7 +123,7 @@ export const TransactionReceiptStep = ({ mode, receiptData, onReset }) => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-xs sm:text-sm py-1">
           <span className="text-neutral-500">Amount</span>
           <span className="font-bold text-neutral-800 text-sm sm:text-base tabular-nums">
-            ${receiptData.amount.toLocaleString()}
+            ${receiptData.amount?.toLocaleString()}
           </span>
         </div>
 
