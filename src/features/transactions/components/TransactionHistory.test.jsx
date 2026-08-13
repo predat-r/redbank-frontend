@@ -18,14 +18,29 @@ vi.mock('../../../components/ui', () => ({
     return <button {...props}>{children}</button>;
   },
   StatusBadge: ({ status }) => <span>{status}</span>,
-  Table: ({ data, emptyMessage, loading, onRowClick, pagination, sorting }) => (
+  Table: ({
+    columns,
+    data,
+    emptyMessage,
+    loading,
+    onRowClick,
+    pagination,
+    renderMobileCard,
+    sorting,
+  }) => (
     <div>
       {loading && <span>Loading transactions</span>}
       {!loading && !data.length && <span>{emptyMessage}</span>}
       {data.map((row) => (
-        <button key={row.id} onClick={() => onRowClick?.(row)}>
-          {row.description}
-        </button>
+        <div key={row.id}>
+          <button onClick={() => onRowClick?.(row)}>{row.description}</button>
+          {columns.map((column) => (
+            <div key={column.key}>
+              {column.render ? column.render(row[column.key], row) : row[column.key]}
+            </div>
+          ))}
+          {renderMobileCard?.(row)}
+        </div>
       ))}
       {pagination && (
         <button onClick={() => pagination.onPageChange(1)}>Next page</button>
@@ -118,5 +133,69 @@ describe('TransactionHistory', () => {
     renderHistory();
 
     expect(screen.getByText('Loading transactions')).toBeInTheDocument();
+  });
+
+  test('classifies deposits, reversals, withdrawals, and transfers in the history display', () => {
+    useMyTransactions.mockReturnValue({
+      data: {
+        content: [
+          {
+            id: 1,
+            description: 'Salary',
+            type: 'DEPOSIT',
+            amount: 100,
+            status: 'COMPLETED',
+            createdAt: '2026-08-01T00:00:00Z',
+          },
+          {
+            id: 2,
+            description: 'Refund',
+            type: 'REVERSAL',
+            amount: 20,
+            status: 'COMPLETED',
+            createdAt: '2026-08-02T00:00:00Z',
+          },
+          {
+            id: 3,
+            description: 'ATM',
+            type: 'WITHDRAWAL',
+            amount: 10,
+            status: 'COMPLETED',
+            createdAt: '2026-08-03T00:00:00Z',
+          },
+          {
+            id: 4,
+            description: 'Incoming',
+            type: 'TRANSFER',
+            destinationAccountNumber: 'RB-001',
+            amount: 15,
+            status: 'COMPLETED',
+            createdAt: '2026-08-04T00:00:00Z',
+          },
+          {
+            id: 5,
+            description: 'Outgoing',
+            type: 'TRANSFER',
+            destinationAccountNumber: 'RB-002',
+            amount: 25,
+            status: 'PENDING',
+            createdAt: '2026-08-05T00:00:00Z',
+            reversedTransactionReference: 'TX-3',
+          },
+        ],
+        page: { totalPages: 1, totalElements: 5 },
+      },
+      isLoading: false,
+      isFetching: false,
+      refetch: vi.fn(),
+    });
+    renderHistory();
+
+    expect(screen.getByText('Credited')).toBeInTheDocument();
+    expect(screen.getByText('Reversal')).toBeInTheDocument();
+    expect(screen.getByText('Debited')).toBeInTheDocument();
+    expect(screen.getByText('Transfer In')).toBeInTheDocument();
+    expect(screen.getByText('Transfer Out')).toBeInTheDocument();
+    expect(screen.getByText(/Reverses TX-3/)).toBeInTheDocument();
   });
 });

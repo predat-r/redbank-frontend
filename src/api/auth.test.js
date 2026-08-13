@@ -1,8 +1,16 @@
 import { afterEach, describe, expect, test } from 'vitest';
-import { refreshClient } from './axios.js';
-import { login, logout, registerAccount } from './auth.js';
+import api, { refreshClient } from './axios.js';
+import {
+  changePassword,
+  getRegistrationStatus,
+  login,
+  logout,
+  registerAccount,
+  updateMyProfile,
+} from './auth.js';
 
 const originalAdapter = refreshClient.defaults.adapter;
+const originalApiAdapter = api.defaults.adapter;
 
 function response(config, data, status = 200) {
   return { config, data, headers: {}, status, statusText: 'OK' };
@@ -10,6 +18,7 @@ function response(config, data, status = 200) {
 
 afterEach(() => {
   refreshClient.defaults.adapter = originalAdapter;
+  api.defaults.adapter = originalApiAdapter;
 });
 
 describe('public auth API', () => {
@@ -45,5 +54,37 @@ describe('public auth API', () => {
     };
 
     await logout();
+  });
+
+  test('uses the authenticated status, password, and profile contracts', async () => {
+    const apiRequests = [];
+    api.defaults.adapter = async (config) => {
+      apiRequests.push(config);
+      return response(config, { id: 3, registrationStatus: 'PENDING_APPROVAL' });
+    };
+    refreshClient.defaults.adapter = async (config) => {
+      if (config.url.endsWith('/auth/csrf')) {
+        return response(config, { token: 'csrf-token' });
+      }
+      return response(config, null, 204);
+    };
+
+    await getRegistrationStatus();
+    await changePassword({ currentPassword: 'old', newPassword: 'new' });
+    await updateMyProfile({ name: 'Amina Khan', phoneNumber: '123' });
+
+    expect(apiRequests.map(({ method, url }) => [method, url])).toEqual([
+      ['get', '/auth/registration-status'],
+      ['put', '/auth/password'],
+      ['patch', '/users/me'],
+    ]);
+    expect(JSON.parse(apiRequests[1].data)).toEqual({
+      currentPassword: 'old',
+      newPassword: 'new',
+    });
+    expect(JSON.parse(apiRequests[2].data)).toEqual({
+      name: 'Amina Khan',
+      phoneNumber: '123',
+    });
   });
 });
