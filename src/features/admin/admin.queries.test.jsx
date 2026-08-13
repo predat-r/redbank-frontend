@@ -137,6 +137,6 @@ describe('admin queries', () => {
 
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: adminKeys.transactions });
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: adminKeys.user(4) });
-    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: adminKeys.accounts });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: adminKeys.users });
   });
 });

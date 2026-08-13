@@ -79,7 +79,7 @@ describe('transaction queries', () => {
     await waitFor(() => expect(result.current.withdrawal.isSuccess).toBe(true));
 
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: transactionKeys.all });
-    expect(createTransfer).toHaveBeenCalledWith({ amount: 10 });
-    expect(createWithdrawal).toHaveBeenCalledWith({ amount: 5 });
+    expect(createTransfer.mock.calls[0][0]).toEqual({ amount: 10 });
+    expect(createWithdrawal.mock.calls[0][0]).toEqual({ amount: 5 });
   });
 });

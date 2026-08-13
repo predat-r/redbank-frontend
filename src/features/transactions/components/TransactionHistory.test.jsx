@@ -10,7 +10,13 @@ import { TransactionHistory } from './TransactionHistory.jsx';
 vi.mock('../../account/account.queries.js', () => ({ useMyAccount: vi.fn() }));
 vi.mock('../transactions.queries.js', () => ({ useMyTransactions: vi.fn() }));
 vi.mock('../../../components/ui', () => ({
-  Button: ({ children, ...props }) => <button {...props}>{children}</button>,
+  Button: ({ children, ...props }) => {
+    delete props.icon;
+    delete props.iconPosition;
+    delete props.loading;
+
+    return <button {...props}>{children}</button>;
+  },
   StatusBadge: ({ status }) => <span>{status}</span>,
   Table: ({ data, emptyMessage, loading, onRowClick, pagination, sorting }) => (
     <div>
@@ -66,7 +72,7 @@ describe('TransactionHistory', () => {
       expect.objectContaining({ page: 0, size: 10, sort: 'createdAt,desc' })
     );
 
-    await user.selectOptions(screen.getByLabelText('Status'), 'PENDING');
+    await user.selectOptions(screen.getAllByRole('combobox')[1], 'PENDING');
     expect(useMyTransactions).toHaveBeenLastCalledWith(
       expect.not.objectContaining({ status: 'PENDING' })
     );

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   useChatWithRedAssist,
@@ -22,15 +23,27 @@ describe('ChatPage', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    Element.prototype.scrollIntoView = vi.fn();
     useMyAccount.mockReturnValue({ data: { user: { name: 'Amina' } } });
     useChatWithRedAssist.mockReturnValue({ isPending: false, mutate });
   });
 
-  afterEach(() => localStorage.clear());
+  afterEach(() => {
+    localStorage.clear();
+    delete Element.prototype.scrollIntoView;
+  });
+
+  function renderChatPage() {
+    return renderWithProviders(
+      <MemoryRouter>
+        <ChatPage />
+      </MemoryRouter>
+    );
+  }
 
   test('shows the empty-chat state and persists a submitted message', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<ChatPage />);
+    renderChatPage();
 
     expect(screen.getByText('How can I help you today?')).toBeInTheDocument();
     await user.type(
@@ -54,7 +67,7 @@ describe('ChatPage', () => {
 
   test('renders a structured assistant reply and clarification indicator', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<ChatPage />);
+    renderChatPage();
     await user.type(screen.getByPlaceholderText('Ask a question...'), 'Show my balance');
     await user.click(screen.getByRole('button', { name: /send/i }));
 
@@ -64,14 +77,20 @@ describe('ChatPage', () => {
       needsClarification: true,
     });
 
-    expect(await screen.findByText('Your balance is')).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        (_, element) =>
+          element?.tagName === 'SPAN' &&
+          element.textContent === 'Your balance is $120.00.'
+      )
+    ).toBeInTheDocument();
     expect(screen.getByText('$120.00')).toBeInTheDocument();
     expect(screen.getByText('Needs Clarification')).toBeInTheDocument();
   });
 
   test('shows a failed reply and lets the user retry the preceding message', async () => {
     const user = userEvent.setup();
-    renderWithProviders(<ChatPage />);
+    renderChatPage();
     await user.type(screen.getByPlaceholderText('Ask a question...'), 'Please help');
     await user.click(screen.getByRole('button', { name: /send/i }));
 
@@ -84,7 +103,7 @@ describe('ChatPage', () => {
 
   test('disables the composer while a reply is pending', () => {
     useChatWithRedAssist.mockReturnValue({ isPending: true, mutate });
-    renderWithProviders(<ChatPage />);
+    renderChatPage();
 
     expect(screen.getByPlaceholderText('Ask a question...')).toBeDisabled();
     expect(screen.getByRole('button', { name: /send/i })).toBeDisabled();
