@@ -84,6 +84,7 @@ function isPublicAuthRequest(url = '') {
 }
 
 async function refreshTokens() {
+  await refreshCsrfToken();
   const response = await refreshClient.post('/auth/refresh');
   return setSession(response.data);
 }
