@@ -278,14 +278,16 @@ export function ProfilePage() {
                 credentials.
               </p>
             </div>
-            <Button
-              variant="danger"
-              icon={LogOut}
-              loading={logoutMutation.isPending}
-              onClick={handleLogoutClick}
-            >
-              Sign Out
-            </Button>
+            <div className="hidden sm:block">
+              <Button
+                variant="danger"
+                icon={LogOut}
+                loading={logoutMutation.isPending}
+                onClick={handleLogoutClick}
+              >
+                Sign Out
+              </Button>
+            </div>
           </div>
         )}
 
