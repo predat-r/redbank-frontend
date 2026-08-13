@@ -52,18 +52,19 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const auth = useAuth();
+  const isAdmin = auth?.roles?.includes('ROLE_ADMIN');
 
   // Real Backend Queries
   const {
     data: realAccount,
     isLoading: isAccountLoading,
     isError: isAccountError,
-  } = useMyAccount();
+  } = useMyAccount({ enabled: !isAdmin });
   const {
     data: realRegStatus,
     isLoading: isRegistrationLoading,
     isError: isRegistrationError,
-  } = useRegistrationStatus();
+  } = useRegistrationStatus({ enabled: !isAdmin });
   const freezeMutation = useFreezeAccount();
   const unfreezeMutation = useUnfreezeAccount();
   const deactivateMutation = useDeactivateAccount();
@@ -90,7 +91,6 @@ export function ProfilePage() {
     role: auth?.roles?.[0] ?? 'ROLE_ACCOUNT_HOLDER',
     createdAt: realUser?.createdAt ?? realAccount?.createdAt ?? null,
   };
-  const isAdmin = profile.role === 'ROLE_ADMIN';
   const isProfileLoading = isAccountLoading || isRegistrationLoading;
   const isProfileError = isAccountError && isRegistrationError;
   const profileForm = {

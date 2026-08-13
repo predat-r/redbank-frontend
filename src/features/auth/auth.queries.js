@@ -21,11 +21,12 @@ export function useRegister() {
   return useMutation({ mutationFn: registerAccount });
 }
 
-export function useRegistrationStatus() {
+export function useRegistrationStatus(options = {}) {
   return useQuery({
     queryKey: authKeys.registrationStatus,
     queryFn: getRegistrationStatus,
     refetchInterval: 5000,
+    ...options,
   });
 }
 

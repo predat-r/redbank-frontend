@@ -9,6 +9,17 @@ import { Send, Bot, XCircle, RefreshCw, ArrowDown, RotateCcw } from 'lucide-reac
 
 const LOCAL_STORAGE_KEY = 'redbank_chat_history';
 
+const getReplyText = (reply) => {
+  if (typeof reply !== 'string') return reply;
+
+  try {
+    const parsedReply = JSON.parse(reply);
+    return typeof parsedReply?.reply === 'string' ? parsedReply.reply : reply;
+  } catch {
+    return reply;
+  }
+};
+
 const formatMessageText = (text, isUser) => {
   if (isUser) return text;
 
@@ -111,7 +122,7 @@ export const ChatPage = () => {
           const aiMsg = {
             id: (Date.now() + 1).toString(),
             role: 'ai',
-            text: data.reply,
+            text: getReplyText(data.reply),
             needsClarification: data.needsClarification,
             timestamp: new Date().toISOString(),
           };
