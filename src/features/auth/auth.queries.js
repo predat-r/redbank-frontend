@@ -25,6 +25,7 @@ export function useRegistrationStatus() {
   return useQuery({
     queryKey: authKeys.registrationStatus,
     queryFn: getRegistrationStatus,
+    refetchInterval: 5000,
   });
 }
 

@@ -66,7 +66,7 @@ describe('auth pages', () => {
       screen.getByText('Name must be between 2 and 150 characters.')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('You must accept the terms to continue.')
+      screen.getByText('You must confirm that the information is accurate.')
     ).toBeInTheDocument();
   });
 

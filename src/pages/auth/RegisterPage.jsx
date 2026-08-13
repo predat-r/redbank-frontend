@@ -16,7 +16,7 @@ const initialValues = {
   address: '',
   password: '',
   confirmPassword: '',
-  acceptedTerms: false,
+  confirmedInformation: false,
 };
 
 export function RegisterPage() {
@@ -187,18 +187,18 @@ export function RegisterPage() {
         <div className="mt-5">
           <label className="flex cursor-pointer items-start gap-3 text-sm text-[#4E5563]">
             <input
-              checked={values.acceptedTerms}
+              checked={values.confirmedInformation}
               className="mt-0.5 size-5 accent-[#89221C]"
-              name="acceptedTerms"
+              name="confirmedInformation"
               onChange={updateField}
               type="checkbox"
             />
-            <span>
-              I confirm that the information provided is accurate and agree to the terms.
-            </span>
+            <span>I confirm that the information provided is accurate.</span>
           </label>
-          {errors.acceptedTerms && (
-            <p className="mt-1.5 text-[13px] text-[#D64545]">{errors.acceptedTerms}</p>
+          {errors.confirmedInformation && (
+            <p className="mt-1.5 text-[13px] text-[#D64545]">
+              {errors.confirmedInformation}
+            </p>
           )}
         </div>
 
