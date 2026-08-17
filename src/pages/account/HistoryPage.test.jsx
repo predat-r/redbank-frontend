@@ -24,6 +24,10 @@ vi.mock('../../features/transactions/components/TransactionDetailModal', () => (
   TransactionDetailModal: ({ transaction: selected, isOpen, onClose }) =>
     isOpen ? <button onClick={onClose}>Close {selected.id}</button> : null,
 }));
+vi.mock('../../features/transactions/components/AccountStatementModal', () => ({
+  AccountStatementModal: ({ isOpen, onClose }) =>
+    isOpen ? <button onClick={onClose}>Close Statement Modal</button> : null,
+}));
 vi.mock('../../hooks/useToast', () => ({ useToast: () => ({ addToast }) }));
 vi.mock('react-router-dom', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -59,12 +63,14 @@ describe('HistoryPage', () => {
     );
 
     await user.click(screen.getByRole('button', { name: 'Export statement' }));
-    expect(addToast).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'success',
-        title: 'Statement Downloaded',
-      })
-    );
+    expect(
+      screen.getByRole('button', { name: 'Close Statement Modal' })
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Close Statement Modal' }));
+    expect(
+      screen.queryByRole('button', { name: 'Close Statement Modal' })
+    ).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Send again' }));
     expect(navigate).toHaveBeenCalledWith('/transfer', {
       state: { destinationAccountNumber: 'RB-9', amount: 75 },
