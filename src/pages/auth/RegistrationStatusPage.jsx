@@ -1,6 +1,6 @@
 import { CheckCircle2, Clock3, RefreshCw, ShieldX, XCircle, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Card } from '../../components/ui/Card.jsx';
@@ -44,19 +44,19 @@ export function RegistrationStatusPage() {
   const statusQuery = useRegistrationStatus();
   const logoutMutation = useLogout();
   const navigate = useNavigate();
-  const [isContinuing, setIsContinuing] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const hasRedirected = useRef(false);
 
-  async function continueToDashboard() {
-    setIsContinuing(true);
-    try {
-      await restoreSession();
-      navigate('/dashboard', { replace: true });
-    } catch {
-      setIsContinuing(false);
-      statusQuery.refetch();
-    }
-  }
+  useEffect(() => {
+    if (statusQuery.data?.status !== 'ACTIVE' || hasRedirected.current) return;
+
+    hasRedirected.current = true;
+    restoreSession()
+      .then(() => navigate('/dashboard', { replace: true }))
+      .catch(() => {
+        hasRedirected.current = false;
+      });
+  }, [navigate, statusQuery.data?.status, statusQuery.dataUpdatedAt]);
 
   function handleLogoutClick() {
     setShowSignOutModal(true);
@@ -145,19 +145,6 @@ export function RegistrationStatusPage() {
         )}
 
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-          {statusQuery.data.status === 'ACTIVE' ? (
-            <Button loading={isContinuing} onClick={continueToDashboard}>
-              Continue to Dashboard
-            </Button>
-          ) : (
-            <Button
-              icon={RefreshCw}
-              onClick={() => statusQuery.refetch()}
-              variant="outline"
-            >
-              Refresh Status
-            </Button>
-          )}
           <Button
             loading={logoutMutation.isPending}
             onClick={handleLogoutClick}

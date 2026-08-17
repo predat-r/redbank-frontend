@@ -36,8 +36,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Run tests
-        run: npm run test:run
+      - name: Run tests with 80% coverage threshold
+        run: npm run test:coverage
 
       - name: Build production bundle
         run: npm run build

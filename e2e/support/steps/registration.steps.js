@@ -32,7 +32,7 @@ When(
 );
 
 When(
-  'the user submits otherwise valid registration details without accepting the terms',
+  'the user submits otherwise valid registration details without confirming the information',
   async function () {
     await this.pages.registration.submitRegistration(registrationDetails(), {
       acceptTerms: false,

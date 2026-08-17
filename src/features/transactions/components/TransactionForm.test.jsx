@@ -29,6 +29,15 @@ vi.mock('../transactions.queries.js', () => ({
     data: { content: [], totalElements: 0 },
     isLoading: false,
   }),
+  useMyTransactionById: () => ({
+    data: null,
+    isLoading: false,
+  }),
+  transactionKeys: {
+    all: ['transactions'],
+    myTransactions: (filters) => ['transactions', 'me', filters],
+    detail: (id) => ['transactions', 'detail', id],
+  },
 }));
 
 vi.mock('../../account/account.queries.js', () => ({
@@ -178,5 +187,39 @@ describe('TransactionForm', () => {
     ).toBeInTheDocument();
 
     expect(screen.queryByText('Verify Transaction Details')).not.toBeInTheDocument();
+  });
+
+  test('shows an API submission failure and lets the user return to editing', async () => {
+    const user = userEvent.setup({ delay: null });
+    createTransfer.mockRejectedValueOnce(new Error('Transfer service unavailable'));
+    renderComponent();
+
+    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
+    await user.type(screen.getByLabelText(/amount/i), '1500');
+    await user.click(screen.getByRole('button', { name: /continue to verify/i }));
+    await user.click(screen.getByRole('button', { name: /confirm & submit/i }));
+
+    expect(
+      (await screen.findAllByText('Transfer service unavailable')).length
+    ).toBeGreaterThan(0);
+    await user.click(screen.getByRole('button', { name: /back/i }));
+    expect(
+      screen.getByRole('button', { name: /continue to verify/i })
+    ).toBeInTheDocument();
+  });
+
+  test('resets completed receipt state to a blank initiation form', async () => {
+    const user = userEvent.setup({ delay: null });
+    renderComponent();
+
+    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
+    await user.type(screen.getByLabelText(/amount/i), '1500');
+    await user.click(screen.getByRole('button', { name: /continue to verify/i }));
+    await user.click(screen.getByRole('button', { name: /confirm & submit/i }));
+    await screen.findByRole('heading', { level: 2, name: 'Transfer Successful' });
+    await user.click(screen.getByRole('button', { name: /make another transaction/i }));
+
+    expect(screen.getByLabelText(/destination account number/i)).toHaveValue('');
+    expect(screen.getByLabelText(/amount/i)).toHaveValue(null);
   });
 });

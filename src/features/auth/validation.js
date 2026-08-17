@@ -32,8 +32,8 @@ export function validateRegistration(values) {
   if (values.confirmPassword !== values.password) {
     errors.confirmPassword = 'Passwords do not match.';
   }
-  if (!values.acceptedTerms)
-    errors.acceptedTerms = 'You must accept the terms to continue.';
+  if (!values.confirmedInformation)
+    errors.confirmedInformation = 'You must confirm that the information is accurate.';
 
   return errors;
 }

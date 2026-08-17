@@ -17,16 +17,17 @@ export class RegistrationPage {
 
   async submitValidRegistration(details) {
     for (const [field, value] of Object.entries(details)) {
-      if (field === 'acceptedTerms') continue;
+      if (field === 'confirmedInformation') continue;
       await this.driver.findElement(By.name(field)).sendKeys(value);
     }
-    await this.driver.findElement(By.name('acceptedTerms')).click();
+    await this.driver.findElement(By.name('confirmedInformation')).click();
     await this.driver.findElement(By.css('button[type="submit"]')).click();
   }
 
   async submitRegistration(details, { acceptTerms = true } = {}) {
     await this.submitValidRegistrationFields(details);
-    if (acceptTerms) await this.driver.findElement(By.name('acceptedTerms')).click();
+    if (acceptTerms)
+      await this.driver.findElement(By.name('confirmedInformation')).click();
     await this.driver.findElement(By.css('button[type="submit"]')).click();
   }
 

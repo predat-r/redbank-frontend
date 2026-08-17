@@ -8,15 +8,26 @@ import {
   freezeAdminAccount,
   getAdminAccount,
   getAdminAccounts,
+  getAdminAnomalyReport,
+  getAdminAuditLog,
+  getAdminAuditLogs,
+  getAdminBalanceLedger,
+  getAdminLatestBalance,
+  getAdminTransaction,
+  getAdminTransactionByReference,
   getAdminTransactions,
+  getAdminTransactionsByAccount,
   getAdminUser,
   getAdminUsers,
   getPendingRegistration,
   getPendingRegistrations,
   rejectRegistration,
+  rejectAdminTransaction,
   createAdminDeposit,
   reactivateAdminUser,
+  unfreezeAdminAccount,
   updateAdminUser,
+  approveAdminTransaction,
 } from './admin.js';
 
 const originalAdapter = api.defaults.adapter;
@@ -166,11 +177,13 @@ describe('admin user and account-holder API', () => {
 
     await getAdminAccount(15);
     await freezeAdminAccount(15);
+    await unfreezeAdminAccount(15);
     await deactivateAdminAccount(15);
 
     expect(requests.map(({ method, url }) => [method, url])).toEqual([
       ['get', '/admin/accounts/15'],
       ['patch', '/admin/accounts/freeze/15'],
+      ['patch', '/admin/accounts/unfreeze/15'],
       ['patch', '/admin/accounts/deactivate/15'],
     ]);
   });
@@ -194,5 +207,78 @@ describe('admin user and account-holder API', () => {
       amount: 1000,
       description: 'Test deposit',
     });
+  });
+});
+
+describe('admin transaction, balance, and audit API', () => {
+  test('uses encoded transaction lookup and filtered list contracts', async () => {
+    const requests = [];
+    api.defaults.adapter = async (config) => {
+      requests.push(config);
+      return response(config, { content: [] });
+    };
+
+    await getAdminTransactions({
+      page: 1,
+      size: 5,
+      reference: 'TX 1',
+      accountNumber: 'RB-1',
+      type: 'TRANSFER',
+      status: 'PENDING',
+      fromDate: '2026-08-01',
+      toDate: '2026-08-02',
+    });
+    await getAdminTransaction(3);
+    await getAdminTransactionByReference('TX 1/2');
+    await getAdminTransactionsByAccount('RB/1', { page: 2, size: 10 });
+
+    expect(requests[0].params).toEqual({
+      page: 1,
+      size: 5,
+      reference: 'TX 1',
+      accountNumber: 'RB-1',
+      type: 'TRANSFER',
+      status: 'PENDING',
+      fromDate: '2026-08-01',
+      toDate: '2026-08-02',
+    });
+    expect(requests.slice(1).map(({ url }) => url)).toEqual([
+      '/admin/transactions/3',
+      '/admin/transactions/reference/TX%201%2F2',
+      '/admin/accounts/RB%2F1/transactions',
+    ]);
+    expect(requests[3].params).toEqual({ page: 2, size: 10 });
+  });
+
+  test('uses balance, audit, anomaly, and transaction-decision endpoints', async () => {
+    const requests = [];
+    api.defaults.adapter = async (config) => {
+      requests.push(config);
+      return response(config, { id: 7 });
+    };
+
+    await getAdminLatestBalance(4);
+    await getAdminBalanceLedger(4, { page: 1, size: 20, sort: ['entryDate,desc'] });
+    await getAdminAuditLogs({ page: 1, size: 5 });
+    await getAdminAuditLog(9);
+    await getAdminAnomalyReport(7);
+    await approveAdminTransaction(7);
+    await rejectAdminTransaction({ transactionId: 8, reason: 'Evidence insufficient' });
+    await rejectAdminTransaction({ transactionId: 9 });
+
+    expect(requests.map(({ method, url }) => [method, url])).toEqual([
+      ['get', '/admin/balance/4/latest'],
+      ['get', '/admin/balance/4/ledger'],
+      ['get', '/admin/audit-logs'],
+      ['get', '/admin/audit-logs/9'],
+      ['get', '/admin/transactions/7/anomaly-report'],
+      ['post', '/admin/transactions/7/approve'],
+      ['post', '/admin/transactions/8/reject'],
+      ['post', '/admin/transactions/9/reject'],
+    ]);
+    expect(requests[1].params).toEqual({ page: 1, size: 20, sort: ['entryDate,desc'] });
+    expect(requests[2].params).toEqual({ page: 1, size: 5 });
+    expect(JSON.parse(requests[6].data)).toEqual({ reason: 'Evidence insufficient' });
+    expect(JSON.parse(requests[7].data)).toEqual({});
   });
 });

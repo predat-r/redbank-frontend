@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import { Eye, RefreshCw, Snowflake, UserPlus, UserRoundCog, XCircle } from 'lucide-react';
+import {
+  Clipboard,
+  Eye,
+  RefreshCw,
+  Snowflake,
+  UserPlus,
+  UserRoundCog,
+  XCircle,
+} from 'lucide-react';
 import { Alert } from '../../components/ui/Alert.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { EmptyState } from '../../components/ui/EmptyState.jsx';
@@ -199,12 +207,36 @@ export function AccountHoldersPage() {
     );
   }
 
+  async function copyAccountNumber(event, accountNumber) {
+    event.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(accountNumber);
+      addToast({ type: 'success', title: 'Account number copied' });
+    } catch {
+      addToast({ type: 'error', title: 'Unable to copy account number' });
+    }
+  }
+
   const columns = [
     {
       key: 'accountNumber',
       header: 'Account number',
       sortable: true,
       numeric: true,
+      render: (accountNumber) => (
+        <span className="inline-flex items-center gap-2">
+          <span>{accountNumber}</span>
+          <button
+            aria-label={`Copy account number ${accountNumber}`}
+            className="rounded p-1 text-neutral-500 hover:bg-neutral-100 hover:text-primary-600"
+            onClick={(event) => copyAccountNumber(event, accountNumber)}
+            title="Copy account number"
+            type="button"
+          >
+            <Clipboard aria-hidden="true" className="size-3.5" />
+          </button>
+        </span>
+      ),
     },
     { key: 'userId', header: 'User ID', numeric: true },
     { key: 'currency', header: 'Currency', sortable: true },

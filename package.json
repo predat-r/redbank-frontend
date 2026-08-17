@@ -14,6 +14,7 @@
     "prepare": "husky",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "HEADLESS=true node --env-file=.env.e2e ./node_modules/@cucumber/cucumber/bin/cucumber-js 'e2e/features/**/*.feature' --import 'e2e/support/**/*.js'",
     "test:e2e:headed": "HEADLESS=false node --env-file=.env.e2e ./node_modules/@cucumber/cucumber/bin/cucumber-js 'e2e/features/**/*.feature' --import 'e2e/support/**/*.js'"
   },
@@ -42,6 +43,7 @@
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.3",
+    "@vitest/coverage-v8": "^4.1.10",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
