@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../../layouts/AppShell';
 import { TransactionHistory } from '../../features/transactions/components/TransactionHistory';
 import { TransactionDetailModal } from '../../features/transactions/components/TransactionDetailModal';
-import { useToast } from '../../hooks/useToast';
+import { AccountStatementModal } from '../../features/transactions/components/AccountStatementModal';
 
 export const HistoryPage = () => {
   const navigate = useNavigate();
-  const { addToast } = useToast();
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
 
   const handleRowClick = (transaction) => {
     setSelectedTransaction(transaction);
@@ -17,11 +18,7 @@ export const HistoryPage = () => {
   };
 
   const handleExport = () => {
-    addToast({
-      type: 'success',
-      title: 'Statement Downloaded',
-      message: 'Your complete transaction history statement (CSV) has been generated.',
-    });
+    setIsStatementModalOpen(true);
   };
 
   const handleSendAgain = (transaction) => {
@@ -55,6 +52,11 @@ export const HistoryPage = () => {
           transaction={selectedTransaction}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
+        />
+
+        <AccountStatementModal
+          isOpen={isStatementModalOpen}
+          onClose={() => setIsStatementModalOpen(false)}
         />
       </div>
     </AppShell>

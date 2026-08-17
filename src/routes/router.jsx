@@ -22,10 +22,10 @@ import { RegisterPage } from '../pages/auth/RegisterPage.jsx';
 import { RegistrationStatusPage } from '../pages/auth/RegistrationStatusPage.jsx';
 import { ProfilePage } from '../pages/auth/ProfilePage.jsx';
 import { RoutePlaceholder } from '../pages/system/RoutePlaceholder.jsx';
-import { HomeRedirect } from './HomeRedirect.jsx';
+import { LandingPage } from '../pages/LandingPage.jsx';
 
 export const router = createBrowserRouter([
-  { path: '/', element: <HomeRedirect /> },
+  { path: '/', element: <LandingPage /> },
   {
     element: <PublicRoute />,
     children: [

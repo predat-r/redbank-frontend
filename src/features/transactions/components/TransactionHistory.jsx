@@ -12,6 +12,7 @@ import {
   Filter,
   RotateCcw,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 import { Table, StatusBadge, Button } from '../../../components/ui';
 import { useMyTransactions } from '../transactions.queries';
@@ -23,6 +24,7 @@ export const TransactionHistory = ({
   limit,
   showViewAll = false,
   hideSummaryKpi = false,
+  onExport,
 }) => {
   const navigate = useNavigate();
 
@@ -619,11 +621,11 @@ export const TransactionHistory = ({
               </Button>
             )}
 
-            {/* {!limit && onExport && (
-              <Button variant="ghost" size="sm" icon={Download} onClick={onExport}>
-                Export
+            {!limit && onExport && (
+              <Button variant="primary" size="sm" icon={Download} onClick={onExport}>
+                Account Statement
               </Button>
-            )} */}
+            )}
           </div>
         </div>
 
