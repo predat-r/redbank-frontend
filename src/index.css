@@ -65,6 +65,16 @@
   --shadow-sm: 0 1px 2px rgba(20, 23, 28, 0.06);
   --shadow-md: 0 4px 12px rgba(20, 23, 28, 0.08);
   --shadow-lg: 0 12px 32px rgba(20, 23, 28, 0.12);
+
+  /* Landing Page Specific Tokens */
+  --color-landing-bg: #141922;
+  --color-landing-surface: rgba(32, 40, 52, 0.6);
+  --color-landing-border: rgba(255, 255, 255, 0.08);
+  --color-landing-text-hi: #ffffff;
+  --color-landing-text-mid: #d3dae4;
+  --color-landing-text-low: #7c8fa8;
+  --color-landing-cta-bg: #ffffff;
+  --color-landing-cta-text: #141922;
 }
 
 @layer base {

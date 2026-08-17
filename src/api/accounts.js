@@ -44,3 +44,12 @@ export async function chatWithRedAssist(request) {
   const response = await api.post('/accounts/me/chat', request);
   return response.data;
 }
+
+/**
+ * Request account statement for a date range.
+ * POST /api/accounts/me/statement
+ */
+export async function requestAccountStatement(request) {
+  const response = await api.post('/accounts/me/statement', request);
+  return response.data;
+}

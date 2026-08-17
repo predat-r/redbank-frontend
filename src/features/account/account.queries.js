@@ -5,6 +5,7 @@ import {
   unfreezeMyAccount,
   deactivateMyAccount,
   chatWithRedAssist,
+  requestAccountStatement,
 } from '../../api/accounts.js';
 import { getLatestBalance } from '../../api/balance.js';
 
@@ -84,5 +85,14 @@ export function useDeactivateAccount() {
 export function useChatWithRedAssist() {
   return useMutation({
     mutationFn: chatWithRedAssist,
+  });
+}
+
+/**
+ * Hook to execute POST /api/accounts/me/statement
+ */
+export function useRequestAccountStatement() {
+  return useMutation({
+    mutationFn: requestAccountStatement,
   });
 }
