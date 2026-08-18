@@ -10,9 +10,15 @@ import { LandingFooter } from '../features/landing/components/LandingFooter.jsx'
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/useAuth.js';
 import { LoadingState } from '../components/ui/LoadingState.jsx';
+import { useTheme } from '../hooks/useTheme.js';
 
 export function LandingPage() {
   const { isAuthenticated, isInitializing, hasRole } = useAuth();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
 
   useEffect(() => {
     const lenis = new Lenis({

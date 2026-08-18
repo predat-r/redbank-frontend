@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Menu, User, LogOut, ShieldCheck } from 'lucide-react';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 export const Topbar = ({
   user = { name: 'John Doe', role: 'ROLE_ACCOUNT_HOLDER', email: 'john@example.com' },
@@ -29,8 +30,11 @@ export const Topbar = ({
         </button>
       </div>
 
-      {/* Right: User Avatar Profile */}
+      {/* Right: Theme Toggle & User Avatar Profile */}
       <div className="flex items-center gap-2 sm:gap-4">
+        {/* Dark Mode Toggle Button */}
+        <ThemeToggle />
+
         {/* User Profile Menu */}
         <div className="relative">
           <button

@@ -1,9 +1,16 @@
+import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { LoadingState } from '../../../components/ui/LoadingState.jsx';
 import { useAuth } from '../useAuth.js';
+import { useTheme } from '../../../hooks/useTheme.js';
 
 export function PublicRoute() {
   const { isAuthenticated, isInitializing } = useAuth();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
 
   if (isInitializing) {
     return (
