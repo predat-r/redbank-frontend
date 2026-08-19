@@ -206,7 +206,7 @@ export const TransactionForm = ({ initialMode = 'transfer' }) => {
     if (mode === 'transfer') {
       if (!destinationAccountNumber.trim()) {
         errs.destinationAccountNumber = 'Destination account number is required';
-      } else if (destinationAccountNumber.trim().length < 5) {
+      } else if (!/^RB[0-9A-F]{10}$/.test(destinationAccountNumber.trim())) {
         errs.destinationAccountNumber = 'Please enter a valid account number';
       }
     }
