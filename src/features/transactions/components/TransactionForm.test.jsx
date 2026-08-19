@@ -96,7 +96,7 @@ describe('TransactionForm', () => {
     const user = userEvent.setup();
     renderComponent();
 
-    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-12345');
+    await user.type(screen.getByLabelText(/destination account number/i), 'RB1000000001');
     await user.type(screen.getByLabelText(/amount/i), '0');
 
     await user.click(screen.getByRole('button', { name: /continue to verify/i }));
@@ -111,7 +111,7 @@ describe('TransactionForm', () => {
     renderComponent();
 
     // Step 1: Initiate
-    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
+    await user.type(screen.getByLabelText(/destination account number/i), 'RB7A91F03C2D');
     await user.type(screen.getByLabelText(/amount/i), '1500');
     await user.type(screen.getByLabelText(/description/i), 'Gift');
 
@@ -119,14 +119,14 @@ describe('TransactionForm', () => {
 
     // Step 2: Verify
     expect(screen.getByText('Verify Transaction Details')).toBeInTheDocument();
-    expect(screen.getByText('ACC-888999')).toBeInTheDocument();
+    expect(screen.getByText('RB7A91F03C2D')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /confirm & submit/i }));
 
     // Step 3: Status & Receipt
     await waitFor(() => {
       expect(createTransfer).toHaveBeenCalledWith({
-        destinationAccountNumber: 'ACC-888999',
+        destinationAccountNumber: 'RB7A91F03C2D',
         amount: 1500,
         category: 'OTHER',
         description: 'Gift',
@@ -177,7 +177,7 @@ describe('TransactionForm', () => {
     const user = userEvent.setup({ delay: null });
     renderComponent();
 
-    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
+    await user.type(screen.getByLabelText(/destination account number/i), 'RB7A91F03C2D');
     await user.type(screen.getByLabelText(/amount/i), '60000.00');
 
     await user.click(screen.getByRole('button', { name: /continue to verify/i }));
@@ -194,7 +194,7 @@ describe('TransactionForm', () => {
     createTransfer.mockRejectedValueOnce(new Error('Transfer service unavailable'));
     renderComponent();
 
-    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
+    await user.type(screen.getByLabelText(/destination account number/i), 'RB7A91F03C2D');
     await user.type(screen.getByLabelText(/amount/i), '1500');
     await user.click(screen.getByRole('button', { name: /continue to verify/i }));
     await user.click(screen.getByRole('button', { name: /confirm & submit/i }));
@@ -212,7 +212,7 @@ describe('TransactionForm', () => {
     const user = userEvent.setup({ delay: null });
     renderComponent();
 
-    await user.type(screen.getByLabelText(/destination account number/i), 'ACC-888999');
+    await user.type(screen.getByLabelText(/destination account number/i), 'RB7A91F03C2D');
     await user.type(screen.getByLabelText(/amount/i), '1500');
     await user.click(screen.getByRole('button', { name: /continue to verify/i }));
     await user.click(screen.getByRole('button', { name: /confirm & submit/i }));

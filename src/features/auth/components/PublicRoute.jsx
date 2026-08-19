@@ -9,8 +9,10 @@ export function PublicRoute() {
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    setTheme('light');
-  }, [setTheme]);
+    if (!isInitializing && !isAuthenticated) {
+      setTheme('light');
+    }
+  }, [isAuthenticated, isInitializing, setTheme]);
 
   if (isInitializing) {
     return (

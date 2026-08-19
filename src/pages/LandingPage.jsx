@@ -17,8 +17,10 @@ export function LandingPage() {
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    setTheme('light');
-  }, [setTheme]);
+    if (!isInitializing && !isAuthenticated) {
+      setTheme('light');
+    }
+  }, [isAuthenticated, isInitializing, setTheme]);
 
   useEffect(() => {
     const lenis = new Lenis({
