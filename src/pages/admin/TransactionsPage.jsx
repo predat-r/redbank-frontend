@@ -42,7 +42,7 @@ const money = (v) =>
       });
 
 function AnomalyReportCard({ transactionId, anomalyFlag }) {
-  const hasFlag = Boolean(anomalyFlag && anomalyFlag !== 'NONE');
+  const hasFlag = Boolean(anomalyFlag && anomalyFlag !== 'NONE' && anomalyFlag !== 'LOW');
   const report = useAdminAnomalyReport(transactionId, hasFlag);
 
   if (!hasFlag) {
