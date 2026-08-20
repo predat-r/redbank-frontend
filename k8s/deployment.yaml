@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: redbank-frontend
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: redbank-frontend
+
+  template:
+    metadata:
+      labels:
+        app: redbank-frontend
+
+    spec:
+      containers:
+        - name: redbank-frontend
+          image: redbank-frontend:local
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 80
